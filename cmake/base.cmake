@@ -66,9 +66,9 @@ mark_as_advanced(
   CMAKE_CXX_FLAGS_MAINTAINER CMAKE_C_FLAGS_MAINTAINER
   CMAKE_EXE_LINKER_FLAGS_MAINTAINER CMAKE_SHARED_LINKER_FLAGS_MAINTAINER)
 
-include(CheckTypeSize)
-check_type_size("long long" LONG_LONG)
-set(LEMON_HAVE_LONG_LONG ${HAVE_LONG_LONG})
+# include(CheckTypeSize)
+# check_type_size("long long" LONG_LONG)
+# set(LEMON_HAVE_LONG_LONG ${HAVE_LONG_LONG})
 
 find_package(Threads)
 

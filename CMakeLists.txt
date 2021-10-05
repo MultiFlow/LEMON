@@ -36,7 +36,8 @@ set(CMAKE_BUILD_TYPE
       FORCE)
 
 enable_testing()
-include(cpp)
+
+include(base)
 
 if(BUILD_ARCHIVE)
   include(archive)
