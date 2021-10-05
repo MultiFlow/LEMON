@@ -3,10 +3,7 @@ if(DEFINED ENV{LEMON_CXX_WARNING})
 else()
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(CXX_WARNING
-        "-Wall -W -Wunused -Wformat=2 -Wctor-dtor-privacy -Wnon-virtual-dtor
-        -Wno-char-subscripts -Wwrite-strings -Wno-char-subscripts -Wreturn-type
-        -Wcast-qual -Wcast-align -Wsign-promo -Woverloaded-virtual
-        -fno-strict-aliasing -Wold-style-cast -Wno-unknown-pragmas -Wno-unused-local-typedefs"
+        "-Wall -W -Wunused -Wformat=2 -Wctor-dtor-privacy -Wnon-virtual-dtor -Wno-char-subscripts -Wwrite-strings -Wno-char-subscripts -Wreturn-type -Wcast-qual -Wcast-align -Wsign-promo -Woverloaded-virtual -fno-strict-aliasing -Wold-style-cast -Wno-unknown-pragmas -Wno-unused-local-typedefs"
     )
     set(CMAKE_CXX_FLAGS_DEBUG CACHE STRING "-ggdb")
     set(CMAKE_C_FLAGS_DEBUG CACHE STRING "-ggdb")
