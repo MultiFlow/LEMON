@@ -6,11 +6,17 @@ project(
   VERSION 1.4.0
   LANGUAGES CXX)
 
+# Solvers
 option(LEMON_ENABLE_GLPK "Enable GLPK solver backend." OFF)
 option(LEMON_ENABLE_ILOG "Enable ILOG (CPLEX) solver backend." OFF)
 option(LEMON_ENABLE_COIN "Enable COIN solver backend." OFF)
 option(LEMON_ENABLE_SOPLEX "Enable SoPlex solver backend." OFF)
+# OS
+if(WIN32)
+  set(LEMON_WIN32 ON)
+endif()
 
+# Maintainer Building options
 option(BUILD_DOCS "" OFF)
 option(BUILD_TOOLS "" OFF)
 option(BUILD_ARCHIVE "Enable to create archive" OFF)

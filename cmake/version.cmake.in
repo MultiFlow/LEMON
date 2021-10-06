@@ -1,3 +1,0 @@
-set(LEMON_VERSION
-    "@LEMON_VERSION@"
-    CACHE STRING "LEMON version string.")

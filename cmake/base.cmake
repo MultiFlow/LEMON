@@ -170,16 +170,6 @@ endif()
 
 add_subdirectory(lemon)
 
-if(UNIX)
-  install(FILES ${PROJECT_BINARY_DIR}/cmake/Config.cmake
-          DESTINATION share/lemon/cmake)
-elseif(WIN32)
-  install(FILES ${PROJECT_BINARY_DIR}/cmake/LEMONConfig.cmake DESTINATION cmake)
-endif()
-
-configure_file(${PROJECT_SOURCE_DIR}/cmake/version.cmake.in
-               ${CMAKE_BINARY_DIR}/cmake/version.cmake @ONLY)
-
 include(GNUInstallDirs)
 install(
   EXPORT ${PROJECT_NAME}Targets
@@ -197,3 +187,12 @@ install(
         "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
   COMPONENT Devel)
+
+# Custom install command original from LEMON
+if(UNIX)
+  install(FILES ${PROJECT_BINARY_DIR}/cmake/${PROJECT_NAME}Config.cmake
+          DESTINATION share/lemon/cmake)
+elseif(WIN32)
+  install(FILES ${PROJECT_BINARY_DIR}/cmake/${PROJECT_NAME}Config.cmake
+          DESTINATION cmake)
+endif()
