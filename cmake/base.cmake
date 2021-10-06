@@ -7,6 +7,9 @@ else()
     )
     set(CMAKE_CXX_FLAGS_DEBUG CACHE STRING "-ggdb")
     set(CMAKE_C_FLAGS_DEBUG CACHE STRING "-ggdb")
+    if(WIN32 AND MINGW)
+      set(CXX_WARNING "${CXX_WARNING} -Wa,-mbig-obj -O2")
+    endif()
   elseif(MSVC)
     # This part is unnecessary 'casue the same is set by the lemon/core.h. Still
     # keep it as an example.
@@ -187,12 +190,3 @@ install(
         "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
   COMPONENT Devel)
-
-# Custom install command original from LEMON
-if(UNIX)
-  install(FILES ${PROJECT_BINARY_DIR}/cmake/${PROJECT_NAME}Config.cmake
-          DESTINATION share/lemon/cmake)
-elseif(WIN32)
-  install(FILES ${PROJECT_BINARY_DIR}/cmake/${PROJECT_NAME}Config.cmake
-          DESTINATION cmake)
-endif()
