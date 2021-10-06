@@ -53,7 +53,9 @@ set_target_properties(
   ${NAME}
   PROPERTIES CXX_STANDARD 17
              CXX_STANDARD_REQUIRED ON
-             CXX_EXTENSIONS OFF)
+             CXX_EXTENSIONS OFF
+             POSITION_INDEPENDENT_CODE ON)
+
 target_compile_features(${NAME} PUBLIC cxx_std_17)
 
 target_link_libraries(${NAME} ${GLPK_LIBRARIES} ${COIN_LIBRARIES}
@@ -67,13 +69,8 @@ set_target_properties(
              SOVERSION ${PROJECT_VERSION_MAJOR})
 
 target_include_directories(
-  ${NAME}
-  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/bits>
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/concepts>
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-         $<INSTALL_INTERFACE:include/lemon>)
-
+  ${NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+                 $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>)
 # Add alias
 add_library(LEMON::LEMON ALIAS ${NAME})
 

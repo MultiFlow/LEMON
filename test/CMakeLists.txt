@@ -49,8 +49,7 @@ set(TESTS
     time_measure_test
     tsp_test
     unionfind_test
-    vf2_test
-    )
+    vf2_test)
 
 if(LEMON_HAVE_LP)
   if(${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
@@ -151,6 +150,7 @@ foreach(TEST_NAME ${TESTS})
   target_include_directories(
     ${TEST_NAME}
     PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+           $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
            $<INSTALL_INTERFACE:include/lemon>)

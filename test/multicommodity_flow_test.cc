@@ -16,44 +16,45 @@
  *
  */
 
-#include <iostream>
 #include <lemon/concepts/digraph.h>
 #include <lemon/concepts/maps.h>
 #include <lemon/multicommodity_flow.h>
 #include <lemon/smart_graph.h>
+
+#include <iostream>
 
 using namespace lemon;
 
 void maxFlowTest() {
   DIGRAPH_TYPEDEFS(SmartDigraph);
 
-  SmartDigraph g;
+  SmartDigraph                 g;
   SmartDigraph::ArcMap<double> cap(g);
-  Node s = g.addNode();
-  Node t = g.addNode();
-  Node n1 = g.addNode();
-  Node n2 = g.addNode();
-  Node n3 = g.addNode();
-  Arc a;
-  a = g.addArc(s, n1);
+  Node                         s  = g.addNode();
+  Node                         t  = g.addNode();
+  Node                         n1 = g.addNode();
+  Node                         n2 = g.addNode();
+  Node                         n3 = g.addNode();
+  Arc                          a;
+  a      = g.addArc(s, n1);
   cap[a] = 20.0;
-  a = g.addArc(s, n2);
+  a      = g.addArc(s, n2);
   cap[a] = 10.0;
-  a = g.addArc(s, n3);
+  a      = g.addArc(s, n3);
   cap[a] = 10.0;
-  a = g.addArc(n1, n2);
+  a      = g.addArc(n1, n2);
   cap[a] = 20.0;
-  a = g.addArc(n2, n3);
+  a      = g.addArc(n2, n3);
   cap[a] = 20.0;
-  a = g.addArc(n1, t);
+  a      = g.addArc(n1, t);
   cap[a] = 20.0;
-  a = g.addArc(n2, t);
+  a      = g.addArc(n2, t);
   cap[a] = 20.0;
-  a = g.addArc(n3, t);
+  a      = g.addArc(n3, t);
   cap[a] = 20.0;
 
   MaxMulticommodityFlow<SmartDigraph> max(g, cap, 1, {s}, {t});
-  max.run();
+  max.run(1.5);
 };
 
 int main() {
