@@ -46,7 +46,8 @@ endif()
 
 file(GLOB _HDRS "*.h" "bits/*h" "concepts/*.h")
 
-add_library(${NAME} OBJECT ${LEMON_SOURCES} ${_HDRS})
+add_library(${NAME} ${LEMON_SOURCES} ${_HDRS})
+
 # Compile options (needed for MacOS)
 set_target_properties(
   ${NAME}
@@ -61,7 +62,7 @@ target_link_libraries(${NAME} ${GLPK_LIBRARIES} ${COIN_LIBRARIES}
 set_target_properties(
   ${NAME}
   PROPERTIES PUBLIC_HEADER "${_HDRS};${CMAKE_CURRENT_BINARY_DIR}/config.h"
-             OUTPUT_NAME $<IF:$<BOOL:${UNIX}>,"emon","${NAME}">
+             OUTPUT_NAME $<IF:$<BOOL:${UNIX}>,emon,${NAME}>
              VERSION ${PROJECT_VERSION}
              SOVERSION ${PROJECT_VERSION_MAJOR})
 

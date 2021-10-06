@@ -1,7 +1,7 @@
 find_package(Doxygen REQUIRED)
 find_package(Ghostscript REQUIRED)
 find_package(PythonInterp REQUIRED)
-find_package(WGET REQUIRED)
+find_package(Wget REQUIRED)
 
 set(PACKAGE_NAME ${PROJECT_NAME})
 set(PACKAGE_VERSION ${PROJECT_VERSION})
@@ -9,11 +9,11 @@ set(abs_top_srcdir ${PROJECT_SOURCE_DIR})
 set(abs_top_builddir ${PROJECT_BINARY_DIR})
 
 set(LEMON_DOC_SOURCE_BROWSER
-    "NO"
-    CACHE STRING "Include source into the doc (YES/NO).")
+    OFF
+    CACHE BOOL "Include source into the doc.")
 set(LEMON_DOC_USE_MATHJAX
-    "NO"
-    CACHE STRING "Use MathJax to display math formulae (YES/NO).")
+    OFF
+    CACHE BOOL "Use MathJax to display math formulae.")
 set(LEMON_DOC_MATHJAX_RELPATH
     "http://www.mathjax.org/mathjax"
     CACHE STRING "MathJax library location.")
@@ -119,9 +119,7 @@ if(DOXYGEN_EXECUTABLE
     COMMAND ${CMAKE_COMMAND} -E remove_directory html
     COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-
-  set_target_properties(html PROPERTIES PROJECT_LABEL BUILD_DOC)
-
+  # set_target_properties(html PROPERTIES PROJECT_LABEL BUILD_DOC)
   if(UNIX)
     install(
       DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/
@@ -133,7 +131,6 @@ if(DOXYGEN_EXECUTABLE
       DESTINATION doc
       COMPONENT html_documentation)
   endif()
-
 endif()
 
 if(WGET_FOUND)

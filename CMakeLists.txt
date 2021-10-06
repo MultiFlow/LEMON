@@ -39,10 +39,26 @@ enable_testing()
 
 include(base)
 
-if(BUILD_ARCHIVE)
+if(BUILD_TESTING AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+  add_subdirectory(test)
+endif()
+
+if(BUILD_TOOLS AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+  add_subdirectory(tools)
+endif()
+
+if(BUILD_DOCS AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+  add_subdirectory(doc)
+endif()
+
+if(BUILD_DEMO AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+  add_subdirectory(demo)
+endif()
+
+if(BUILD_ARCHIVE AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
   include(archive)
 endif()
 
-if(BUILD_CPACK)
+if(BUILD_CPACK AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
   include(cpack)
 endif()

@@ -170,22 +170,6 @@ endif()
 
 add_subdirectory(lemon)
 
-if(BUILD_TESTING AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
-  add_subdirectory(test)
-endif()
-
-if(BUILD_TOOLS AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
-  add_subdirectory(tools)
-endif()
-
-if(BUILD_DOCS AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
-  add_subdirectory(doc)
-endif()
-
-if(BUILD_DEMO AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
-  add_subdirectory(demo)
-endif()
-
 if(UNIX)
   install(FILES ${PROJECT_BINARY_DIR}/cmake/Config.cmake
           DESTINATION share/lemon/cmake)
