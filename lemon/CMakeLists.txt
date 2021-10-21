@@ -73,12 +73,12 @@ add_library(${NAME} ${LEMON_SOURCES} ${_HDRS})
 # Compile options (needed for MacOS)
 set_target_properties(
   ${NAME}
-  PROPERTIES CXX_STANDARD 20
+  PROPERTIES CXX_STANDARD 17
              CXX_STANDARD_REQUIRED ON
              CXX_EXTENSIONS OFF
              POSITION_INDEPENDENT_CODE ON)
 
-target_compile_features(${NAME} PUBLIC cxx_std_20)
+target_compile_features(${NAME} PUBLIC cxx_std_17)
 
 target_link_libraries(${NAME} ${GLPK_LIBRARIES} ${COIN_LIBRARIES}
                       ${ILOG_LIBRARIES} ${SOPLEX_LIBRARIES})
