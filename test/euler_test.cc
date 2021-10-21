@@ -16,79 +16,83 @@
  *
  */
 
+#include <lemon/adaptors.h>
 #include <lemon/euler.h>
 #include <lemon/list_graph.h>
-#include <lemon/adaptors.h>
+
 #include "test_tools.h"
 
 using namespace lemon;
 
-template <typename Digraph>
-void checkDiEulerIt(const Digraph& g,
-                    const typename Digraph::Node& start = INVALID)
-{
+template<typename Digraph>
+void checkDiEulerIt(
+    const Digraph&                g,
+    const typename Digraph::Node& start = INVALID) {
   typename Digraph::template ArcMap<int> visitationNumber(g, 0);
 
   DiEulerIt<Digraph> e(g, start);
-  if (e == INVALID) return;
+  if (e == INVALID)
+    return;
   typename Digraph::Node firstNode = g.source(e);
-  typename Digraph::Node lastNode = g.target(e);
+  typename Digraph::Node lastNode  = g.target(e);
   if (start != INVALID) {
     check(firstNode == start, "checkDiEulerIt: Wrong first node");
   }
 
   for (; e != INVALID; ++e) {
-    if (e != INVALID) lastNode = g.target(e);
+    if (e != INVALID)
+      lastNode = g.target(e);
     ++visitationNumber[e];
   }
 
-  check(firstNode == lastNode,
+  check(
+      firstNode == lastNode,
       "checkDiEulerIt: First and last nodes are not the same");
 
-  for (typename Digraph::ArcIt a(g); a != INVALID; ++a)
-  {
-    check(visitationNumber[a] == 1,
+  for (typename Digraph::ArcIt a(g); a != INVALID; ++a) {
+    check(
+        visitationNumber[a] == 1,
         "checkDiEulerIt: Not visited or multiple times visited arc found");
   }
 }
 
-template <typename Graph>
-void checkEulerIt(const Graph& g,
-                  const typename Graph::Node& start = INVALID)
-{
+template<typename Graph>
+void checkEulerIt(const Graph& g, const typename Graph::Node& start = INVALID) {
   typename Graph::template EdgeMap<int> visitationNumber(g, 0);
 
   EulerIt<Graph> e(g, start);
-  if (e == INVALID) return;
+  if (e == INVALID)
+    return;
   typename Graph::Node firstNode = g.source(typename Graph::Arc(e));
-  typename Graph::Node lastNode = g.target(typename Graph::Arc(e));
+  typename Graph::Node lastNode  = g.target(typename Graph::Arc(e));
   if (start != INVALID) {
     check(firstNode == start, "checkEulerIt: Wrong first node");
   }
 
   for (; e != INVALID; ++e) {
-    if (e != INVALID) lastNode = g.target(typename Graph::Arc(e));
+    if (e != INVALID)
+      lastNode = g.target(typename Graph::Arc(e));
     ++visitationNumber[e];
   }
 
-  check(firstNode == lastNode,
+  check(
+      firstNode == lastNode,
       "checkEulerIt: First and last nodes are not the same");
 
-  for (typename Graph::EdgeIt e(g); e != INVALID; ++e)
-  {
-    check(visitationNumber[e] == 1,
+  for (typename Graph::EdgeIt e(g); e != INVALID; ++e) {
+    check(
+        visitationNumber[e] == 1,
         "checkEulerIt: Not visited or multiple times visited edge found");
   }
 }
 
-int main()
-{
-  typedef ListDigraph Digraph;
+int main() {
+  typedef ListDigraph         Digraph;
   typedef Undirector<Digraph> Graph;
 
   {
     Digraph d;
-    Graph g(d);
+    Graph   g(d);
 
     checkDiEulerIt(d);
     checkDiEulerIt(g);
@@ -98,8 +102,8 @@ int main()
     check(eulerian(g), "This graph is Eulerian");
   }
   {
-    Digraph d;
-    Graph g(d);
+    Digraph       d;
+    Graph         g(d);
     Digraph::Node n = d.addNode();
     ::lemon::ignore_unused_variable_warning(n);
 
@@ -111,8 +115,8 @@ int main()
     check(eulerian(g), "This graph is Eulerian");
   }
   {
-    Digraph d;
-    Graph g(d);
+    Digraph       d;
+    Graph         g(d);
     Digraph::Node n = d.addNode();
     d.addArc(n, n);
 
@@ -124,8 +128,8 @@ int main()
     check(eulerian(g), "This graph is Eulerian");
   }
   {
-    Digraph d;
-    Graph g(d);
+    Digraph       d;
+    Graph         g(d);
     Digraph::Node n1 = d.addNode();
     Digraph::Node n2 = d.addNode();
     Digraph::Node n3 = d.addNode();
@@ -146,8 +150,8 @@ int main()
     check(eulerian(g), "This graph is Eulerian");
   }
   {
-    Digraph d;
-    Graph g(d);
+    Digraph       d;
+    Graph         g(d);
     Digraph::Node n1 = d.addNode();
     Digraph::Node n2 = d.addNode();
     Digraph::Node n3 = d.addNode();
@@ -182,15 +186,15 @@ int main()
     check(eulerian(g), "This graph is Eulerian");
   }
   {
-    Digraph d;
-    Graph g(d);
+    Digraph       d;
+    Graph         g(d);
     Digraph::Node n0 = d.addNode();
     Digraph::Node n1 = d.addNode();
     Digraph::Node n2 = d.addNode();
     Digraph::Node n3 = d.addNode();
     Digraph::Node n4 = d.addNode();
     Digraph::Node n5 = d.addNode();
-    ::lemon::ignore_unused_variable_warning(n0,n4,n5);
+    ::lemon::ignore_unused_variable_warning(n0, n4, n5);
 
     d.addArc(n1, n2);
     d.addArc(n2, n3);
@@ -208,8 +212,8 @@ int main()
     check(!eulerian(g), "This graph is not Eulerian");
   }
   {
-    Digraph d;
-    Graph g(d);
+    Digraph       d;
+    Graph         g(d);
     Digraph::Node n1 = d.addNode();
     Digraph::Node n2 = d.addNode();
     Digraph::Node n3 = d.addNode();

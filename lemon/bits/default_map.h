@@ -19,9 +19,9 @@
 #ifndef LEMON_BITS_DEFAULT_MAP_H
 #define LEMON_BITS_DEFAULT_MAP_H
 
-#include <lemon/config.h>
 #include <lemon/bits/array_map.h>
 #include <lemon/bits/vector_map.h>
+#include <lemon/config.h>
 //#include <lemon/bits/debug_map.h>
 
 //\ingroup graphbits
@@ -30,115 +30,106 @@
 
 namespace lemon {
 
+//#ifndef LEMON_USE_DEBUG_MAP
 
-  //#ifndef LEMON_USE_DEBUG_MAP
+template<typename _Graph, typename _Item, typename _Value>
+struct DefaultMapSelector {
+  typedef ArrayMap<_Graph, _Item, _Value> Map;
+};
 
-  template <typename _Graph, typename _Item, typename _Value>
-  struct DefaultMapSelector {
-    typedef ArrayMap<_Graph, _Item, _Value> Map;
-  };
+// bool
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, bool> {
+  typedef VectorMap<_Graph, _Item, bool> Map;
+};
 
-  // bool
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, bool> {
-    typedef VectorMap<_Graph, _Item, bool> Map;
-  };
+// char
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, char> {
+  typedef VectorMap<_Graph, _Item, char> Map;
+};
 
-  // char
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, char> {
-    typedef VectorMap<_Graph, _Item, char> Map;
-  };
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, signed char> {
+  typedef VectorMap<_Graph, _Item, signed char> Map;
+};
 
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, signed char> {
-    typedef VectorMap<_Graph, _Item, signed char> Map;
-  };
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, unsigned char> {
+  typedef VectorMap<_Graph, _Item, unsigned char> Map;
+};
 
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, unsigned char> {
-    typedef VectorMap<_Graph, _Item, unsigned char> Map;
-  };
+// int
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, signed int> {
+  typedef VectorMap<_Graph, _Item, signed int> Map;
+};
 
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, unsigned int> {
+  typedef VectorMap<_Graph, _Item, unsigned int> Map;
+};
 
-  // int
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, signed int> {
-    typedef VectorMap<_Graph, _Item, signed int> Map;
-  };
+// short
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, signed short> {
+  typedef VectorMap<_Graph, _Item, signed short> Map;
+};
 
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, unsigned int> {
-    typedef VectorMap<_Graph, _Item, unsigned int> Map;
-  };
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, unsigned short> {
+  typedef VectorMap<_Graph, _Item, unsigned short> Map;
+};
 
+// long
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, signed long> {
+  typedef VectorMap<_Graph, _Item, signed long> Map;
+};
 
-  // short
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, signed short> {
-    typedef VectorMap<_Graph, _Item, signed short> Map;
-  };
-
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, unsigned short> {
-    typedef VectorMap<_Graph, _Item, unsigned short> Map;
-  };
-
-
-  // long
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, signed long> {
-    typedef VectorMap<_Graph, _Item, signed long> Map;
-  };
-
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, unsigned long> {
-    typedef VectorMap<_Graph, _Item, unsigned long> Map;
-  };
-
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, unsigned long> {
+  typedef VectorMap<_Graph, _Item, unsigned long> Map;
+};
 
 #if defined LEMON_HAVE_LONG_LONG
 
-  // long long
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, signed long long> {
-    typedef VectorMap<_Graph, _Item, signed long long> Map;
-  };
+// long long
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, signed long long> {
+  typedef VectorMap<_Graph, _Item, signed long long> Map;
+};
 
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, unsigned long long> {
-    typedef VectorMap<_Graph, _Item, unsigned long long> Map;
-  };
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, unsigned long long> {
+  typedef VectorMap<_Graph, _Item, unsigned long long> Map;
+};
 
 #endif
 
+// float
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, float> {
+  typedef VectorMap<_Graph, _Item, float> Map;
+};
 
-  // float
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, float> {
-    typedef VectorMap<_Graph, _Item, float> Map;
-  };
+// double
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, double> {
+  typedef VectorMap<_Graph, _Item, double> Map;
+};
 
+// long double
+template<typename _Graph, typename _Item>
+struct DefaultMapSelector<_Graph, _Item, long double> {
+  typedef VectorMap<_Graph, _Item, long double> Map;
+};
 
-  // double
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, double> {
-    typedef VectorMap<_Graph, _Item,  double> Map;
-  };
-
-
-  // long double
-  template <typename _Graph, typename _Item>
-  struct DefaultMapSelector<_Graph, _Item, long double> {
-    typedef VectorMap<_Graph, _Item, long double> Map;
-  };
-
-
-  // pointer
-  template <typename _Graph, typename _Item, typename _Ptr>
-  struct DefaultMapSelector<_Graph, _Item, _Ptr*> {
-    typedef VectorMap<_Graph, _Item, _Ptr*> Map;
-  };
+// pointer
+template<typename _Graph, typename _Item, typename _Ptr>
+struct DefaultMapSelector<_Graph, _Item, _Ptr*> {
+  typedef VectorMap<_Graph, _Item, _Ptr*> Map;
+};
 
 // #else
 
@@ -149,34 +140,32 @@ namespace lemon {
 
 // #endif
 
-  // DefaultMap class
-  template <typename _Graph, typename _Item, typename _Value>
-  class DefaultMap
-    : public DefaultMapSelector<_Graph, _Item, _Value>::Map {
-    typedef typename DefaultMapSelector<_Graph, _Item, _Value>::Map Parent;
+// DefaultMap class
+template<typename _Graph, typename _Item, typename _Value>
+class DefaultMap : public DefaultMapSelector<_Graph, _Item, _Value>::Map {
+  typedef typename DefaultMapSelector<_Graph, _Item, _Value>::Map Parent;
 
-  public:
-    typedef DefaultMap<_Graph, _Item, _Value> Map;
+ public:
+  typedef DefaultMap<_Graph, _Item, _Value> Map;
 
-    typedef typename Parent::GraphType GraphType;
-    typedef typename Parent::Value Value;
+  typedef typename Parent::GraphType GraphType;
+  typedef typename Parent::Value     Value;
 
-    explicit DefaultMap(const GraphType& graph) : Parent(graph) {}
-    DefaultMap(const GraphType& graph, const Value& value)
+  explicit DefaultMap(const GraphType& graph) : Parent(graph) {}
+  DefaultMap(const GraphType& graph, const Value& value)
       : Parent(graph, value) {}
 
-    DefaultMap& operator=(const DefaultMap& cmap) {
-      return operator=<DefaultMap>(cmap);
-    }
+  DefaultMap& operator=(const DefaultMap& cmap) {
+    return operator=<DefaultMap>(cmap);
+  }
 
-    template <typename CMap>
-    DefaultMap& operator=(const CMap& cmap) {
-      Parent::operator=(cmap);
-      return *this;
-    }
+  template<typename CMap>
+  DefaultMap& operator=(const CMap& cmap) {
+    Parent::operator=(cmap);
+    return *this;
+  }
+};
 
-  };
-
-}
+} // namespace lemon
 
 #endif

@@ -18,30 +18,29 @@
 #ifndef VF2_INTERNALS_H
 #define VF2_INTERNALS_H
 
-
 ///\ingroup graph_properties
 ///\file
 ///\brief Mapping types for graph matching algorithms.
 
 namespace lemon {
-  ///\ingroup graph_isomorphism
-  ///The \ref Vf2 "VF2" algorithm is capable of finding different kind of
-  ///graph embeddings, this enum specifies their types.
+///\ingroup graph_isomorphism
+/// The \ref Vf2 "VF2" algorithm is capable of finding different kind of
+/// graph embeddings, this enum specifies their types.
+///
+/// See \ref graph_isomorphism for a more detailed description.
+enum MappingType {
+  /// Subgraph isomorphism
+  SUBGRAPH = 0,
+  /// Induced subgraph isomorphism
+  INDUCED = 1,
+  /// Graph isomorphism
   ///
-  ///See \ref graph_isomorphism for a more detailed description.
-  enum MappingType {
-    /// Subgraph isomorphism
-    SUBGRAPH = 0,
-    /// Induced subgraph isomorphism
-    INDUCED = 1,
-    /// Graph isomorphism
-    ///
-    /// If the two graphs have the same number of nodes, than it is
-    /// equivalent to \ref INDUCED, and if they also have the same
-    /// number of edges, then it is also equivalent to \ref SUBGRAPH.
-    ///
-    /// However, using this setting is faster than the other two options.
-    ISOMORPH = 2
-  };
-}
+  /// If the two graphs have the same number of nodes, than it is
+  /// equivalent to \ref INDUCED, and if they also have the same
+  /// number of edges, then it is also equivalent to \ref SUBGRAPH.
+  ///
+  /// However, using this setting is faster than the other two options.
+  ISOMORPH = 2
+};
+} // namespace lemon
 #endif

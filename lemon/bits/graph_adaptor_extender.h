@@ -19,424 +19,361 @@
 #ifndef LEMON_BITS_GRAPH_ADAPTOR_EXTENDER_H
 #define LEMON_BITS_GRAPH_ADAPTOR_EXTENDER_H
 
+#include <lemon/bits/stl_iterators.h>
 #include <lemon/core.h>
 #include <lemon/error.h>
 
 namespace lemon {
 
-  template <typename _Digraph>
-  class DigraphAdaptorExtender : public _Digraph {
-    typedef _Digraph Parent;
+template<typename _Digraph>
+class DigraphAdaptorExtender : public _Digraph {
+  typedef _Digraph Parent;
 
-  public:
+ public:
+  typedef _Digraph               Digraph;
+  typedef DigraphAdaptorExtender Adaptor;
 
-    typedef _Digraph Digraph;
-    typedef DigraphAdaptorExtender Adaptor;
+  // Base extensions
 
-    // Base extensions
+  typedef typename Parent::Node Node;
+  typedef typename Parent::Arc  Arc;
 
-    typedef typename Parent::Node Node;
-    typedef typename Parent::Arc Arc;
+  int maxId(Node) const { return Parent::maxNodeId(); }
 
-    int maxId(Node) const {
-      return Parent::maxNodeId();
+  int maxId(Arc) const { return Parent::maxArcId(); }
+
+  Node fromId(int id, Node) const { return Parent::nodeFromId(id); }
+
+  Arc fromId(int id, Arc) const { return Parent::arcFromId(id); }
+
+  Node oppositeNode(const Node& n, const Arc& e) const {
+    if (n == Parent::source(e))
+      return Parent::target(e);
+    else if (n == Parent::target(e))
+      return Parent::source(e);
+    else
+      return INVALID;
+  }
+
+  class NodeIt : public Node {
+    const Adaptor* _adaptor;
+
+   public:
+    NodeIt() {}
+
+    NodeIt(Invalid i) : Node(i) {}
+
+    explicit NodeIt(const Adaptor& adaptor) : _adaptor(&adaptor) {
+      _adaptor->first(static_cast<Node&>(*this));
     }
 
-    int maxId(Arc) const {
-      return Parent::maxArcId();
-    }
-
-    Node fromId(int id, Node) const {
-      return Parent::nodeFromId(id);
-    }
-
-    Arc fromId(int id, Arc) const {
-      return Parent::arcFromId(id);
-    }
-
-    Node oppositeNode(const Node &n, const Arc &e) const {
-      if (n == Parent::source(e))
-        return Parent::target(e);
-      else if(n==Parent::target(e))
-        return Parent::source(e);
-      else
-        return INVALID;
-    }
-
-    class NodeIt : public Node {
-      const Adaptor* _adaptor;
-    public:
-
-      NodeIt() {}
-
-      NodeIt(Invalid i) : Node(i) { }
-
-      explicit NodeIt(const Adaptor& adaptor) : _adaptor(&adaptor) {
-        _adaptor->first(static_cast<Node&>(*this));
-      }
-
-      NodeIt(const Adaptor& adaptor, const Node& node)
+    NodeIt(const Adaptor& adaptor, const Node& node)
         : Node(node), _adaptor(&adaptor) {}
 
-      NodeIt& operator++() {
-        _adaptor->next(*this);
-        return *this;
-      }
-
-    };
-
-    LemonRangeWrapper1<NodeIt, Adaptor> nodes() const {
-      return LemonRangeWrapper1<NodeIt, Adaptor>(*this);
+    NodeIt& operator++() {
+      _adaptor->next(*this);
+      return *this;
     }
-
-    class ArcIt : public Arc {
-      const Adaptor* _adaptor;
-    public:
-
-      ArcIt() { }
-
-      ArcIt(Invalid i) : Arc(i) { }
-
-      explicit ArcIt(const Adaptor& adaptor) : _adaptor(&adaptor) {
-        _adaptor->first(static_cast<Arc&>(*this));
-      }
-
-      ArcIt(const Adaptor& adaptor, const Arc& e) :
-        Arc(e), _adaptor(&adaptor) { }
-
-      ArcIt& operator++() {
-        _adaptor->next(*this);
-        return *this;
-      }
-
-    };
-
-    LemonRangeWrapper1<ArcIt, Adaptor> arcs() const {
-      return LemonRangeWrapper1<ArcIt, Adaptor>(*this);
-    }
-
-
-    class OutArcIt : public Arc {
-      const Adaptor* _adaptor;
-    public:
-
-      OutArcIt() { }
-
-      OutArcIt(Invalid i) : Arc(i) { }
-
-      OutArcIt(const Adaptor& adaptor, const Node& node)
-        : _adaptor(&adaptor) {
-        _adaptor->firstOut(*this, node);
-      }
-
-      OutArcIt(const Adaptor& adaptor, const Arc& arc)
-        : Arc(arc), _adaptor(&adaptor) {}
-
-      OutArcIt& operator++() {
-        _adaptor->nextOut(*this);
-        return *this;
-      }
-
-    };
-
-    LemonRangeWrapper2<OutArcIt, Adaptor, Node> outArcs(const Node& u) const {
-      return LemonRangeWrapper2<OutArcIt, Adaptor, Node>(*this, u);
-    }
-
-
-    class InArcIt : public Arc {
-      const Adaptor* _adaptor;
-    public:
-
-      InArcIt() { }
-
-      InArcIt(Invalid i) : Arc(i) { }
-
-      InArcIt(const Adaptor& adaptor, const Node& node)
-        : _adaptor(&adaptor) {
-        _adaptor->firstIn(*this, node);
-      }
-
-      InArcIt(const Adaptor& adaptor, const Arc& arc) :
-        Arc(arc), _adaptor(&adaptor) {}
-
-      InArcIt& operator++() {
-        _adaptor->nextIn(*this);
-        return *this;
-      }
-
-    };
-
-    LemonRangeWrapper2<InArcIt, Adaptor, Node> inArcs(const Node& u) const {
-      return LemonRangeWrapper2<InArcIt, Adaptor, Node>(*this, u);
-    }
-
-    Node baseNode(const OutArcIt &e) const {
-      return Parent::source(e);
-    }
-    Node runningNode(const OutArcIt &e) const {
-      return Parent::target(e);
-    }
-
-    Node baseNode(const InArcIt &e) const {
-      return Parent::target(e);
-    }
-    Node runningNode(const InArcIt &e) const {
-      return Parent::source(e);
-    }
-
   };
 
-  template <typename _Graph>
-  class GraphAdaptorExtender : public _Graph {
-    typedef _Graph Parent;
+  LemonRangeWrapper1<NodeIt, Adaptor> nodes() const {
+    return LemonRangeWrapper1<NodeIt, Adaptor>(*this);
+  }
 
-  public:
+  class ArcIt : public Arc {
+    const Adaptor* _adaptor;
 
-    typedef _Graph Graph;
-    typedef GraphAdaptorExtender Adaptor;
+   public:
+    ArcIt() {}
 
-    typedef True UndirectedTag;
+    ArcIt(Invalid i) : Arc(i) {}
 
-    typedef typename Parent::Node Node;
-    typedef typename Parent::Arc Arc;
-    typedef typename Parent::Edge Edge;
-
-    // Graph extension
-
-    int maxId(Node) const {
-      return Parent::maxNodeId();
+    explicit ArcIt(const Adaptor& adaptor) : _adaptor(&adaptor) {
+      _adaptor->first(static_cast<Arc&>(*this));
     }
 
-    int maxId(Arc) const {
-      return Parent::maxArcId();
+    ArcIt(const Adaptor& adaptor, const Arc& e) : Arc(e), _adaptor(&adaptor) {}
+
+    ArcIt& operator++() {
+      _adaptor->next(*this);
+      return *this;
+    }
+  };
+
+  LemonRangeWrapper1<ArcIt, Adaptor> arcs() const {
+    return LemonRangeWrapper1<ArcIt, Adaptor>(*this);
+  }
+
+  class OutArcIt : public Arc {
+    const Adaptor* _adaptor;
+
+   public:
+    OutArcIt() {}
+
+    OutArcIt(Invalid i) : Arc(i) {}
+
+    OutArcIt(const Adaptor& adaptor, const Node& node) : _adaptor(&adaptor) {
+      _adaptor->firstOut(*this, node);
     }
 
-    int maxId(Edge) const {
-      return Parent::maxEdgeId();
-    }
-
-    Node fromId(int id, Node) const {
-      return Parent::nodeFromId(id);
-    }
-
-    Arc fromId(int id, Arc) const {
-      return Parent::arcFromId(id);
-    }
-
-    Edge fromId(int id, Edge) const {
-      return Parent::edgeFromId(id);
-    }
-
-    Node oppositeNode(const Node &n, const Edge &e) const {
-      if( n == Parent::u(e))
-        return Parent::v(e);
-      else if( n == Parent::v(e))
-        return Parent::u(e);
-      else
-        return INVALID;
-    }
-
-    Arc oppositeArc(const Arc &a) const {
-      return Parent::direct(a, !Parent::direction(a));
-    }
-
-    using Parent::direct;
-    Arc direct(const Edge &e, const Node &s) const {
-      return Parent::direct(e, Parent::u(e) == s);
-    }
-
-
-    class NodeIt : public Node {
-      const Adaptor* _adaptor;
-    public:
-
-      NodeIt() {}
-
-      NodeIt(Invalid i) : Node(i) { }
-
-      explicit NodeIt(const Adaptor& adaptor) : _adaptor(&adaptor) {
-        _adaptor->first(static_cast<Node&>(*this));
-      }
-
-      NodeIt(const Adaptor& adaptor, const Node& node)
-        : Node(node), _adaptor(&adaptor) {}
-
-      NodeIt& operator++() {
-        _adaptor->next(*this);
-        return *this;
-      }
-
-    };
-
-    LemonRangeWrapper1<NodeIt, Adaptor> nodes() const {
-      return LemonRangeWrapper1<NodeIt, Adaptor>(*this);
-    }
-
-
-    class ArcIt : public Arc {
-      const Adaptor* _adaptor;
-    public:
-
-      ArcIt() { }
-
-      ArcIt(Invalid i) : Arc(i) { }
-
-      explicit ArcIt(const Adaptor& adaptor) : _adaptor(&adaptor) {
-        _adaptor->first(static_cast<Arc&>(*this));
-      }
-
-      ArcIt(const Adaptor& adaptor, const Arc& e) :
-        Arc(e), _adaptor(&adaptor) { }
-
-      ArcIt& operator++() {
-        _adaptor->next(*this);
-        return *this;
-      }
-
-    };
-
-    LemonRangeWrapper1<ArcIt, Adaptor> arcs() const {
-      return LemonRangeWrapper1<ArcIt, Adaptor>(*this);
-    }
-
-
-    class OutArcIt : public Arc {
-      const Adaptor* _adaptor;
-    public:
-
-      OutArcIt() { }
-
-      OutArcIt(Invalid i) : Arc(i) { }
-
-      OutArcIt(const Adaptor& adaptor, const Node& node)
-        : _adaptor(&adaptor) {
-        _adaptor->firstOut(*this, node);
-      }
-
-      OutArcIt(const Adaptor& adaptor, const Arc& arc)
+    OutArcIt(const Adaptor& adaptor, const Arc& arc)
         : Arc(arc), _adaptor(&adaptor) {}
 
-      OutArcIt& operator++() {
-        _adaptor->nextOut(*this);
-        return *this;
-      }
+    OutArcIt& operator++() {
+      _adaptor->nextOut(*this);
+      return *this;
+    }
+  };
 
-    };
+  LemonRangeWrapper2<OutArcIt, Adaptor, Node> outArcs(const Node& u) const {
+    return LemonRangeWrapper2<OutArcIt, Adaptor, Node>(*this, u);
+  }
 
-    LemonRangeWrapper2<OutArcIt, Adaptor, Node> outArcs(const Node& u) const {
-      return LemonRangeWrapper2<OutArcIt, Adaptor, Node>(*this, u);
+  class InArcIt : public Arc {
+    const Adaptor* _adaptor;
+
+   public:
+    InArcIt() {}
+
+    InArcIt(Invalid i) : Arc(i) {}
+
+    InArcIt(const Adaptor& adaptor, const Node& node) : _adaptor(&adaptor) {
+      _adaptor->firstIn(*this, node);
     }
 
+    InArcIt(const Adaptor& adaptor, const Arc& arc)
+        : Arc(arc), _adaptor(&adaptor) {}
 
-    class InArcIt : public Arc {
-      const Adaptor* _adaptor;
-    public:
+    InArcIt& operator++() {
+      _adaptor->nextIn(*this);
+      return *this;
+    }
+  };
 
-      InArcIt() { }
+  LemonRangeWrapper2<InArcIt, Adaptor, Node> inArcs(const Node& u) const {
+    return LemonRangeWrapper2<InArcIt, Adaptor, Node>(*this, u);
+  }
 
-      InArcIt(Invalid i) : Arc(i) { }
+  Node baseNode(const OutArcIt& e) const { return Parent::source(e); }
+  Node runningNode(const OutArcIt& e) const { return Parent::target(e); }
 
-      InArcIt(const Adaptor& adaptor, const Node& node)
-        : _adaptor(&adaptor) {
-        _adaptor->firstIn(*this, node);
-      }
+  Node baseNode(const InArcIt& e) const { return Parent::target(e); }
+  Node runningNode(const InArcIt& e) const { return Parent::source(e); }
+};
 
-      InArcIt(const Adaptor& adaptor, const Arc& arc) :
-        Arc(arc), _adaptor(&adaptor) {}
+template<typename _Graph>
+class GraphAdaptorExtender : public _Graph {
+  typedef _Graph Parent;
 
-      InArcIt& operator++() {
-        _adaptor->nextIn(*this);
-        return *this;
-      }
+ public:
+  typedef _Graph               Graph;
+  typedef GraphAdaptorExtender Adaptor;
 
-    };
+  typedef True UndirectedTag;
 
-    LemonRangeWrapper2<InArcIt, Adaptor, Node> inArcs(const Node& u) const {
-      return LemonRangeWrapper2<InArcIt, Adaptor, Node>(*this, u);
+  typedef typename Parent::Node Node;
+  typedef typename Parent::Arc  Arc;
+  typedef typename Parent::Edge Edge;
+
+  // Graph extension
+
+  int maxId(Node) const { return Parent::maxNodeId(); }
+
+  int maxId(Arc) const { return Parent::maxArcId(); }
+
+  int maxId(Edge) const { return Parent::maxEdgeId(); }
+
+  Node fromId(int id, Node) const { return Parent::nodeFromId(id); }
+
+  Arc fromId(int id, Arc) const { return Parent::arcFromId(id); }
+
+  Edge fromId(int id, Edge) const { return Parent::edgeFromId(id); }
+
+  Node oppositeNode(const Node& n, const Edge& e) const {
+    if (n == Parent::u(e))
+      return Parent::v(e);
+    else if (n == Parent::v(e))
+      return Parent::u(e);
+    else
+      return INVALID;
+  }
+
+  Arc oppositeArc(const Arc& a) const {
+    return Parent::direct(a, !Parent::direction(a));
+  }
+
+  using Parent::direct;
+  Arc direct(const Edge& e, const Node& s) const {
+    return Parent::direct(e, Parent::u(e) == s);
+  }
+
+  class NodeIt : public Node {
+    const Adaptor* _adaptor;
+
+   public:
+    NodeIt() {}
+
+    NodeIt(Invalid i) : Node(i) {}
+
+    explicit NodeIt(const Adaptor& adaptor) : _adaptor(&adaptor) {
+      _adaptor->first(static_cast<Node&>(*this));
     }
 
-    class EdgeIt : public Parent::Edge {
-      const Adaptor* _adaptor;
-    public:
+    NodeIt(const Adaptor& adaptor, const Node& node)
+        : Node(node), _adaptor(&adaptor) {}
 
-      EdgeIt() { }
+    NodeIt& operator++() {
+      _adaptor->next(*this);
+      return *this;
+    }
+  };
 
-      EdgeIt(Invalid i) : Edge(i) { }
+  LemonRangeWrapper1<NodeIt, Adaptor> nodes() const {
+    return LemonRangeWrapper1<NodeIt, Adaptor>(*this);
+  }
 
-      explicit EdgeIt(const Adaptor& adaptor) : _adaptor(&adaptor) {
-        _adaptor->first(static_cast<Edge&>(*this));
-      }
+  class ArcIt : public Arc {
+    const Adaptor* _adaptor;
 
-      EdgeIt(const Adaptor& adaptor, const Edge& e) :
-        Edge(e), _adaptor(&adaptor) { }
+   public:
+    ArcIt() {}
 
-      EdgeIt& operator++() {
-        _adaptor->next(*this);
-        return *this;
-      }
+    ArcIt(Invalid i) : Arc(i) {}
 
-    };
-
-    LemonRangeWrapper1<EdgeIt, Adaptor> edges() const {
-      return LemonRangeWrapper1<EdgeIt, Adaptor>(*this);
+    explicit ArcIt(const Adaptor& adaptor) : _adaptor(&adaptor) {
+      _adaptor->first(static_cast<Arc&>(*this));
     }
 
+    ArcIt(const Adaptor& adaptor, const Arc& e) : Arc(e), _adaptor(&adaptor) {}
 
-    class IncEdgeIt : public Edge {
-      friend class GraphAdaptorExtender;
-      const Adaptor* _adaptor;
-      bool direction;
-    public:
+    ArcIt& operator++() {
+      _adaptor->next(*this);
+      return *this;
+    }
+  };
 
-      IncEdgeIt() { }
+  LemonRangeWrapper1<ArcIt, Adaptor> arcs() const {
+    return LemonRangeWrapper1<ArcIt, Adaptor>(*this);
+  }
 
-      IncEdgeIt(Invalid i) : Edge(i), direction(false) { }
+  class OutArcIt : public Arc {
+    const Adaptor* _adaptor;
 
-      IncEdgeIt(const Adaptor& adaptor, const Node &n) : _adaptor(&adaptor) {
-        _adaptor->firstInc(static_cast<Edge&>(*this), direction, n);
-      }
+   public:
+    OutArcIt() {}
 
-      IncEdgeIt(const Adaptor& adaptor, const Edge &e, const Node &n)
+    OutArcIt(Invalid i) : Arc(i) {}
+
+    OutArcIt(const Adaptor& adaptor, const Node& node) : _adaptor(&adaptor) {
+      _adaptor->firstOut(*this, node);
+    }
+
+    OutArcIt(const Adaptor& adaptor, const Arc& arc)
+        : Arc(arc), _adaptor(&adaptor) {}
+
+    OutArcIt& operator++() {
+      _adaptor->nextOut(*this);
+      return *this;
+    }
+  };
+
+  LemonRangeWrapper2<OutArcIt, Adaptor, Node> outArcs(const Node& u) const {
+    return LemonRangeWrapper2<OutArcIt, Adaptor, Node>(*this, u);
+  }
+
+  class InArcIt : public Arc {
+    const Adaptor* _adaptor;
+
+   public:
+    InArcIt() {}
+
+    InArcIt(Invalid i) : Arc(i) {}
+
+    InArcIt(const Adaptor& adaptor, const Node& node) : _adaptor(&adaptor) {
+      _adaptor->firstIn(*this, node);
+    }
+
+    InArcIt(const Adaptor& adaptor, const Arc& arc)
+        : Arc(arc), _adaptor(&adaptor) {}
+
+    InArcIt& operator++() {
+      _adaptor->nextIn(*this);
+      return *this;
+    }
+  };
+
+  LemonRangeWrapper2<InArcIt, Adaptor, Node> inArcs(const Node& u) const {
+    return LemonRangeWrapper2<InArcIt, Adaptor, Node>(*this, u);
+  }
+
+  class EdgeIt : public Parent::Edge {
+    const Adaptor* _adaptor;
+
+   public:
+    EdgeIt() {}
+
+    EdgeIt(Invalid i) : Edge(i) {}
+
+    explicit EdgeIt(const Adaptor& adaptor) : _adaptor(&adaptor) {
+      _adaptor->first(static_cast<Edge&>(*this));
+    }
+
+    EdgeIt(const Adaptor& adaptor, const Edge& e)
+        : Edge(e), _adaptor(&adaptor) {}
+
+    EdgeIt& operator++() {
+      _adaptor->next(*this);
+      return *this;
+    }
+  };
+
+  LemonRangeWrapper1<EdgeIt, Adaptor> edges() const {
+    return LemonRangeWrapper1<EdgeIt, Adaptor>(*this);
+  }
+
+  class IncEdgeIt : public Edge {
+    friend class GraphAdaptorExtender;
+    const Adaptor* _adaptor;
+    bool           direction;
+
+   public:
+    IncEdgeIt() {}
+
+    IncEdgeIt(Invalid i) : Edge(i), direction(false) {}
+
+    IncEdgeIt(const Adaptor& adaptor, const Node& n) : _adaptor(&adaptor) {
+      _adaptor->firstInc(static_cast<Edge&>(*this), direction, n);
+    }
+
+    IncEdgeIt(const Adaptor& adaptor, const Edge& e, const Node& n)
         : _adaptor(&adaptor), Edge(e) {
-        direction = (_adaptor->u(e) == n);
-      }
-
-      IncEdgeIt& operator++() {
-        _adaptor->nextInc(*this, direction);
-        return *this;
-      }
-    };
-
-    LemonRangeWrapper2<IncEdgeIt, Adaptor, Node> incEdges(const Node& u) const {
-      return LemonRangeWrapper2<IncEdgeIt, Adaptor, Node>(*this, u);
+      direction = (_adaptor->u(e) == n);
     }
 
-
-    Node baseNode(const OutArcIt &a) const {
-      return Parent::source(a);
+    IncEdgeIt& operator++() {
+      _adaptor->nextInc(*this, direction);
+      return *this;
     }
-    Node runningNode(const OutArcIt &a) const {
-      return Parent::target(a);
-    }
-
-    Node baseNode(const InArcIt &a) const {
-      return Parent::target(a);
-    }
-    Node runningNode(const InArcIt &a) const {
-      return Parent::source(a);
-    }
-
-    Node baseNode(const IncEdgeIt &e) const {
-      return e.direction ? Parent::u(e) : Parent::v(e);
-    }
-    Node runningNode(const IncEdgeIt &e) const {
-      return e.direction ? Parent::v(e) : Parent::u(e);
-    }
-
   };
 
-}
+  LemonRangeWrapper2<IncEdgeIt, Adaptor, Node> incEdges(const Node& u) const {
+    return LemonRangeWrapper2<IncEdgeIt, Adaptor, Node>(*this, u);
+  }
 
+  Node baseNode(const OutArcIt& a) const { return Parent::source(a); }
+  Node runningNode(const OutArcIt& a) const { return Parent::target(a); }
+
+  Node baseNode(const InArcIt& a) const { return Parent::target(a); }
+  Node runningNode(const InArcIt& a) const { return Parent::source(a); }
+
+  Node baseNode(const IncEdgeIt& e) const {
+    return e.direction ? Parent::u(e) : Parent::v(e);
+  }
+  Node runningNode(const IncEdgeIt& e) const {
+    return e.direction ? Parent::v(e) : Parent::u(e);
+  }
+};
+
+} // namespace lemon
 
 #endif

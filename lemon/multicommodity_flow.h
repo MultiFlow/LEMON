@@ -19,8 +19,8 @@
 // Author: David Torres Sanchez <d.torressanchez@lancaster.ac.uk>
 // Lancaster University
 
-#ifndef LEMON_APPROX_MCNF_H
-#define LEMON_APPROX_MCNF_H
+#ifndef LEMON_MULTICOMMODITY_FLOW_H
+#define LEMON_MULTICOMMODITY_FLOW_H
 
 /// \ingroup approx
 ///
@@ -894,4 +894,4 @@ class ApproxMCF {
 
 } // namespace lemon
 
-#endif // LEMON_APPROX_MCNF_H
+#endif // LEMON_MULTICOMMODITY_FLOW_H

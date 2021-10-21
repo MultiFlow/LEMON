@@ -17,26 +17,27 @@
  */
 
 #include <lemon/counter.h>
-#include <vector>
+
 #include <sstream>
+#include <vector>
 
 #include "test/test_tools.h"
 
 using namespace lemon;
 
-template <typename T>
+template<typename T>
 void bubbleSort(std::vector<T>& v) {
   std::stringstream s1, s2, s3;
   {
-    Counter op("Bubble Sort - Operations: ", s1);
+    Counter             op("Bubble Sort - Operations: ", s1);
     Counter::SubCounter as(op, "Assignments: ", s2);
     Counter::SubCounter co(op, "Comparisons: ", s3);
-    for (int i = v.size()-1; i > 0; --i) {
+    for (int i = v.size() - 1; i > 0; --i) {
       for (int j = 0; j < i; ++j) {
-        if (v[j] > v[j+1]) {
-          T tmp = v[j];
-          v[j] = v[j+1];
-          v[j+1] = tmp;
+        if (v[j] > v[j + 1]) {
+          T tmp    = v[j];
+          v[j]     = v[j + 1];
+          v[j + 1] = tmp;
           as += 3;
         }
         ++co;
@@ -48,21 +49,22 @@ void bubbleSort(std::vector<T>& v) {
   check(s3.str() == "Comparisons: 45\n", "Wrong subcounter");
 }
 
-template <typename T>
+template<typename T>
 void insertionSort(std::vector<T>& v) {
   std::stringstream s1, s2, s3;
   {
-    Counter op("Insertion Sort - Operations: ", s1);
+    Counter             op("Insertion Sort - Operations: ", s1);
     Counter::SubCounter as(op, "Assignments: ", s2);
     Counter::SubCounter co(op, "Comparisons: ", s3);
     for (int i = 1; i < int(v.size()); ++i) {
       T value = v[i];
       ++as;
       int j = i;
-      while (j > 0 && v[j-1] > value) {
-        v[j] = v[j-1];
+      while (j > 0 && v[j - 1] > value) {
+        v[j] = v[j - 1];
         --j;
-        ++co; ++as;
+        ++co;
+        ++as;
       }
       v[j] = value;
       ++as;
@@ -73,7 +75,7 @@ void insertionSort(std::vector<T>& v) {
   check(s3.str() == "Comparisons: 19\n", "Wrong subcounter");
 }
 
-template <typename MyCounter>
+template<typename MyCounter>
 void counterTest(bool output) {
   std::stringstream s1, s2, s3;
   {
@@ -83,9 +85,9 @@ void counterTest(bool output) {
     d++;
     typename MyCounter::SubCounter::NoSubCounter e(d, "SubSubCounter: ", s3);
     e++;
-    d+=3;
-    c-=4;
-    e-=2;
+    d += 3;
+    c -= 4;
+    e -= 2;
     c.reset(2);
     c.reset();
   }
@@ -101,18 +103,27 @@ void counterTest(bool output) {
 }
 
 void init(std::vector<int>& v) {
-  v[0] = 10; v[1] = 60; v[2] = 20; v[3] = 90; v[4] = 100;
-  v[5] = 80; v[6] = 40; v[7] = 30; v[8] = 50; v[9] = 70;
+  v[0] = 10;
+  v[1] = 60;
+  v[2] = 20;
+  v[3] = 90;
+  v[4] = 100;
+  v[5] = 80;
+  v[6] = 40;
+  v[7] = 30;
+  v[8] = 50;
+  v[9] = 70;
 }
 
-int main()
-{
+int main() {
   counterTest<Counter>(true);
   counterTest<NoCounter>(false);
 
   std::vector<int> x(10);
-  init(x); bubbleSort(x);
-  init(x); insertionSort(x);
+  init(x);
+  bubbleSort(x);
+  init(x);
+  insertionSort(x);
 
   return 0;
 }

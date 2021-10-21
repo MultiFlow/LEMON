@@ -16,28 +16,27 @@
  *
  */
 
-#include <string>
-#include <iostream>
-
-#include <lemon/concepts/path.h>
-#include <lemon/concepts/digraph.h>
 #include <lemon/concept_check.h>
-
-#include <lemon/path.h>
+#include <lemon/concepts/digraph.h>
+#include <lemon/concepts/path.h>
 #include <lemon/list_graph.h>
+#include <lemon/path.h>
+
+#include <iostream>
+#include <string>
 
 #include "test_tools.h"
 
 using namespace std;
 using namespace lemon;
 
-template <typename GR>
+template<typename GR>
 void checkConcepts() {
-  checkConcept<concepts::Path<GR>, concepts::Path<GR> >();
-  checkConcept<concepts::Path<GR>, Path<GR> >();
-  checkConcept<concepts::Path<GR>, SimplePath<GR> >();
-  checkConcept<concepts::Path<GR>, StaticPath<GR> >();
-  checkConcept<concepts::Path<GR>, ListPath<GR> >();
+  checkConcept<concepts::Path<GR>, concepts::Path<GR>>();
+  checkConcept<concepts::Path<GR>, Path<GR>>();
+  checkConcept<concepts::Path<GR>, SimplePath<GR>>();
+  checkConcept<concepts::Path<GR>, StaticPath<GR>>();
+  checkConcept<concepts::Path<GR>, ListPath<GR>>();
 }
 
 // Conecpt checking for path structures
@@ -47,7 +46,7 @@ void checkPathConcepts() {
 }
 
 // Check if proper copy consructor is called (use valgrind for testing)
-template <typename GR, typename P1, typename P2>
+template<typename GR, typename P1, typename P2>
 void checkCopy(typename GR::Arc a) {
   P1 p;
   p.addBack(a);
@@ -61,12 +60,12 @@ void checkCopy(typename GR::Arc a) {
 
 // Tests for copy constructors and assignment operators of paths
 void checkPathCopy() {
-  ListDigraph g;
+  ListDigraph      g;
   ListDigraph::Arc a = g.addArc(g.addNode(), g.addNode());
 
-  typedef Path<ListDigraph> Path1;
+  typedef Path<ListDigraph>       Path1;
   typedef SimplePath<ListDigraph> Path2;
-  typedef ListPath<ListDigraph> Path3;
+  typedef ListPath<ListDigraph>   Path3;
   typedef StaticPath<ListDigraph> Path4;
   checkCopy<ListDigraph, Path1, Path2>(a);
   checkCopy<ListDigraph, Path1, Path3>(a);
@@ -83,15 +82,14 @@ void checkPathCopy() {
 class CheckPathFunctions {
   typedef ListDigraph GR;
   DIGRAPH_TYPEDEFS(GR);
-  GR gr;
+  GR        gr;
   const GR& cgr;
-  Node n1, n2, n3, n4;
-  Node tmp_n;
-  Arc a1, a2, a3, a4;
-  Arc tmp_a;
+  Node      n1, n2, n3, n4;
+  Node      tmp_n;
+  Arc       a1, a2, a3, a4;
+  Arc       tmp_a;
 
-public:
-
+ public:
   CheckPathFunctions() : cgr(gr) {
     n1 = gr.addNode();
     n2 = gr.addNode();
@@ -104,30 +102,28 @@ public:
   }
 
   void run() {
-    checkBackAndFrontInsertablePath<Path<GR> >();
-    checkBackAndFrontInsertablePath<ListPath<GR> >();
-    checkBackInsertablePath<SimplePath<GR> >();
+    checkBackAndFrontInsertablePath<Path<GR>>();
+    checkBackAndFrontInsertablePath<ListPath<GR>>();
+    checkBackInsertablePath<SimplePath<GR>>();
 
-    checkSubscriptOperator<Path<GR> >();
-    checkSubscriptOperator<SimplePath<GR> >();
-    checkSubscriptOperator<StaticPath<GR> >();
-    checkSubscriptOperator<ListPath<GR> >();
+    checkSubscriptOperator<Path<GR>>();
+    checkSubscriptOperator<SimplePath<GR>>();
+    checkSubscriptOperator<StaticPath<GR>>();
+    checkSubscriptOperator<ListPath<GR>>();
 
     checkListPathSplitAndSplice();
   }
 
-private:
-
-  template <typename P>
+ private:
+  template<typename P>
   void checkBackInsertablePath() {
-
     // Create and check empty path
-    P p;
+    P        p;
     const P& cp = p;
     check(cp.empty(), "The path is not empty");
     check(cp.length() == 0, "The path is not empty");
-//    check(cp.front() == INVALID, "Wrong front()");
-//    check(cp.back() == INVALID, "Wrong back()");
+    //    check(cp.front() == INVALID, "Wrong front()");
+    //    check(cp.back() == INVALID, "Wrong back()");
     typename P::ArcIt ai(cp);
     check(ai == INVALID, "Wrong ArcIt");
     check(pathSource(cgr, cp) == INVALID, "Wrong pathSource()");
@@ -218,14 +214,13 @@ private:
     check(!checkPath(cgr, cp), "Wrong checkPath()");
   }
 
-  template <typename P>
+  template<typename P>
   void checkBackAndFrontInsertablePath() {
-
     // Include back insertable test cases
     checkBackInsertablePath<P>();
 
     // Check front and back insertion
-    P p;
+    P        p;
     const P& cp = p;
     p.addFront(a4);
     p.addBack(a1);
@@ -278,7 +273,7 @@ private:
     check(checkPath(cgr, cp), "Wrong checkPath()");
   }
 
-  template <typename P>
+  template<typename P>
   void checkSubscriptOperator() {
     SimplePath<GR> p0;
     p0.addBack(a1);
@@ -298,7 +293,6 @@ private:
   }
 
   void checkListPathSplitAndSplice() {
-
     // Build a path with spliceFront() and spliceBack()
     ListPath<GR> p1, p2, p3, p4;
     p1.addBack(a3);
@@ -350,7 +344,6 @@ private:
     check(++ai == INVALID, "Wrong nthIt()");
     check(checkPath(cgr, p2), "Wrong checkPath()");
   }
-
 };
 
 int main() {

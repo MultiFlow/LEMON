@@ -17,17 +17,17 @@
  */
 
 #include <lemon/concepts/bpgraph.h>
+#include <lemon/full_graph.h>
 #include <lemon/list_graph.h>
 #include <lemon/smart_graph.h>
-#include <lemon/full_graph.h>
 
-#include "test_tools.h"
 #include "graph_test.h"
+#include "test_tools.h"
 
 using namespace lemon;
 using namespace lemon::concepts;
 
-template <class BpGraph>
+template<class BpGraph>
 void checkBpGraphBuild() {
   TEMPLATE_BPGRAPH_TYPEDEFS(BpGraph);
 
@@ -41,17 +41,14 @@ void checkBpGraphBuild() {
   G.reserveNode(3);
   G.reserveEdge(3);
 
-  RedNode
-    rn1 = G.addRedNode();
+  RedNode rn1 = G.addRedNode();
   checkGraphNodeList(G, 1);
   checkGraphRedNodeList(G, 1);
   checkGraphBlueNodeList(G, 0);
   checkGraphEdgeList(G, 0);
   checkGraphArcList(G, 0);
 
-  BlueNode
-    bn1 = G.addBlueNode(),
-    bn2 = G.addBlueNode();
+  BlueNode bn1 = G.addBlueNode(), bn2 = G.addBlueNode();
   checkGraphNodeList(G, 3);
   checkGraphRedNodeList(G, 1);
   checkGraphBlueNodeList(G, 2);
@@ -75,10 +72,8 @@ void checkBpGraphBuild() {
   checkGraphConEdgeList(G, 1);
   checkGraphConArcList(G, 2);
 
-  Edge
-    e2 = G.addEdge(bn1, rn1),
-    e3 = G.addEdge(rn1, bn2);
-  ::lemon::ignore_unused_variable_warning(e2,e3);
+  Edge e2 = G.addEdge(bn1, rn1), e3 = G.addEdge(rn1, bn2);
+  ::lemon::ignore_unused_variable_warning(e2, e3);
 
   checkGraphNodeList(G, 3);
   checkGraphRedNodeList(G, 1);
@@ -108,19 +103,16 @@ void checkBpGraphBuild() {
   checkGraphEdgeMap(G);
 }
 
-template <class BpGraph>
+template<class BpGraph>
 void checkBpGraphErase() {
   TEMPLATE_BPGRAPH_TYPEDEFS(BpGraph);
 
-  BpGraph G;
-  RedNode
-    n1 = G.addRedNode(), n4 = G.addRedNode();
-  BlueNode
-    n2 = G.addBlueNode(), n3 = G.addBlueNode();
-  Edge
-    e1 = G.addEdge(n1, n2), e2 = G.addEdge(n1, n3),
-    e3 = G.addEdge(n4, n2), e4 = G.addEdge(n4, n3);
-  ::lemon::ignore_unused_variable_warning(e1,e3,e4);
+  BpGraph  G;
+  RedNode  n1 = G.addRedNode(), n4 = G.addRedNode();
+  BlueNode n2 = G.addBlueNode(), n3 = G.addBlueNode();
+  Edge e1 = G.addEdge(n1, n2), e2 = G.addEdge(n1, n3), e3 = G.addEdge(n4, n2),
+       e4 = G.addEdge(n4, n3);
+  ::lemon::ignore_unused_variable_warning(e1, e3, e4);
 
   // Check edge deletion
   G.erase(e2);
@@ -154,22 +146,18 @@ void checkBpGraphErase() {
 
   checkGraphConEdgeList(G, 2);
   checkGraphConArcList(G, 4);
-
 }
 
-template <class BpGraph>
+template<class BpGraph>
 void checkBpGraphAlter() {
   TEMPLATE_BPGRAPH_TYPEDEFS(BpGraph);
 
-  BpGraph G;
-  RedNode
-    n1 = G.addRedNode(), n4 = G.addRedNode();
-  BlueNode
-    n2 = G.addBlueNode(), n3 = G.addBlueNode();
-  Edge
-    e1 = G.addEdge(n1, n2), e2 = G.addEdge(n1, n3),
-    e3 = G.addEdge(n4, n2), e4 = G.addEdge(n4, n3);
-  ::lemon::ignore_unused_variable_warning(e1,e3,e4);
+  BpGraph  G;
+  RedNode  n1 = G.addRedNode(), n4 = G.addRedNode();
+  BlueNode n2 = G.addBlueNode(), n3 = G.addBlueNode();
+  Edge e1 = G.addEdge(n1, n2), e2 = G.addEdge(n1, n3), e3 = G.addEdge(n4, n2),
+       e4 = G.addEdge(n4, n3);
+  ::lemon::ignore_unused_variable_warning(e1, e3, e4);
 
   G.changeRed(e2, n4);
   check(G.redNode(e2) == n4, "Wrong red node");
@@ -208,21 +196,15 @@ void checkBpGraphAlter() {
   checkGraphConArcList(G, 8);
 }
 
-
-template <class BpGraph>
+template<class BpGraph>
 void checkBpGraphSnapshot() {
   TEMPLATE_BPGRAPH_TYPEDEFS(BpGraph);
 
-  BpGraph G;
-  RedNode
-    n1 = G.addRedNode();
-  BlueNode
-    n2 = G.addBlueNode(),
-    n3 = G.addBlueNode();
-  Edge
-    e1 = G.addEdge(n1, n2),
-    e2 = G.addEdge(n1, n3);
-  ::lemon::ignore_unused_variable_warning(e1,e2);
+  BpGraph  G;
+  RedNode  n1 = G.addRedNode();
+  BlueNode n2 = G.addBlueNode(), n3 = G.addBlueNode();
+  Edge     e1 = G.addEdge(n1, n2), e2 = G.addEdge(n1, n3);
+  ::lemon::ignore_unused_variable_warning(e1, e2);
 
   checkGraphNodeList(G, 3);
   checkGraphRedNodeList(G, 1);
@@ -294,20 +276,15 @@ void checkBpGraphSnapshot() {
   checkGraphArcList(G, 4);
 }
 
-template <typename BpGraph>
+template<typename BpGraph>
 void checkBpGraphValidity() {
   TEMPLATE_BPGRAPH_TYPEDEFS(BpGraph);
   BpGraph g;
 
-  RedNode
-    n1 = g.addRedNode();
-  BlueNode
-    n2 = g.addBlueNode(),
-    n3 = g.addBlueNode();
+  RedNode  n1 = g.addRedNode();
+  BlueNode n2 = g.addBlueNode(), n3 = g.addBlueNode();
 
-  Edge
-    e1 = g.addEdge(n1, n2),
-    e2 = g.addEdge(n1, n3);
+  Edge e1 = g.addEdge(n1, n2), e2 = g.addEdge(n1, n3);
   ::lemon::ignore_unused_variable_warning(e2);
 
   check(g.valid(n1), "Wrong validity check");
@@ -321,29 +298,21 @@ void checkBpGraphValidity() {
 
 void checkConcepts() {
   { // Checking graph components
-    checkConcept<BaseBpGraphComponent, BaseBpGraphComponent >();
+    checkConcept<BaseBpGraphComponent, BaseBpGraphComponent>();
 
-    checkConcept<IDableBpGraphComponent<>,
-      IDableBpGraphComponent<> >();
+    checkConcept<IDableBpGraphComponent<>, IDableBpGraphComponent<>>();
 
-    checkConcept<IterableBpGraphComponent<>,
-      IterableBpGraphComponent<> >();
+    checkConcept<IterableBpGraphComponent<>, IterableBpGraphComponent<>>();
 
-    checkConcept<AlterableBpGraphComponent<>,
-      AlterableBpGraphComponent<> >();
+    checkConcept<AlterableBpGraphComponent<>, AlterableBpGraphComponent<>>();
 
-    checkConcept<MappableBpGraphComponent<>,
-      MappableBpGraphComponent<> >();
+    checkConcept<MappableBpGraphComponent<>, MappableBpGraphComponent<>>();
 
-    checkConcept<ExtendableBpGraphComponent<>,
-      ExtendableBpGraphComponent<> >();
+    checkConcept<ExtendableBpGraphComponent<>, ExtendableBpGraphComponent<>>();
 
-    checkConcept<ErasableBpGraphComponent<>,
-      ErasableBpGraphComponent<> >();
+    checkConcept<ErasableBpGraphComponent<>, ErasableBpGraphComponent<>>();
 
-    checkConcept<ClearableBpGraphComponent<>,
-      ClearableBpGraphComponent<> >();
-
+    checkConcept<ClearableBpGraphComponent<>, ClearableBpGraphComponent<>>();
   }
   { // Checking skeleton graph
     checkConcept<BpGraph, BpGraph>();
@@ -416,18 +385,18 @@ void checkFullBpGraph(int redNum, int blueNum) {
   for (NodeIt u(G); u != INVALID; ++u) {
     for (NodeIt v(G); v != INVALID; ++v) {
       Edge e = G.edge(u, v);
-      Arc a = G.arc(u, v);
+      Arc  a = G.arc(u, v);
       if (G.red(u) == G.red(v)) {
         check(e == INVALID, "Wrong edge lookup");
         check(a == INVALID, "Wrong arc lookup");
       } else {
-        check((G.u(e) == u && G.v(e) == v) ||
-              (G.u(e) == v && G.v(e) == u), "Wrong edge lookup");
+        check(
+            (G.u(e) == u && G.v(e) == v) || (G.u(e) == v && G.v(e) == u),
+            "Wrong edge lookup");
         check(G.source(a) == u && G.target(a) == v, "Wrong arc lookup");
       }
     }
   }
-
 }
 
 void checkGraphs() {

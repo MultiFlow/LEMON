@@ -17,18 +17,17 @@
  */
 
 #include <lemon/core.h>
-
-#include <lemon/time_measure.h>
-#include <lemon/smart_graph.h>
 #include <lemon/maps.h>
-#include <lemon/radix_sort.h>
 #include <lemon/math.h>
+#include <lemon/radix_sort.h>
+#include <lemon/smart_graph.h>
+#include <lemon/time_measure.h>
+
+#include <algorithm>
+#include <list>
+#include <vector>
 
 #include "test_tools.h"
-
-#include <vector>
-#include <list>
-#include <algorithm>
 
 using namespace lemon;
 
@@ -37,63 +36,62 @@ static const int n = 10000;
 struct Negate {
   typedef int argument_type;
   typedef int result_type;
-  int operator()(int a) { return - a; }
+  int         operator()(int a) { return -a; }
 };
 
-int negate(int a) { return - a; }
-
-template<class T>
-bool isTheSame(T &a, T&b)
-{
-  typename T::iterator ai=a.begin();
-  typename T::iterator bi=b.begin();
-  for(;ai!=a.end()||bi!=b.end();++ai,++bi)
-    if(*ai!=*bi) return false;
-  return ai==a.end()&&bi==b.end();
+int negate(int a) {
+  return -a;
 }
 
 template<class T>
-T listsort(typename T::iterator b, typename T::iterator e)
-{
-  if(b==e) return T();
-  typename T::iterator bn=b;
-  if(++bn==e) {
+bool isTheSame(T& a, T& b) {
+  typename T::iterator ai = a.begin();
+  typename T::iterator bi = b.begin();
+  for (; ai != a.end() || bi != b.end(); ++ai, ++bi)
+    if (*ai != *bi)
+      return false;
+  return ai == a.end() && bi == b.end();
+}
+
+template<class T>
+T listsort(typename T::iterator b, typename T::iterator e) {
+  if (b == e)
+    return T();
+  typename T::iterator bn = b;
+  if (++bn == e) {
     T l;
     l.push_back(*b);
     return l;
   }
-  typename T::iterator m=b;
-  bool x=false;
-  for(typename T::iterator i=b;i!=e;++i,x=!x)
-    if(x) ++m;
-  T l1(listsort<T>(b,m));
-  T l2(listsort<T>(m,e));
+  typename T::iterator m = b;
+  bool                 x = false;
+  for (typename T::iterator i = b; i != e; ++i, x = !x)
+    if (x)
+      ++m;
+  T l1(listsort<T>(b, m));
+  T l2(listsort<T>(m, e));
   T l;
-  while((!l1.empty())&&(!l2.empty()))
-    if(l1.front()<=l2.front())
-      {
-        l.push_back(l1.front());
-        l1.pop_front();
-      }
-    else {
-      l.push_back(l2.front());
-      l2.pop_front();
-    }
-  while(!l1.empty())
-    {
+  while ((!l1.empty()) && (!l2.empty()))
+    if (l1.front() <= l2.front()) {
       l.push_back(l1.front());
       l1.pop_front();
-    }
-  while(!l2.empty())
-    {
+    } else {
       l.push_back(l2.front());
       l2.pop_front();
     }
+  while (!l1.empty()) {
+    l.push_back(l1.front());
+    l1.pop_front();
+  }
+  while (!l2.empty()) {
+    l.push_back(l2.front());
+    l2.pop_front();
+  }
   return l;
 }
 
 template<class T>
-void generateIntSequence(int n, T & data) {
+void generateIntSequence(int n, T& data) {
   int prime = 9973;
   int root = 136, value = 1;
   for (int i = 0; i < n; ++i) {
@@ -103,7 +101,7 @@ void generateIntSequence(int n, T & data) {
 }
 
 template<class T>
-void generateCharSequence(int n, T & data) {
+void generateCharSequence(int n, T& data) {
   int prime = 251;
   int root = 3, value = root;
   for (int i = 0; i < n; ++i) {
@@ -134,7 +132,6 @@ void checkRadixSort() {
     // for (int i = 0; i < n; ++i) {
     //   check(data1[i] == data2[n - 1 - i], "Test failed");
     // }
-
   }
 
   {
@@ -148,18 +145,16 @@ void checkRadixSort() {
     for (int i = 0; i < n; ++i) {
       check(data1[i] == data2[i], "Test failed");
     }
-
   }
   {
     std::list<int> data1;
     generateIntSequence(n, data1);
 
-    std::list<int> data2(listsort<std::list<int> >(data1.begin(), data1.end()));
+    std::list<int> data2(listsort<std::list<int>>(data1.begin(), data1.end()));
 
     radixSort(data1.begin(), data1.end());
 
-    check(isTheSame(data1,data2), "Test failed");
-
+    check(isTheSame(data1, data2), "Test failed");
 
     // radixSort(data2.begin(), data2.end(), Negate());
     // check(isTheSame(data1,data2), "Test failed");
@@ -171,23 +166,19 @@ void checkRadixSort() {
     // for (int i = 0; i < n; ++i) {
     //   check(data1[i] == data2[n - 1 - i], "Test failed");
     // }
-
   }
 
   {
     std::list<unsigned char> data1(n);
     generateCharSequence(n, data1);
 
-    std::list<unsigned char> data2(listsort<std::list<unsigned char> >
-                                   (data1.begin(),
-                                    data1.end()));
+    std::list<unsigned char> data2(
+        listsort<std::list<unsigned char>>(data1.begin(), data1.end()));
 
     radixSort(data1.begin(), data1.end());
-    check(isTheSame(data1,data2), "Test failed");
-
+    check(isTheSame(data1, data2), "Test failed");
   }
 }
-
 
 void checkStableRadixSort() {
   {
@@ -224,16 +215,14 @@ void checkStableRadixSort() {
     for (int i = 0; i < n; ++i) {
       check(data1[i] == data2[i], "Test failed");
     }
-
   }
   {
     std::list<int> data1;
     generateIntSequence(n, data1);
 
-    std::list<int> data2(listsort<std::list<int> >(data1.begin(),
-                                                   data1.end()));
+    std::list<int> data2(listsort<std::list<int>>(data1.begin(), data1.end()));
     stableRadixSort(data1.begin(), data1.end());
-    check(isTheSame(data1,data2), "Test failed");
+    check(isTheSame(data1, data2), "Test failed");
 
     // stableRadixSort(data2.begin(), data2.end(), Negate());
     // for (int i = 0; i < n; ++i) {
@@ -250,17 +239,14 @@ void checkStableRadixSort() {
     std::list<unsigned char> data1(n);
     generateCharSequence(n, data1);
 
-    std::list<unsigned char> data2(listsort<std::list<unsigned char> >
-                                   (data1.begin(),
-                                    data1.end()));
+    std::list<unsigned char> data2(
+        listsort<std::list<unsigned char>>(data1.begin(), data1.end()));
     radixSort(data1.begin(), data1.end());
-    check(isTheSame(data1,data2), "Test failed");
-
+    check(isTheSame(data1, data2), "Test failed");
   }
 }
 
 int main() {
-
   checkRadixSort();
   checkStableRadixSort();
 

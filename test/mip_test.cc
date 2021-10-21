@@ -16,9 +16,9 @@
  *
  */
 
-#include "test_tools.h"
-
 #include <lemon/config.h>
+
+#include "test_tools.h"
 
 #ifdef LEMON_HAVE_CPLEX
 #include <lemon/cplex.h>
@@ -36,107 +36,94 @@
 #include <lemon/lp.h>
 #endif
 
-
 using namespace lemon;
 
-void solveAndCheck(MipSolver& mip, MipSolver::ProblemType stat,
-                   double exp_opt) {
+void solveAndCheck(
+    MipSolver&             mip,
+    MipSolver::ProblemType stat,
+    double                 exp_opt) {
   using std::string;
 
   mip.solve();
-  //int decimal,sign;
+  // int decimal,sign;
   std::ostringstream buf;
-  buf << "Type should be: " << int(stat)<<" and it is "<<int(mip.type());
-
+  buf << "Type should be: " << int(stat) << " and it is " << int(mip.type());
 
   //  itoa(stat,buf1, 10);
-  check(mip.type()==stat, buf.str());
+  check(mip.type() == stat, buf.str());
 
-  if (stat ==  MipSolver::OPTIMAL) {
+  if (stat == MipSolver::OPTIMAL) {
     std::ostringstream sbuf;
-    sbuf << "Wrong optimal value ("<< mip.solValue()
-         <<" instead of " << exp_opt << ")";
-    check(std::abs(mip.solValue()-exp_opt) < 1e-3, sbuf.str());
+    sbuf << "Wrong optimal value (" << mip.solValue() << " instead of "
+         << exp_opt << ")";
+    check(std::abs(mip.solValue() - exp_opt) < 1e-3, sbuf.str());
     //+ecvt(exp_opt,2)
   }
 }
 
-void aTest(MipSolver& mip, bool solve_empty=true)
-{
-  //The following example is very simple
-
+void aTest(MipSolver& mip, bool solve_empty = true) {
+  // The following example is very simple
 
   typedef MipSolver::Row Row;
   typedef MipSolver::Col Col;
 
-
   Col x1 = mip.addCol();
   Col x2 = mip.addCol();
 
-
-  //Objective function
+  // Objective function
   mip.obj(x1);
 
   mip.max();
 
-  //Unconstrained optimization
-  if(solve_empty)
+  // Unconstrained optimization
+  if (solve_empty)
     mip.solve();
-  //Check it out!
+  // Check it out!
 
-  //Constraints
+  // Constraints
   mip.addRow(2 * x1 + x2 <= 2);
   Row y2 = mip.addRow(x1 - 2 * x2 <= 0);
 
-  //Nonnegativity of the variable x1
+  // Nonnegativity of the variable x1
   mip.colLowerBound(x1, 0);
 
-
-  //Maximization of x1
-  //over the triangle with vertices (0,0),(4/5,2/5),(0,2)
-  double expected_opt=4.0/5.0;
+  // Maximization of x1
+  // over the triangle with vertices (0,0),(4/5,2/5),(0,2)
+  double expected_opt = 4.0 / 5.0;
   solveAndCheck(mip, MipSolver::OPTIMAL, expected_opt);
 
-
-  //Restrict x2 to integer
-  mip.colType(x2,MipSolver::INTEGER);
-  expected_opt=1.0/2.0;
+  // Restrict x2 to integer
+  mip.colType(x2, MipSolver::INTEGER);
+  expected_opt = 1.0 / 2.0;
   solveAndCheck(mip, MipSolver::OPTIMAL, expected_opt);
 
-
-  //Restrict both to integer
-  mip.colType(x1,MipSolver::INTEGER);
-  expected_opt=0;
+  // Restrict both to integer
+  mip.colType(x1, MipSolver::INTEGER);
+  expected_opt = 0;
   solveAndCheck(mip, MipSolver::OPTIMAL, expected_opt);
 
-  //Erase a variable
+  // Erase a variable
   mip.erase(x2);
   mip.rowUpperBound(y2, 8);
-  expected_opt=1;
+  expected_opt = 1;
   solveAndCheck(mip, MipSolver::OPTIMAL, expected_opt);
-
 }
 
-
 template<class MIP>
-void cloneTest()
-{
-
-  MIP* mip = new MIP();
-  MIP* mipnew = mip->newSolver();
+void cloneTest() {
+  MIP* mip      = new MIP();
+  MIP* mipnew   = mip->newSolver();
   MIP* mipclone = mip->cloneSolver();
   delete mip;
   delete mipnew;
   delete mipclone;
 }
 
-int main()
-{
-
+int main() {
 #ifdef LEMON_HAVE_MIP
   {
     Mip mip1;
-#if LEMON_DEFAULT_MIP==LEMON_CBC_
+#if LEMON_DEFAULT_MIP == LEMON_CBC_
     aTest(mip1, false);
 #else
     aTest(mip1);
@@ -172,5 +159,4 @@ int main()
 #endif
 
   return 0;
-
 }

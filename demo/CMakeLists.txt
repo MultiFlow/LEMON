@@ -33,8 +33,17 @@ project(
 # Option 2.
 # add_subdirectory(path-to-lemon)
 
-# Option 3.
-# FetchContent_Declare(LEMON GIT_REPOSITORY "git@github.com:MultiFlow/LEMON.git")
+# Option 3. (works with updated repo)
+# find_package(Hg)
+# if(HG_FOUND)
+#   FetchContent_Declare(
+#     LEMON
+#     HG_REPOSITORY "https://lemon.cs.elte.hu/hg/lemon/"
+#     )
+# else()
+#   FetchContent_Declare(
+#     SOURCE_DIR "path-to-lemon-src")
+# endif()
 # FetchContent_MakeAvailable(LEMON)
 
 set(DEMOS arg_parser_demo graph_to_eps_demo lgf_demo)

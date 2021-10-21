@@ -27,39 +27,31 @@
 #endif
 
 namespace lemon {
-  namespace bits {
+namespace bits {
 
 #if defined(LEMON_USE_PTHREAD)
-    class Lock {
-    public:
-      Lock() {
-        pthread_mutex_init(&_lock, 0);
-      }
-      ~Lock() {
-        pthread_mutex_destroy(&_lock);
-      }
-      void lock() {
-        pthread_mutex_lock(&_lock);
-      }
-      void unlock() {
-        pthread_mutex_unlock(&_lock);
-      }
+class Lock {
+ public:
+  Lock() { pthread_mutex_init(&_lock, 0); }
+  ~Lock() { pthread_mutex_destroy(&_lock); }
+  void lock() { pthread_mutex_lock(&_lock); }
+  void unlock() { pthread_mutex_unlock(&_lock); }
 
-    private:
-      pthread_mutex_t _lock;
-    };
+ private:
+  pthread_mutex_t _lock;
+};
 #elif defined(LEMON_USE_WIN32_THREADS)
-    class Lock : public WinLock {};
+class Lock : public WinLock {};
 #else
-    class Lock {
-    public:
-      Lock() {}
-      ~Lock() {}
-      void lock() {}
-      void unlock() {}
-    };
+class Lock {
+ public:
+  Lock() {}
+  ~Lock() {}
+  void lock() {}
+  void unlock() {}
+};
 #endif
-  }
-}
+} // namespace bits
+} // namespace lemon
 
 #endif

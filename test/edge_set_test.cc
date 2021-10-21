@@ -16,16 +16,14 @@
  *
  */
 
-#include <iostream>
-#include <vector>
-
+#include <lemon/concept_check.h>
 #include <lemon/concepts/digraph.h>
 #include <lemon/concepts/graph.h>
-#include <lemon/concept_check.h>
-
+#include <lemon/edge_set.h>
 #include <lemon/list_graph.h>
 
-#include <lemon/edge_set.h>
+#include <iostream>
+#include <vector>
 
 #include "graph_test.h"
 #include "test_tools.h"
@@ -33,15 +31,13 @@
 using namespace lemon;
 
 void checkSmartArcSet() {
-  checkConcept<concepts::Digraph, SmartArcSet<ListDigraph> >();
+  checkConcept<concepts::Digraph, SmartArcSet<ListDigraph>>();
 
-  typedef ListDigraph Digraph;
+  typedef ListDigraph          Digraph;
   typedef SmartArcSet<Digraph> ArcSet;
 
-  Digraph digraph;
-  Digraph::Node
-    n1 = digraph.addNode(),
-    n2 = digraph.addNode();
+  Digraph       digraph;
+  Digraph::Node n1 = digraph.addNode(), n2 = digraph.addNode();
 
   Digraph::Arc ga1 = digraph.addArc(n1, n2);
   ::lemon::ignore_unused_variable_warning(ga1);
@@ -54,8 +50,7 @@ void checkSmartArcSet() {
   checkGraphNodeList(arc_set, 2);
   checkGraphArcList(arc_set, 0);
 
-  Digraph::Node
-    n3 = digraph.addNode();
+  Digraph::Node n3 = digraph.addNode();
   checkGraphNodeList(arc_set, 3);
   checkGraphArcList(arc_set, 0);
 
@@ -74,10 +69,9 @@ void checkSmartArcSet() {
 
   checkGraphConArcList(arc_set, 1);
 
-  ArcSet::Arc a2 = arc_set.addArc(n2, n1),
-    a3 = arc_set.addArc(n2, n3),
-    a4 = arc_set.addArc(n2, n3);
-  ::lemon::ignore_unused_variable_warning(a2,a3,a4);
+  ArcSet::Arc a2 = arc_set.addArc(n2, n1), a3 = arc_set.addArc(n2, n3),
+              a4 = arc_set.addArc(n2, n3);
+  ::lemon::ignore_unused_variable_warning(a2, a3, a4);
 
   checkGraphNodeList(arc_set, 3);
   checkGraphArcList(arc_set, 4);
@@ -103,15 +97,13 @@ void checkSmartArcSet() {
 }
 
 void checkListArcSet() {
-  checkConcept<concepts::Digraph, SmartArcSet<ListDigraph> >();
+  checkConcept<concepts::Digraph, SmartArcSet<ListDigraph>>();
 
-  typedef ListDigraph Digraph;
+  typedef ListDigraph         Digraph;
   typedef ListArcSet<Digraph> ArcSet;
 
-  Digraph digraph;
-  Digraph::Node
-    n1 = digraph.addNode(),
-    n2 = digraph.addNode();
+  Digraph       digraph;
+  Digraph::Node n1 = digraph.addNode(), n2 = digraph.addNode();
 
   Digraph::Arc ga1 = digraph.addArc(n1, n2);
   ::lemon::ignore_unused_variable_warning(ga1);
@@ -124,8 +116,7 @@ void checkListArcSet() {
   checkGraphNodeList(arc_set, 2);
   checkGraphArcList(arc_set, 0);
 
-  Digraph::Node
-    n3 = digraph.addNode();
+  Digraph::Node n3 = digraph.addNode();
   checkGraphNodeList(arc_set, 3);
   checkGraphArcList(arc_set, 0);
 
@@ -144,10 +135,9 @@ void checkListArcSet() {
 
   checkGraphConArcList(arc_set, 1);
 
-  ArcSet::Arc a2 = arc_set.addArc(n2, n1),
-    a3 = arc_set.addArc(n2, n3),
-    a4 = arc_set.addArc(n2, n3);
-  ::lemon::ignore_unused_variable_warning(a2,a3,a4);
+  ArcSet::Arc a2 = arc_set.addArc(n2, n1), a3 = arc_set.addArc(n2, n3),
+              a4 = arc_set.addArc(n2, n3);
+  ::lemon::ignore_unused_variable_warning(a2, a3, a4);
 
   checkGraphNodeList(arc_set, 3);
   checkGraphArcList(arc_set, 4);
@@ -187,15 +177,13 @@ void checkListArcSet() {
 }
 
 void checkSmartEdgeSet() {
-  checkConcept<concepts::Digraph, SmartEdgeSet<ListDigraph> >();
+  checkConcept<concepts::Digraph, SmartEdgeSet<ListDigraph>>();
 
-  typedef ListDigraph Digraph;
+  typedef ListDigraph           Digraph;
   typedef SmartEdgeSet<Digraph> EdgeSet;
 
-  Digraph digraph;
-  Digraph::Node
-    n1 = digraph.addNode(),
-    n2 = digraph.addNode();
+  Digraph       digraph;
+  Digraph::Node n1 = digraph.addNode(), n2 = digraph.addNode();
 
   Digraph::Arc ga1 = digraph.addArc(n1, n2);
   ::lemon::ignore_unused_variable_warning(ga1);
@@ -209,15 +197,16 @@ void checkSmartEdgeSet() {
   checkGraphArcList(edge_set, 0);
   checkGraphEdgeList(edge_set, 0);
 
-  Digraph::Node
-    n3 = digraph.addNode();
+  Digraph::Node n3 = digraph.addNode();
   checkGraphNodeList(edge_set, 3);
   checkGraphArcList(edge_set, 0);
   checkGraphEdgeList(edge_set, 0);
 
   EdgeSet::Edge e1 = edge_set.addEdge(n1, n2);
-  check((edge_set.u(e1) == n1 && edge_set.v(e1) == n2) ||
-        (edge_set.v(e1) == n1 && edge_set.u(e1) == n2), "Wrong edge");
+  check(
+      (edge_set.u(e1) == n1 && edge_set.v(e1) == n2) ||
+          (edge_set.v(e1) == n1 && edge_set.u(e1) == n2),
+      "Wrong edge");
   checkGraphNodeList(edge_set, 3);
   checkGraphArcList(edge_set, 2);
   checkGraphEdgeList(edge_set, 1);
@@ -237,10 +226,9 @@ void checkSmartEdgeSet() {
   checkGraphConEdgeList(edge_set, 1);
   checkGraphConArcList(edge_set, 2);
 
-  EdgeSet::Edge e2 = edge_set.addEdge(n2, n1),
-    e3 = edge_set.addEdge(n2, n3),
-    e4 = edge_set.addEdge(n2, n3);
-  ::lemon::ignore_unused_variable_warning(e2,e3,e4);
+  EdgeSet::Edge e2 = edge_set.addEdge(n2, n1), e3 = edge_set.addEdge(n2, n3),
+                e4 = edge_set.addEdge(n2, n3);
+  ::lemon::ignore_unused_variable_warning(e2, e3, e4);
 
   checkGraphNodeList(edge_set, 3);
   checkGraphEdgeList(edge_set, 4);
@@ -275,15 +263,13 @@ void checkSmartEdgeSet() {
 }
 
 void checkListEdgeSet() {
-  checkConcept<concepts::Digraph, ListEdgeSet<ListDigraph> >();
+  checkConcept<concepts::Digraph, ListEdgeSet<ListDigraph>>();
 
-  typedef ListDigraph Digraph;
+  typedef ListDigraph          Digraph;
   typedef ListEdgeSet<Digraph> EdgeSet;
 
-  Digraph digraph;
-  Digraph::Node
-    n1 = digraph.addNode(),
-    n2 = digraph.addNode();
+  Digraph       digraph;
+  Digraph::Node n1 = digraph.addNode(), n2 = digraph.addNode();
 
   Digraph::Arc ga1 = digraph.addArc(n1, n2);
   ::lemon::ignore_unused_variable_warning(ga1);
@@ -297,15 +283,16 @@ void checkListEdgeSet() {
   checkGraphArcList(edge_set, 0);
   checkGraphEdgeList(edge_set, 0);
 
-  Digraph::Node
-    n3 = digraph.addNode();
+  Digraph::Node n3 = digraph.addNode();
   checkGraphNodeList(edge_set, 3);
   checkGraphArcList(edge_set, 0);
   checkGraphEdgeList(edge_set, 0);
 
   EdgeSet::Edge e1 = edge_set.addEdge(n1, n2);
-  check((edge_set.u(e1) == n1 && edge_set.v(e1) == n2) ||
-        (edge_set.v(e1) == n1 && edge_set.u(e1) == n2), "Wrong edge");
+  check(
+      (edge_set.u(e1) == n1 && edge_set.v(e1) == n2) ||
+          (edge_set.v(e1) == n1 && edge_set.u(e1) == n2),
+      "Wrong edge");
   checkGraphNodeList(edge_set, 3);
   checkGraphArcList(edge_set, 2);
   checkGraphEdgeList(edge_set, 1);
@@ -325,10 +312,9 @@ void checkListEdgeSet() {
   checkGraphConEdgeList(edge_set, 1);
   checkGraphConArcList(edge_set, 2);
 
-  EdgeSet::Edge e2 = edge_set.addEdge(n2, n1),
-    e3 = edge_set.addEdge(n2, n3),
-    e4 = edge_set.addEdge(n2, n3);
-  ::lemon::ignore_unused_variable_warning(e2,e3,e4);
+  EdgeSet::Edge e2 = edge_set.addEdge(n2, n1), e3 = edge_set.addEdge(n2, n3),
+                e4 = edge_set.addEdge(n2, n3);
+  ::lemon::ignore_unused_variable_warning(e2, e3, e4);
 
   checkGraphNodeList(edge_set, 3);
   checkGraphEdgeList(edge_set, 4);
@@ -381,12 +367,9 @@ void checkListEdgeSet() {
 
   checkGraphConEdgeList(edge_set, 2);
   checkGraphConArcList(edge_set, 4);
-
 }
 
-
 int main() {
-
   checkSmartArcSet();
   checkListArcSet();
   checkSmartEdgeSet();

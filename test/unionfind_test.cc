@@ -19,25 +19,27 @@
 #include <lemon/list_graph.h>
 #include <lemon/maps.h>
 #include <lemon/unionfind.h>
+
 #include "test_tools.h"
 
 using namespace lemon;
 using namespace std;
 
-typedef UnionFindEnum<ListGraph::NodeMap<int> > UFE;
+typedef UnionFindEnum<ListGraph::NodeMap<int>> UFE;
 
 int main() {
-  ListGraph g;
+  ListGraph               g;
   ListGraph::NodeMap<int> base(g);
-  UFE U(base);
+  UFE                     U(base);
   vector<ListGraph::Node> n;
 
-  for(int i=0;i<20;i++) n.push_back(g.addNode());
+  for (int i = 0; i < 20; i++)
+    n.push_back(g.addNode());
 
   U.insert(n[1]);
   U.insert(n[2]);
 
-  check(U.join(n[1],n[2]) != -1, "Something is wrong with UnionFindEnum");
+  check(U.join(n[1], n[2]) != -1, "Something is wrong with UnionFindEnum");
 
   U.insert(n[3]);
   U.insert(n[4]);
@@ -45,27 +47,21 @@ int main() {
   U.insert(n[6]);
   U.insert(n[7]);
 
+  check(U.join(n[1], n[4]) != -1, "Something is wrong with UnionFindEnum");
+  check(U.join(n[2], n[4]) == -1, "Something is wrong with UnionFindEnum");
+  check(U.join(n[3], n[5]) != -1, "Something is wrong with UnionFindEnum");
 
-  check(U.join(n[1],n[4]) != -1, "Something is wrong with UnionFindEnum");
-  check(U.join(n[2],n[4]) == -1, "Something is wrong with UnionFindEnum");
-  check(U.join(n[3],n[5]) != -1, "Something is wrong with UnionFindEnum");
-
-
-  U.insert(n[8],U.find(n[5]));
-
+  U.insert(n[8], U.find(n[5]));
 
   check(U.size(U.find(n[4])) == 3, "Something is wrong with UnionFindEnum");
   check(U.size(U.find(n[5])) == 3, "Something is wrong with UnionFindEnum");
   check(U.size(U.find(n[6])) == 1, "Something is wrong with UnionFindEnum");
   check(U.size(U.find(n[2])) == 3, "Something is wrong with UnionFindEnum");
 
-
   U.insert(n[9]);
-  U.insert(n[10],U.find(n[9]));
+  U.insert(n[10], U.find(n[9]));
 
-
-  check(U.join(n[8],n[10])  != -1, "Something is wrong with UnionFindEnum");
-
+  check(U.join(n[8], n[10]) != -1, "Something is wrong with UnionFindEnum");
 
   check(U.size(U.find(n[4])) == 3, "Something is wrong with UnionFindEnum");
   check(U.size(U.find(n[9])) == 5, "Something is wrong with UnionFindEnum");
@@ -76,20 +72,17 @@ int main() {
   U.erase(n[1]);
 
   check(U.size(U.find(n[10])) == 4, "Something is wrong with UnionFindEnum");
-  check(U.size(U.find(n[2]))  == 2, "Something is wrong with UnionFindEnum");
+  check(U.size(U.find(n[2])) == 2, "Something is wrong with UnionFindEnum");
 
   U.erase(n[6]);
   U.split(U.find(n[8]));
-
 
   check(U.size(U.find(n[4])) == 2, "Something is wrong with UnionFindEnum");
   check(U.size(U.find(n[3])) == 1, "Something is wrong with UnionFindEnum");
   check(U.size(U.find(n[2])) == 2, "Something is wrong with UnionFindEnum");
 
-
-  check(U.join(n[3],n[4]) != -1, "Something is wrong with UnionFindEnum");
-  check(U.join(n[2],n[4]) == -1, "Something is wrong with UnionFindEnum");
-
+  check(U.join(n[3], n[4]) != -1, "Something is wrong with UnionFindEnum");
+  check(U.join(n[2], n[4]) == -1, "Something is wrong with UnionFindEnum");
 
   check(U.size(U.find(n[4])) == 3, "Something is wrong with UnionFindEnum");
   check(U.size(U.find(n[3])) == 3, "Something is wrong with UnionFindEnum");

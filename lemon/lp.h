@@ -19,8 +19,7 @@
 #ifndef LEMON_LP_H
 #define LEMON_LP_H
 
-#include<lemon/config.h>
-
+#include <lemon/config.h>
 
 #if LEMON_DEFAULT_LP == LEMON_GLPK_ || LEMON_DEFAULT_MIP == LEMON_GLPK_
 #include <lemon/glpk.h>
@@ -44,56 +43,56 @@
 namespace lemon {
 
 #ifdef DOXYGEN
-  ///The default LP solver identifier
+/// The default LP solver identifier
 
-  ///The default LP solver identifier.
-  ///\ingroup lp_group
-  ///
-  ///Currently, the possible values are \c LEMON_GLPK_, \c LEMON_CPLEX_,
-  ///\c LEMON_SOPLEX_ or \c LEMON_CLP_
+/// The default LP solver identifier.
+///\ingroup lp_group
+///
+/// Currently, the possible values are \c LEMON_GLPK_, \c LEMON_CPLEX_,
+///\c LEMON_SOPLEX_ or \c LEMON_CLP_
 #define LEMON_DEFAULT_LP SOLVER
-  ///The default LP solver
+/// The default LP solver
 
-  ///The default LP solver.
-  ///\ingroup lp_group
-  ///
-  ///Currently, it is either \c GlpkLp, \c CplexLp, \c SoplexLp or \c ClpLp
-  typedef GlpkLp Lp;
+/// The default LP solver.
+///\ingroup lp_group
+///
+/// Currently, it is either \c GlpkLp, \c CplexLp, \c SoplexLp or \c ClpLp
+typedef GlpkLp Lp;
 
-  ///The default MIP solver identifier
+/// The default MIP solver identifier
 
-  ///The default MIP solver identifier.
-  ///\ingroup lp_group
-  ///
-  ///Currently, the possible values are \c LEMON_GLPK_, \c LEMON_CPLEX_
-  ///or \c LEMON_CBC_
+/// The default MIP solver identifier.
+///\ingroup lp_group
+///
+/// Currently, the possible values are \c LEMON_GLPK_, \c LEMON_CPLEX_
+/// or \c LEMON_CBC_
 #define LEMON_DEFAULT_MIP SOLVER
-  ///The default MIP solver.
+/// The default MIP solver.
 
-  ///The default MIP solver.
-  ///\ingroup lp_group
-  ///
-  ///Currently, it is either \c GlpkMip, \c CplexMip , \c CbcMip
-  typedef GlpkMip Mip;
+/// The default MIP solver.
+///\ingroup lp_group
+///
+/// Currently, it is either \c GlpkMip, \c CplexMip , \c CbcMip
+typedef GlpkMip Mip;
 #else
 #if LEMON_DEFAULT_LP == LEMON_GLPK_
-  typedef GlpkLp Lp;
+typedef GlpkLp  Lp;
 #elif LEMON_DEFAULT_LP == LEMON_CPLEX_
-  typedef CplexLp Lp;
+typedef CplexLp  Lp;
 #elif LEMON_DEFAULT_LP == LEMON_SOPLEX_
-  typedef SoplexLp Lp;
+typedef SoplexLp Lp;
 #elif LEMON_DEFAULT_LP == LEMON_CLP_
-  typedef ClpLp Lp;
+typedef ClpLp Lp;
 #endif
 #if LEMON_DEFAULT_MIP == LEMON_GLPK_
-  typedef GlpkMip Mip;
+typedef GlpkMip Mip;
 #elif LEMON_DEFAULT_MIP == LEMON_CPLEX_
-  typedef CplexMip Mip;
+typedef CplexMip Mip;
 #elif LEMON_DEFAULT_MIP == LEMON_CBC_
-  typedef CbcMip Mip;
+typedef CbcMip   Mip;
 #endif
 #endif
 
-} //namespace lemon
+} // namespace lemon
 
-#endif //LEMON_LP_H
+#endif // LEMON_LP_H

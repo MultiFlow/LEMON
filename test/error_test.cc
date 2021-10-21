@@ -16,9 +16,10 @@
  *
  */
 
+#include <lemon/error.h>
+
 #include <iostream>
 
-#include <lemon/error.h>
 #include "test_tools.h"
 
 using namespace lemon;
@@ -35,7 +36,7 @@ using namespace lemon;
 #undef NDEBUG
 #endif
 
-//checking disabled asserts
+// checking disabled asserts
 #define LEMON_DISABLE_ASSERTS
 #include <lemon/assert.h>
 
@@ -53,12 +54,16 @@ void check_assertion_disable() {
 }
 #undef LEMON_DISABLE_ASSERTS
 
-//checking custom assert handler
+// checking custom assert handler
 #define LEMON_ASSERT_CUSTOM
 
 static int cnt = 0;
-void my_assert_handler(const char*, int, const char*,
-                       const char*, const char*) {
+void       my_assert_handler(
+          const char*,
+          int,
+          const char*,
+          const char*,
+          const char*) {
   ++cnt;
 }
 
@@ -80,7 +85,6 @@ void check_assertion_custom() {
 }
 
 #undef LEMON_ASSERT_CUSTOM
-
 
 int main() {
   check_assertion_disable();

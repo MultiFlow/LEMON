@@ -18,8 +18,7 @@
 
 #include "test_tools.h"
 
-int main()
-{
+int main() {
   check(false, "Don't panic. Failing is the right behaviour here.");
   return 0;
 }

@@ -28,49 +28,55 @@
 
 namespace lemon {
 
-  /*
-    "inline" is used for ignore_unused_variable_warning()
-    and function_requires() to make sure there is no
-    overtarget with g++.
-  */
+/*
+  "inline" is used for ignore_unused_variable_warning()
+  and function_requires() to make sure there is no
+  overtarget with g++.
+*/
 
-  template <class T> inline void ignore_unused_variable_warning(const T&) { }
-  template <class T1, class T2>
-  inline void ignore_unused_variable_warning(const T1&, const T2&) { }
-  template <class T1, class T2, class T3>
-  inline void ignore_unused_variable_warning(const T1&, const T2&,
-                                             const T3&) { }
-  template <class T1, class T2, class T3, class T4>
-  inline void ignore_unused_variable_warning(const T1&, const T2&,
-                                             const T3&, const T4&) { }
-  template <class T1, class T2, class T3, class T4, class T5>
-  inline void ignore_unused_variable_warning(const T1&, const T2&,
-                                             const T3&, const T4&,
-                                             const T5&) { }
-  template <class T1, class T2, class T3, class T4, class T5, class T6>
-  inline void ignore_unused_variable_warning(const T1&, const T2&,
-                                             const T3&, const T4&,
-                                             const T5&, const T6&) { }
+template<class T>
+inline void ignore_unused_variable_warning(const T&) {}
+template<class T1, class T2>
+inline void ignore_unused_variable_warning(const T1&, const T2&) {}
+template<class T1, class T2, class T3>
+inline void ignore_unused_variable_warning(const T1&, const T2&, const T3&) {}
+template<class T1, class T2, class T3, class T4>
+inline void
+ignore_unused_variable_warning(const T1&, const T2&, const T3&, const T4&) {}
+template<class T1, class T2, class T3, class T4, class T5>
+inline void ignore_unused_variable_warning(
+    const T1&,
+    const T2&,
+    const T3&,
+    const T4&,
+    const T5&) {}
+template<class T1, class T2, class T3, class T4, class T5, class T6>
+inline void ignore_unused_variable_warning(
+    const T1&,
+    const T2&,
+    const T3&,
+    const T4&,
+    const T5&,
+    const T6&) {}
 
-  ///\e
-  template <class Concept>
-  inline void function_requires()
-  {
+///\e
+template<class Concept>
+inline void function_requires() {
 #if !defined(NDEBUG)
-    void (Concept::*x)() = & Concept::constraints;
-    ::lemon::ignore_unused_variable_warning(x);
+  void (Concept::*x)() = &Concept::constraints;
+  ::lemon::ignore_unused_variable_warning(x);
 #endif
-  }
+}
 
-  ///\e
-  template <typename Concept, typename Type>
-  inline void checkConcept() {
+///\e
+template<typename Concept, typename Type>
+inline void checkConcept() {
 #if !defined(NDEBUG)
-    typedef typename Concept::template Constraints<Type> ConceptCheck;
-    void (ConceptCheck::*x)() = & ConceptCheck::constraints;
-    ::lemon::ignore_unused_variable_warning(x);
+  typedef typename Concept::template Constraints<Type> ConceptCheck;
+  void (ConceptCheck::*x)() = &ConceptCheck::constraints;
+  ::lemon::ignore_unused_variable_warning(x);
 #endif
-  }
+}
 
 } // namespace lemon
 

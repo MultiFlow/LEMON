@@ -31,24 +31,29 @@
 /// standard output:
 /// \include lgf_demo.cc
 
-#include <iostream>
-#include <lemon/smart_graph.h>
 #include <lemon/lgf_reader.h>
 #include <lemon/lgf_writer.h>
+#include <lemon/smart_graph.h>
+
+#include <iostream>
 
 using namespace lemon;
 
 int main() {
-  SmartDigraph g;
+  SmartDigraph              g;
   SmartDigraph::ArcMap<int> cap(g);
-  SmartDigraph::Node s, t;
+  SmartDigraph::Node        s, t;
 
   try {
-    digraphReader(g, "digraph.lgf"). // read the directed graph into g
-      arcMap("capacity", cap).       // read the 'capacity' arc map into cap
-      node("source", s).             // read 'source' node to s
-      node("target", t).             // read 'target' node to t
-      run();
+    digraphReader(g, "digraph.lgf")
+        . // read the directed graph into g
+        arcMap("capacity", cap)
+        . // read the 'capacity' arc map into cap
+        node("source", s)
+        . // read 'source' node to s
+        node("target", t)
+        . // read 'target' node to t
+        run();
   } catch (Exception& error) { // check if there was any error
     std::cerr << "Error: " << error.what() << std::endl;
     return -1;
@@ -60,11 +65,15 @@ int main() {
 
   std::cout << "We can write it to the standard output:" << std::endl;
 
-  digraphWriter(g).                // write g to the standard output
-    arcMap("capacity", cap).       // write cap into 'capacity'
-    node("source", s).             // write s to 'source'
-    node("target", t).             // write t to 'target'
-    run();
+  digraphWriter(g)
+      . // write g to the standard output
+      arcMap("capacity", cap)
+      . // write cap into 'capacity'
+      node("source", s)
+      . // write s to 'source'
+      node("target", t)
+      . // write t to 'target'
+      run();
 
   return 0;
 }

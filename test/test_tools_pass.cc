@@ -18,8 +18,7 @@
 
 #include "test_tools.h"
 
-int main()
-{
+int main() {
   check(true, "It should pass.");
   return 0;
 }

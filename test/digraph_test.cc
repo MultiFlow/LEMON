@@ -16,20 +16,20 @@
  *
  */
 
+#include <lemon/compact_graph.h>
 #include <lemon/concepts/digraph.h>
+#include <lemon/full_graph.h>
 #include <lemon/list_graph.h>
 #include <lemon/smart_graph.h>
 #include <lemon/static_graph.h>
-#include <lemon/compact_graph.h>
-#include <lemon/full_graph.h>
 
-#include "test_tools.h"
 #include "graph_test.h"
+#include "test_tools.h"
 
 using namespace lemon;
 using namespace lemon::concepts;
 
-template <class Digraph>
+template<class Digraph>
 void checkDigraphBuild() {
   TEMPLATE_DIGRAPH_TYPEDEFS(Digraph);
   Digraph G;
@@ -40,10 +40,7 @@ void checkDigraphBuild() {
   G.reserveNode(3);
   G.reserveArc(4);
 
-  Node
-    n1 = G.addNode(),
-    n2 = G.addNode(),
-    n3 = G.addNode();
+  Node n1 = G.addNode(), n2 = G.addNode(), n3 = G.addNode();
   checkGraphNodeList(G, 3);
   checkGraphArcList(G, 0);
 
@@ -62,10 +59,8 @@ void checkDigraphBuild() {
 
   checkGraphConArcList(G, 1);
 
-  Arc a2 = G.addArc(n2, n1),
-      a3 = G.addArc(n2, n3),
-      a4 = G.addArc(n2, n3);
-  ::lemon::ignore_unused_variable_warning(a2,a3,a4);
+  Arc a2 = G.addArc(n2, n1), a3 = G.addArc(n2, n3), a4 = G.addArc(n2, n3);
+  ::lemon::ignore_unused_variable_warning(a2, a3, a4);
 
   checkGraphNodeList(G, 3);
   checkGraphArcList(G, 4);
@@ -86,21 +81,21 @@ void checkDigraphBuild() {
   checkGraphArcMap(G);
 }
 
-template <class Digraph>
+template<class Digraph>
 void checkDigraphSplit() {
   TEMPLATE_DIGRAPH_TYPEDEFS(Digraph);
 
   Digraph G;
-  Node n1 = G.addNode(), n2 = G.addNode(), n3 = G.addNode();
-  Arc a1 = G.addArc(n1, n2), a2 = G.addArc(n2, n1),
-      a3 = G.addArc(n2, n3), a4 = G.addArc(n2, n3);
-  ::lemon::ignore_unused_variable_warning(a1,a2,a3,a4);
+  Node    n1 = G.addNode(), n2 = G.addNode(), n3 = G.addNode();
+  Arc     a1 = G.addArc(n1, n2), a2 = G.addArc(n2, n1), a3 = G.addArc(n2, n3),
+      a4 = G.addArc(n2, n3);
+  ::lemon::ignore_unused_variable_warning(a1, a2, a3, a4);
 
   Node n4 = G.split(n2);
 
-  check(G.target(OutArcIt(G, n2)) == n4 &&
-        G.source(InArcIt(G, n4)) == n2,
-        "Wrong split.");
+  check(
+      G.target(OutArcIt(G, n2)) == n4 && G.source(InArcIt(G, n4)) == n2,
+      "Wrong split.");
 
   checkGraphNodeList(G, 4);
   checkGraphArcList(G, 5);
@@ -118,17 +113,15 @@ void checkDigraphSplit() {
   checkGraphConArcList(G, 5);
 }
 
-template <class Digraph>
+template<class Digraph>
 void checkDigraphAlter() {
   TEMPLATE_DIGRAPH_TYPEDEFS(Digraph);
 
   Digraph G;
-  Node n1 = G.addNode(), n2 = G.addNode(),
-       n3 = G.addNode(), n4 = G.addNode();
-  Arc a1 = G.addArc(n1, n2), a2 = G.addArc(n4, n1),
-      a3 = G.addArc(n4, n3), a4 = G.addArc(n4, n3),
-      a5 = G.addArc(n2, n4);
-  ::lemon::ignore_unused_variable_warning(a1,a2,a3,a5);
+  Node n1 = G.addNode(), n2 = G.addNode(), n3 = G.addNode(), n4 = G.addNode();
+  Arc  a1 = G.addArc(n1, n2), a2 = G.addArc(n4, n1), a3 = G.addArc(n4, n3),
+      a4 = G.addArc(n4, n3), a5 = G.addArc(n2, n4);
+  ::lemon::ignore_unused_variable_warning(a1, a2, a3, a5);
 
   checkGraphNodeList(G, 4);
   checkGraphArcList(G, 5);
@@ -198,17 +191,15 @@ void checkDigraphAlter() {
   checkGraphConArcList(G, 3);
 }
 
-template <class Digraph>
+template<class Digraph>
 void checkDigraphErase() {
   TEMPLATE_DIGRAPH_TYPEDEFS(Digraph);
 
   Digraph G;
-  Node n1 = G.addNode(), n2 = G.addNode(),
-       n3 = G.addNode(), n4 = G.addNode();
-  Arc a1 = G.addArc(n1, n2), a2 = G.addArc(n4, n1),
-      a3 = G.addArc(n4, n3), a4 = G.addArc(n3, n1),
-      a5 = G.addArc(n2, n4);
-  ::lemon::ignore_unused_variable_warning(a2,a3,a4,a5);
+  Node n1 = G.addNode(), n2 = G.addNode(), n3 = G.addNode(), n4 = G.addNode();
+  Arc  a1 = G.addArc(n1, n2), a2 = G.addArc(n4, n1), a3 = G.addArc(n4, n3),
+      a4 = G.addArc(n3, n1), a5 = G.addArc(n2, n4);
+  ::lemon::ignore_unused_variable_warning(a2, a3, a4, a5);
 
   // Check arc deletion
   G.erase(a1);
@@ -247,16 +238,15 @@ void checkDigraphErase() {
   checkGraphConArcList(G, 1);
 }
 
-
-template <class Digraph>
+template<class Digraph>
 void checkDigraphSnapshot() {
   TEMPLATE_DIGRAPH_TYPEDEFS(Digraph);
 
   Digraph G;
-  Node n1 = G.addNode(), n2 = G.addNode(), n3 = G.addNode();
-  Arc a1 = G.addArc(n1, n2), a2 = G.addArc(n2, n1),
-      a3 = G.addArc(n2, n3), a4 = G.addArc(n2, n3);
-  ::lemon::ignore_unused_variable_warning(a1,a2,a3,a4);
+  Node    n1 = G.addNode(), n2 = G.addNode(), n3 = G.addNode();
+  Arc     a1 = G.addArc(n1, n2), a2 = G.addArc(n2, n1), a3 = G.addArc(n2, n3),
+      a4 = G.addArc(n2, n3);
+  ::lemon::ignore_unused_variable_warning(a1, a2, a3, a4);
 
   typename Digraph::Snapshot snapshot(G);
 
@@ -308,16 +298,13 @@ void checkDigraphSnapshot() {
 
 void checkConcepts() {
   { // Checking digraph components
-    checkConcept<BaseDigraphComponent, BaseDigraphComponent >();
+    checkConcept<BaseDigraphComponent, BaseDigraphComponent>();
 
-    checkConcept<IDableDigraphComponent<>,
-      IDableDigraphComponent<> >();
+    checkConcept<IDableDigraphComponent<>, IDableDigraphComponent<>>();
 
-    checkConcept<IterableDigraphComponent<>,
-      IterableDigraphComponent<> >();
+    checkConcept<IterableDigraphComponent<>, IterableDigraphComponent<>>();
 
-    checkConcept<MappableDigraphComponent<>,
-      MappableDigraphComponent<> >();
+    checkConcept<MappableDigraphComponent<>, MappableDigraphComponent<>>();
   }
   { // Checking skeleton digraph
     checkConcept<Digraph, Digraph>();
@@ -348,19 +335,14 @@ void checkConcepts() {
   }
 }
 
-template <typename Digraph>
+template<typename Digraph>
 void checkDigraphValidity() {
   TEMPLATE_DIGRAPH_TYPEDEFS(Digraph);
   Digraph g;
 
-  Node
-    n1 = g.addNode(),
-    n2 = g.addNode(),
-    n3 = g.addNode();
+  Node n1 = g.addNode(), n2 = g.addNode(), n3 = g.addNode();
 
-  Arc
-    e1 = g.addArc(n1, n2),
-    e2 = g.addArc(n2, n3);
+  Arc e1 = g.addArc(n1, n2), e2 = g.addArc(n2, n3);
   ::lemon::ignore_unused_variable_warning(e2);
 
   check(g.valid(n1), "Wrong validity check");
@@ -370,19 +352,14 @@ void checkDigraphValidity() {
   check(!g.valid(g.arcFromId(-1)), "Wrong validity check");
 }
 
-template <typename Digraph>
+template<typename Digraph>
 void checkDigraphValidityErase() {
   TEMPLATE_DIGRAPH_TYPEDEFS(Digraph);
   Digraph g;
 
-  Node
-    n1 = g.addNode(),
-    n2 = g.addNode(),
-    n3 = g.addNode();
+  Node n1 = g.addNode(), n2 = g.addNode(), n3 = g.addNode();
 
-  Arc
-    e1 = g.addArc(n1, n2),
-    e2 = g.addArc(n2, n3);
+  Arc e1 = g.addArc(n1, n2), e2 = g.addArc(n2, n3);
 
   check(g.valid(n1), "Wrong validity check");
   check(g.valid(e1), "Wrong validity check");
@@ -399,11 +376,11 @@ void checkDigraphValidityErase() {
   check(!g.valid(g.arcFromId(-1)), "Wrong validity check");
 }
 
-template <typename GR>
+template<typename GR>
 void checkStaticDigraph() {
-  SmartDigraph g;
+  SmartDigraph                             g;
   SmartDigraph::NodeMap<typename GR::Node> nref(g);
-  SmartDigraph::ArcMap<typename GR::Arc> aref(g);
+  SmartDigraph::ArcMap<typename GR::Arc>   aref(g);
 
   GR G;
 
@@ -415,10 +392,7 @@ void checkStaticDigraph() {
   checkGraphNodeList(G, 0);
   checkGraphArcList(G, 0);
 
-  SmartDigraph::Node
-    n1 = g.addNode(),
-    n2 = g.addNode(),
-    n3 = g.addNode();
+  SmartDigraph::Node n1 = g.addNode(), n2 = g.addNode(), n3 = g.addNode();
 
   G.build(g, nref, aref);
 
@@ -429,8 +403,9 @@ void checkStaticDigraph() {
 
   G.build(g, nref, aref);
 
-  check(G.source(aref[a1]) == nref[n1] && G.target(aref[a1]) == nref[n2],
-        "Wrong arc or wrong references");
+  check(
+      G.source(aref[a1]) == nref[n1] && G.target(aref[a1]) == nref[n2],
+      "Wrong arc or wrong references");
   checkGraphNodeList(G, 3);
   checkGraphArcList(G, 1);
 
@@ -444,11 +419,9 @@ void checkStaticDigraph() {
 
   checkGraphConArcList(G, 1);
 
-  SmartDigraph::Arc
-    a2 = g.addArc(n2, n1),
-    a3 = g.addArc(n2, n3),
-    a4 = g.addArc(n2, n3);
-  ::lemon::ignore_unused_variable_warning(a2,a3,a4);
+  SmartDigraph::Arc a2 = g.addArc(n2, n1), a3 = g.addArc(n2, n3),
+                    a4 = g.addArc(n2, n3);
+  ::lemon::ignore_unused_variable_warning(a2, a3, a4);
 
   digraphCopy(g, G).nodeRef(nref).run();
 
@@ -465,16 +438,16 @@ void checkStaticDigraph() {
 
   checkGraphConArcList(G, 4);
 
-  std::vector<std::pair<int,int> > arcs;
-  arcs.push_back(std::make_pair(0,1));
-  arcs.push_back(std::make_pair(0,2));
-  arcs.push_back(std::make_pair(1,3));
-  arcs.push_back(std::make_pair(1,2));
-  arcs.push_back(std::make_pair(3,0));
-  arcs.push_back(std::make_pair(3,3));
-  arcs.push_back(std::make_pair(4,2));
-  arcs.push_back(std::make_pair(4,3));
-  arcs.push_back(std::make_pair(4,1));
+  std::vector<std::pair<int, int>> arcs;
+  arcs.push_back(std::make_pair(0, 1));
+  arcs.push_back(std::make_pair(0, 2));
+  arcs.push_back(std::make_pair(1, 3));
+  arcs.push_back(std::make_pair(1, 2));
+  arcs.push_back(std::make_pair(3, 0));
+  arcs.push_back(std::make_pair(3, 3));
+  arcs.push_back(std::make_pair(4, 2));
+  arcs.push_back(std::make_pair(4, 3));
+  arcs.push_back(std::make_pair(4, 1));
 
   G.build(6, arcs.begin(), arcs.end());
 
@@ -504,8 +477,8 @@ void checkStaticDigraph() {
 
   int n = G.nodeNum();
   int m = G.arcNum();
-  check(G.index(G.node(n-1)) == n-1, "Wrong index.");
-  check(G.index(G.arc(m-1)) == m-1, "Wrong index.");
+  check(G.index(G.node(n - 1)) == n - 1, "Wrong index.");
+  check(G.index(G.arc(m - 1)) == m - 1, "Wrong index.");
 }
 
 void checkFullDigraph(int num) {
