@@ -2,7 +2,7 @@
  *
  * This file is a part of LEMON, a generic C++ optimization library.
  *
- * Copyright (C) 2003-2013
+ * Copyright (C) 2003-2021
  * Egervary Jeno Kombinatorikus Optimalizalasi Kutatocsoport
  * (Egervary Research Group on Combinatorial Optimization, EGRES).
  *
@@ -852,4 +852,4 @@ In order to compile them, use the <tt>make demo</tt> or the
 <tt>make check</tt> commands.
 */
 
-}
+} // namespace lemon

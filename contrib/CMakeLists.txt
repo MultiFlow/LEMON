@@ -1,7 +1,3 @@
-include_directories(${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
-
-link_directories(${PROJECT_BINARY_DIR}/lemon)
-
 # Uncomment (and adjust) the following two lines. 'myprog' is the name
 # of the final executable ('.exe' will automatically be added to the
 # name on Windows) and 'myprog-main.cc' is the source code it is
@@ -9,5 +5,5 @@ link_directories(${PROJECT_BINARY_DIR}/lemon)
 # whitespaces. Moreover, you can add multiple similar blocks if you
 # want to build more than one executables.
 
-# ADD_EXECUTABLE(myprog myprog-main.cc)
-# TARGET_LINK_LIBRARIES(myprog lemon)
+add_executable(myprog myprog-main.cc)
+target_link_libraries(myprog LEMON::LEMON)

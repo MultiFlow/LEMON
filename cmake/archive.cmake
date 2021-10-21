@@ -1,11 +1,33 @@
-set(ARCHIVE_BASE_NAME ${CMAKE_PROJECT_NAME})
+#[[
+This file is a part of LEMON, a generic C++ optimization library.
+
+Copyright (C) 2003-2021
+Egervary Jeno Kombinatorikus Optimalizalasi Kutatocsoport
+(Egervary Research Group on Combinatorial Optimization, EGRES).
+
+Permission to use, modify and distribute this software is granted
+provided that this copyright notice appears in all copies. For
+precise terms see the accompanying LICENSE file.
+
+This software is provided "AS IS" with no warranty of any kind,
+express or implied, and with no claim as to its suitability for any
+purpose.
+]]
+
+#[[
+This file creates compressed files of the current version and places them in the
+PROJECT_BINARY_DIR as tar.gz and zip files.
+]]
+
+set(ARCHIVE_BASE_NAME ${PROJECT_NAME})
 string(TOLOWER ${ARCHIVE_BASE_NAME} ARCHIVE_BASE_NAME)
 set(ARCHIVE_NAME ${ARCHIVE_BASE_NAME}-${PROJECT_VERSION})
 add_custom_target(
   dist
   COMMAND cmake -E remove_directory ${ARCHIVE_NAME}
   COMMAND hg archive ${ARCHIVE_NAME}
-  COMMAND cmake -E copy cmake/version.cmake ${ARCHIVE_NAME}/cmake/version.cmake
+  COMMAND cmake -E copy ${PROJECT_NAME}ConfigVersion.cmake
+          ${ARCHIVE_NAME}/cmake/${PROJECT_NAME}ConfigVersion.cmake
   COMMAND tar -czf ${ARCHIVE_BASE_NAME}-nodoc-${PROJECT_VERSION}.tar.gz
           ${ARCHIVE_NAME}
   COMMAND zip -r ${ARCHIVE_BASE_NAME}-nodoc-${PROJECT_VERSION}.zip

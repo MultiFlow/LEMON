@@ -1,7 +1,29 @@
+#[[
+This file is a part of LEMON, a generic C++ optimization library.
+
+Copyright (C) 2003-2021
+Egervary Jeno Kombinatorikus Optimalizalasi Kutatocsoport
+(Egervary Research Group on Combinatorial Optimization, EGRES).
+
+Permission to use, modify and distribute this software is granted
+provided that this copyright notice appears in all copies. For
+precise terms see the accompanying LICENSE file.
+
+This software is provided "AS IS" with no warranty of any kind,
+express or implied, and with no claim as to its suitability for any
+purpose.
+]]
+
+#[[
+This file defines the lemon target and LEMON::LEMON alias.
+]]
+
 set(NAME lemon)
 
+# Configure
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+# Configure lemon package file
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lemon.pc.in
                ${CMAKE_CURRENT_BINARY_DIR}/lemon.pc @ONLY)
 
@@ -51,16 +73,18 @@ add_library(${NAME} ${LEMON_SOURCES} ${_HDRS})
 # Compile options (needed for MacOS)
 set_target_properties(
   ${NAME}
-  PROPERTIES CXX_STANDARD 17
+  PROPERTIES CXX_STANDARD 20
              CXX_STANDARD_REQUIRED ON
              CXX_EXTENSIONS OFF
              POSITION_INDEPENDENT_CODE ON)
 
-target_compile_features(${NAME} PUBLIC cxx_std_17)
+target_compile_features(${NAME} PUBLIC cxx_std_20)
 
 target_link_libraries(${NAME} ${GLPK_LIBRARIES} ${COIN_LIBRARIES}
                       ${ILOG_LIBRARIES} ${SOPLEX_LIBRARIES})
 
+# Target output name depends on OS: libemon if on UNIX (LINUX and MacOS),
+# liblemon if on WIN32.
 set_target_properties(
   ${NAME}
   PROPERTIES PUBLIC_HEADER "${_HDRS};${CMAKE_CURRENT_BINARY_DIR}/config.h"
@@ -74,7 +98,7 @@ target_include_directories(
 # Add alias
 add_library(LEMON::LEMON ALIAS ${NAME})
 
-# Install
+# Install targets
 include(GNUInstallDirs)
 install(
   TARGETS ${NAME}

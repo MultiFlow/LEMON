@@ -1,3 +1,23 @@
+#[[
+This file is a part of LEMON, a generic C++ optimization library.
+
+Copyright (C) 2003-2021
+Egervary Jeno Kombinatorikus Optimalizalasi Kutatocsoport
+(Egervary Research Group on Combinatorial Optimization, EGRES).
+
+Permission to use, modify and distribute this software is granted
+provided that this copyright notice appears in all copies. For
+precise terms see the accompanying LICENSE file.
+
+This software is provided "AS IS" with no warranty of any kind,
+express or implied, and with no claim as to its suitability for any
+purpose.
+]]
+
+#[[
+This file orchestrates the build of the docs.
+]]
+
 find_package(Doxygen REQUIRED)
 find_package(Ghostscript REQUIRED)
 find_package(PythonInterp REQUIRED)
@@ -42,13 +62,13 @@ if(DOXYGEN_EXECUTABLE
    AND GHOSTSCRIPT_EXECUTABLE)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/)
   set(GHOSTSCRIPT_OPTIONS
-      -dNOPAUSE
-      -dBATCH
-      -q
-      -dEPSCrop
-      -dTextAlphaBits=4
-      -dGraphicsAlphaBits=4
-      -sDEVICE=pngalpha)
+      "-dNOPAUSE"
+      "-dBATCH"
+      "-q"
+      "-dEPSCrop"
+      "-dTextAlphaBits=4"
+      "-dGraphicsAlphaBits=4"
+      "-sDEVICE=pngalpha")
   add_custom_target(
     html
     COMMAND ${CMAKE_COMMAND} -E remove_directory gen-images

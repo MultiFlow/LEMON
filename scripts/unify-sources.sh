@@ -2,7 +2,7 @@
 #
 # This file is a part of LEMON, a generic C++ optimization library.
 #
-# Copyright (C) 2003-2009
+# Copyright (C) 2003-2021
 # Egervary Jeno Kombinatorikus Optimalizalasi Kutatocsoport
 # (Egervary Research Group on Combinatorial Optimization, EGRES).
 #
@@ -50,7 +50,7 @@ function changed_files() {
         then
             hg status --rev $HG_PARENT2:$HG_NODE -a -m
         fi
-    } | cut -d ' ' -f 2 | grep -E '(\.(cc|h|dox)$|Makefile\.am$)' | 
+    } | cut -d ' ' -f 2 | grep -E '(\.(cc|h|dox)$|Makefile\.am$)' |
     sort | uniq |
     while read file; do echo $HGROOT/$file; done
 }
@@ -303,7 +303,7 @@ function process_all {
 
 while [ $# -gt 0 ]
 do
-    
+
     if [ "$1" == '--help' ] || [ "$1" == '-h' ]
     then
 	echo -n \
@@ -373,7 +373,7 @@ Options:
 	FILES=given_files
 	break
     fi
-    
+
     shift
 done
 

@@ -1,9 +1,29 @@
-set(TEST_WITH_VALGRIND
-    OFF
-    CACHE BOOL "Run the test with valgrind .")
-set(VALGRIND_FLAGS
-    ""
-    CACHE STRING "Valgrind flags used by the tests.")
+#[[
+This file is a part of LEMON, a generic C++ optimization library.
+
+Copyright (C) 2003-2021
+Egervary Jeno Kombinatorikus Optimalizalasi Kutatocsoport
+(Egervary Research Group on Combinatorial Optimization, EGRES).
+
+Permission to use, modify and distribute this software is granted
+provided that this copyright notice appears in all copies. For
+precise terms see the accompanying LICENSE file.
+
+This software is provided "AS IS" with no warranty of any kind,
+express or implied, and with no claim as to its suitability for any
+purpose.
+]]
+
+#[[
+This file defines all the test targets for ctest.
+Can also be used to run valgrind
+]]
+
+if(LEMON_TEST_WITH_VALGRIND)
+  set(VALGRIND_FLAGS
+      "--leak-check=full"
+      CACHE STRING "Valgrind flags used by the tests.")
+endif()
 
 set(TESTS
     adaptors_test
@@ -120,7 +140,7 @@ if(LEMON_HAVE_MIP)
 
   target_link_libraries(mip_test ${MIP_TEST_LIBS})
   add_test(mip_test mip_test)
-  add_dependencies(check mip_test)
+  # add_dependencies(check mip_test)
 
   if(WIN32 AND LEMON_HAVE_GLPK)
     get_target_property(TARGET_LOC mip_test LOCATION)
@@ -155,6 +175,7 @@ foreach(TEST_NAME ${TESTS})
            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
            $<INSTALL_INTERFACE:include/lemon>)
 
+  # Inherit lemon target properties
   if(APPLE)
     set_target_properties(
       ${TEST_NAME} PROPERTIES INSTALL_RPATH
@@ -165,7 +186,7 @@ foreach(TEST_NAME ${TESTS})
                               "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
   endif()
 
-  if(TEST_WITH_VALGRIND)
+  if(LEMON_TEST_WITH_VALGRIND)
     add_test(${TEST_NAME} valgrind --error-exitcode=1 ${VALGRIND_FLAGS}
              ${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME})
   else()
