@@ -219,7 +219,7 @@ namespace lemon {
           int jd = nf->id(it);;
           if (id != jd) {
             allocator.construct(&(new_values[jd]), values[jd]);
-            allocator.destroy(&(values[jd]));
+            std::allocator_traits<std::allocator<Value>>::destroy(allocator, &(values[jd]));
           }
         }
         if (capacity != 0) allocator.deallocate(values, capacity);
@@ -261,7 +261,7 @@ namespace lemon {
           }
           if (found) continue;
           allocator.construct(&(new_values[id]), values[id]);
-          allocator.destroy(&(values[id]));
+          std::allocator_traits<std::allocator<Value>>::destroy(allocator, &(values[id]));
         }
         if (capacity != 0) allocator.deallocate(values, capacity);
         values = new_values;
@@ -279,7 +279,7 @@ namespace lemon {
     // and it overrides the erase() member function of the observer base.
     virtual void erase(const Key& key) {
       int id = Parent::notifier()->id(key);
-      allocator.destroy(&(values[id]));
+      std::allocator_traits<std::allocator<Value>>::destroy(allocator, &(values[id]));
     }
 
     // \brief Erase more keys from the map.
@@ -289,7 +289,7 @@ namespace lemon {
     virtual void erase(const std::vector<Key>& keys) {
       for (int i = 0; i < int(keys.size()); ++i) {
         int id = Parent::notifier()->id(keys[i]);
-        allocator.destroy(&(values[id]));
+        std::allocator_traits<std::allocator<Value>>::destroy(allocator, &(values[id]));
       }
     }
 
@@ -317,7 +317,7 @@ namespace lemon {
         Item it;
         for (nf->first(it); it != INVALID; nf->next(it)) {
           int id = nf->id(it);
-          allocator.destroy(&(values[id]));
+          std::allocator_traits<std::allocator<Value>>::destroy(allocator, &(values[id]));
         }
         allocator.deallocate(values, capacity);
         capacity = 0;

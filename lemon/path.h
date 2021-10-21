@@ -663,7 +663,7 @@ namespace lemon {
     void clear() {
       while (first != 0) {
         last = first->next;
-        alloc.destroy(first);
+        std::allocator_traits<std::allocator<Node>>::destroy(alloc, first);
         alloc.deallocate(first, 1);
         first = last;
       }
@@ -698,7 +698,7 @@ namespace lemon {
       } else {
         last = 0;
       }
-      alloc.destroy(node);
+      std::allocator_traits<std::allocator<Node>>::destroy(alloc, node);
       alloc.deallocate(node, 1);
     }
 
@@ -731,7 +731,7 @@ namespace lemon {
       } else {
         first = 0;
       }
-      alloc.destroy(node);
+      std::allocator_traits<std::allocator<Node>>::destroy(alloc, node);
       alloc.deallocate(node, 1);
     }
 
