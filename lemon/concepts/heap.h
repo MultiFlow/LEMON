@@ -75,9 +75,9 @@ class Heap {
   /// The item-int map must be initialized in such way that it assigns
   /// \c PRE_HEAP (<tt>-1</tt>) to any element to be put in the heap.
   enum State {
-    IN_HEAP   = 0,  ///< = 0. The "in heap" state constant.
-    PRE_HEAP  = -1, ///< = -1. The "pre-heap" state constant.
-    POST_HEAP = -2  ///< = -2. The "post-heap" state constant.
+    IN_HEAP   = 0,   ///< = 0. The "in heap" state constant.
+    PRE_HEAP  = -1,  ///< = -1. The "pre-heap" state constant.
+    POST_HEAP = -2   ///< = -2. The "post-heap" state constant.
   };
 
   /// \brief Constructor.
@@ -317,6 +317,6 @@ class Heap {
 };
 
 /// @}
-} // namespace concepts
-} // namespace lemon
+}  // namespace concepts
+}  // namespace lemon
 #endif

@@ -597,7 +597,7 @@ class Digraph {
   };
 };
 
-} // namespace concepts
-} // namespace lemon
+}  // namespace concepts
+}  // namespace lemon
 
 #endif

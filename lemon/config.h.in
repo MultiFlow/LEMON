@@ -1,3 +1,4 @@
+// clang-format off
 #ifndef LEMON_CONFIG_H
 #define LEMON_CONFIG_H
 
@@ -25,8 +26,8 @@
 #define LEMON_SOPLEX_ 4
 #define LEMON_CBC_ 5
 
-#cmakedefine LEMON_DEFAULT_LP  LEMON_ @LEMON_DEFAULT_LP @_
-#cmakedefine LEMON_DEFAULT_MIP LEMON_ @LEMON_DEFAULT_MIP @_
+#cmakedefine LEMON_DEFAULT_LP  LEMON_@LEMON_DEFAULT_LP@_
+#cmakedefine LEMON_DEFAULT_MIP LEMON_@LEMON_DEFAULT_MIP@_
 
 #cmakedefine LEMON_USE_PTHREAD 1
 #cmakedefine LEMON_USE_WIN32_THREADS 1

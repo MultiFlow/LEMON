@@ -168,7 +168,7 @@ class Bezier3 : public BezierBase {
   }
 };
 
-} // END OF NAMESPACE dim2
-} // END OF NAMESPACE lemon
+}  // END OF NAMESPACE dim2
+}  // END OF NAMESPACE lemon
 
-#endif // LEMON_BEZIER_H
+#endif  // LEMON_BEZIER_H

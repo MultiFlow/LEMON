@@ -166,6 +166,6 @@ class DefaultMap : public DefaultMapSelector<_Graph, _Item, _Value>::Map {
   }
 };
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

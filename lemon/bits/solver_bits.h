@@ -174,7 +174,7 @@ class VarIndex {
 
   void nextItem(int& fdx) const { fdx = items[fdx].next; }
 };
-} // namespace _solver_bits
-} // namespace lemon
+}  // namespace _solver_bits
+}  // namespace lemon
 
 #endif

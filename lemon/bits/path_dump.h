@@ -159,6 +159,6 @@ class PredMatrixMapPath {
   typename Digraph::Node target;
 };
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

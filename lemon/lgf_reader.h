@@ -415,7 +415,7 @@ class StreamSection : public Section {
   }
 };
 
-} // namespace _reader_bits
+}  // namespace _reader_bits
 
 template<typename DGR>
 class DigraphReader;
@@ -3850,6 +3850,6 @@ class LgfContents {
 
   /// @}
 };
-} // namespace lemon
+}  // namespace lemon
 
 #endif

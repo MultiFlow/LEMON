@@ -439,6 +439,6 @@ class AlterationNotifier {
   }
 };
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

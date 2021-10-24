@@ -16,7 +16,13 @@ purpose.
 
 #[[
 This file sets up the necessary dependencies and flags required to build the
-LEMON::LEMON alias (called from here). Also defines main project install target.
+LEMON::LEMON alias (called from here). This includes:
+
+- Compile definitions for different architectures
+- Solver finding if required
+-
+
+Also defines main project install target.
 ]]
 
 if(DEFINED ENV{LEMON_CXX_WARNING})
@@ -136,7 +142,7 @@ endif()
 
 # GLPK #
 if(LEMON_ENABLE_GLPK)
-  find_package(GLPK 4.33)
+  find_package(GLPK REQUIRED)
 endif()
 if(GLPK_FOUND)
   set(LEMON_HAVE_LP ON)
@@ -146,7 +152,7 @@ endif()
 
 # ILOG #
 if(LEMON_ENABLE_ILOG)
-  find_package(ILOG)
+  find_package(ILOG REQUIRED)
 endif()
 if(ILOG_FOUND)
   set(LEMON_HAVE_LP ON)
@@ -156,7 +162,7 @@ endif()
 
 # COIN #
 if(LEMON_ENABLE_COIN)
-  find_package(COIN)
+  find_package(COIN REQUIRED)
 endif()
 if(COIN_FOUND)
   set(LEMON_HAVE_LP ON)
@@ -167,7 +173,7 @@ endif()
 
 # SOPLEX #
 if(LEMON_ENABLE_SOPLEX)
-  find_package(SOPLEX)
+  find_package(SOPLEX REQUIRED)
 endif()
 if(SOPLEX_FOUND)
   set(LEMON_HAVE_LP ON)

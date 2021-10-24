@@ -44,7 +44,7 @@ class WinLock {
  private:
   void* _repr;
 };
-} // namespace bits
-} // namespace lemon
+}  // namespace bits
+}  // namespace lemon
 
 #endif

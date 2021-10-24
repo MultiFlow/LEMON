@@ -285,6 +285,6 @@ class SubMapExtender : public _Map {
   const GraphType& graph;
 };
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

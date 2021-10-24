@@ -26,13 +26,13 @@ extern "C" {
 #include <ilcplex/cplex.h>
 }
 
-///\file
-///\brief Implementation of the LEMON-CPLEX lp solver interface.
+/// \file
+/// \brief Implementation of the LEMON-CPLEX lp solver interface.
 namespace lemon {
 
 CplexEnv::LicenseError::LicenseError(int status) {
   if (!CPXgeterrorstring(0, status, _message)) {
-    std::strcpy(_message, "Cplex unknown error");
+    std::snprintf(_message, "Cplex unknown error");
   }
 }
 
@@ -50,8 +50,9 @@ void CplexEnv::decCnt() {
     _cnt_lock->unlock();
     delete _cnt_lock;
     CPXcloseCPLEX(&_env);
-  } else
+  } else {
     _cnt_lock->unlock();
+  }
 }
 
 CplexEnv::CplexEnv() {
@@ -732,8 +733,6 @@ CplexLp::Value CplexLp::_getPrimalRay(int i) const {
 }
 
 CplexLp::Value CplexLp::_getDualRay(int i) const {
-  if (_dual_ray.empty()) {
-  }
   return _dual_ray[i];
 }
 
@@ -855,13 +854,13 @@ CplexLp::ProblemType CplexLp::_getPrimalType() const {
   // CPXgetstat(cplexEnv(), _prob);
   switch (stat) {
     case 0:
-      return UNDEFINED; // Undefined
-    case CPX_OPTIMAL:   // Optimal
+      return UNDEFINED;  // Undefined
+    case CPX_OPTIMAL:    // Optimal
       return OPTIMAL;
-    case CPX_UNBOUNDED:  // Unbounded
-      return INFEASIBLE; // In case of dual simplex
+    case CPX_UNBOUNDED:   // Unbounded
+      return INFEASIBLE;  // In case of dual simplex
       // return UNBOUNDED;
-    case CPX_INFEASIBLE: // Infeasible
+    case CPX_INFEASIBLE:  // Infeasible
       //    case CPX_IT_LIM_INFEAS:
       //     case CPX_TIME_LIM_INFEAS:
       //     case CPX_NUM_BEST_INFEAS:
@@ -869,7 +868,7 @@ CplexLp::ProblemType CplexLp::_getPrimalType() const {
       //     case CPX_ABORT_INFEAS:
       //     case CPX_ABORT_PRIM_INFEAS:
       //     case CPX_ABORT_PRIM_DUAL_INFEAS:
-      return UNBOUNDED; // In case of dual simplex
+      return UNBOUNDED;  // In case of dual simplex
       // return INFEASIBLE;
       //     case CPX_OBJ_LIM:
       //     case CPX_IT_LIM_FEAS:
@@ -879,8 +878,8 @@ CplexLp::ProblemType CplexLp::_getPrimalType() const {
       //     case CPX_ABORT_PRIM_DUAL_FEAS:
       //       return FEASIBLE;
     default:
-      return UNDEFINED; // Everything else comes here
-      // FIXME error
+      return UNDEFINED;  // Everything else comes here
+                         // FIXME error
   }
 #endif
 }
@@ -917,14 +916,14 @@ CplexLp::ProblemType CplexLp::_getDualType() const {
   statusSwitch(cplexEnv(), stat);
   switch (stat) {
     case 0:
-      return UNDEFINED; // Undefined
-    case CPX_OPTIMAL:   // Optimal
+      return UNDEFINED;  // Undefined
+    case CPX_OPTIMAL:    // Optimal
       return OPTIMAL;
     case CPX_UNBOUNDED:
       return INFEASIBLE;
     default:
-      return UNDEFINED; // Everything else comes here
-      // FIXME error
+      return UNDEFINED;  // Everything else comes here
+                         // FIXME error
   }
 #endif
 }
@@ -1053,4 +1052,4 @@ CplexMip::Value CplexMip::_getSolValue() const {
   return objval;
 }
 
-} // namespace lemon
+}  // namespace lemon

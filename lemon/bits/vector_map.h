@@ -224,6 +224,6 @@ class VectorMap
   Container container;
 };
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

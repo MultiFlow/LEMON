@@ -6,8 +6,9 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-11, macos-10.15] # 10.14 and 11 don't work
+        os: [macos-11, macos-10.15]
     timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2

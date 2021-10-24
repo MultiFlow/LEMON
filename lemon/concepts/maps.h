@@ -209,8 +209,8 @@ class ReferenceMap : public ReadWriteMap<K, T> {
 
 // @}
 
-} // namespace concepts
+}  // namespace concepts
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

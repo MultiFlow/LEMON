@@ -351,6 +351,6 @@ struct BuildTagIndicator<
   static const bool value = true;
 };
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

@@ -1570,38 +1570,38 @@ class MappableDigraphComponent : public BAS {
 
     void constraints() {
       checkConcept<Base, _Digraph>();
-      { // int map test
+      {  // int map test
         typedef typename _Digraph::template NodeMap<int> IntNodeMap;
         checkConcept<
             GraphMap<_Digraph, typename _Digraph::Node, int>,
             IntNodeMap>();
       }
-      { // bool map test
+      {  // bool map test
         typedef typename _Digraph::template NodeMap<bool> BoolNodeMap;
         checkConcept<
             GraphMap<_Digraph, typename _Digraph::Node, bool>,
             BoolNodeMap>();
       }
-      { // Dummy map test
+      {  // Dummy map test
         typedef typename _Digraph::template NodeMap<Dummy> DummyNodeMap;
         checkConcept<
             GraphMap<_Digraph, typename _Digraph::Node, Dummy>,
             DummyNodeMap>();
       }
 
-      { // int map test
+      {  // int map test
         typedef typename _Digraph::template ArcMap<int> IntArcMap;
         checkConcept<
             GraphMap<_Digraph, typename _Digraph::Arc, int>,
             IntArcMap>();
       }
-      { // bool map test
+      {  // bool map test
         typedef typename _Digraph::template ArcMap<bool> BoolArcMap;
         checkConcept<
             GraphMap<_Digraph, typename _Digraph::Arc, bool>,
             BoolArcMap>();
       }
-      { // Dummy map test
+      {  // Dummy map test
         typedef typename _Digraph::template ArcMap<Dummy> DummyArcMap;
         checkConcept<
             GraphMap<_Digraph, typename _Digraph::Arc, Dummy>,
@@ -1675,19 +1675,19 @@ class MappableGraphComponent : public MappableDigraphComponent<BAS> {
     void constraints() {
       checkConcept<MappableDigraphComponent<Base>, _Graph>();
 
-      { // int map test
+      {  // int map test
         typedef typename _Graph::template EdgeMap<int> IntEdgeMap;
         checkConcept<
             GraphMap<_Graph, typename _Graph::Edge, int>,
             IntEdgeMap>();
       }
-      { // bool map test
+      {  // bool map test
         typedef typename _Graph::template EdgeMap<bool> BoolEdgeMap;
         checkConcept<
             GraphMap<_Graph, typename _Graph::Edge, bool>,
             BoolEdgeMap>();
       }
-      { // Dummy map test
+      {  // Dummy map test
         typedef typename _Graph::template EdgeMap<Dummy> DummyEdgeMap;
         checkConcept<
             GraphMap<_Graph, typename _Graph::Edge, Dummy>,
@@ -1800,38 +1800,38 @@ class MappableBpGraphComponent : public MappableGraphComponent<BAS> {
     void constraints() {
       checkConcept<MappableGraphComponent<Base>, _BpGraph>();
 
-      { // int map test
+      {  // int map test
         typedef typename _BpGraph::template RedNodeMap<int> IntRedNodeMap;
         checkConcept<
             GraphMap<_BpGraph, typename _BpGraph::RedNode, int>,
             IntRedNodeMap>();
       }
-      { // bool map test
+      {  // bool map test
         typedef typename _BpGraph::template RedNodeMap<bool> BoolRedNodeMap;
         checkConcept<
             GraphMap<_BpGraph, typename _BpGraph::RedNode, bool>,
             BoolRedNodeMap>();
       }
-      { // Dummy map test
+      {  // Dummy map test
         typedef typename _BpGraph::template RedNodeMap<Dummy> DummyRedNodeMap;
         checkConcept<
             GraphMap<_BpGraph, typename _BpGraph::RedNode, Dummy>,
             DummyRedNodeMap>();
       }
 
-      { // int map test
+      {  // int map test
         typedef typename _BpGraph::template BlueNodeMap<int> IntBlueNodeMap;
         checkConcept<
             GraphMap<_BpGraph, typename _BpGraph::BlueNode, int>,
             IntBlueNodeMap>();
       }
-      { // bool map test
+      {  // bool map test
         typedef typename _BpGraph::template BlueNodeMap<bool> BoolBlueNodeMap;
         checkConcept<
             GraphMap<_BpGraph, typename _BpGraph::BlueNode, bool>,
             BoolBlueNodeMap>();
       }
-      { // Dummy map test
+      {  // Dummy map test
         typedef typename _BpGraph::template BlueNodeMap<Dummy> DummyBlueNodeMap;
         checkConcept<
             GraphMap<_BpGraph, typename _BpGraph::BlueNode, Dummy>,
@@ -2107,8 +2107,8 @@ class ClearableGraphComponent : public ClearableDigraphComponent<BAS> {};
 template<typename BAS = BaseBpGraphComponent>
 class ClearableBpGraphComponent : public ClearableGraphComponent<BAS> {};
 
-} // namespace concepts
+}  // namespace concepts
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

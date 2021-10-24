@@ -393,6 +393,54 @@ For more information, see \ref Circulation.
 */
 
 /**
+@defgroup approx Approximation Algorithms for Multicommodity Flow Problems
+@ingroup algs
+\brief Algorithms for finding multicommodity flows.
+
+This group contains the algorithms for finding multicommodity flows.
+
+Linear multicommodity flows: from \cite fleischer2000approximating. There are
+some more recent advances in approximation schemes for this problem \cite
+madry2010faster, however, they are not practically usable due to excessive
+memory consumption \cite emanuelsson2016approximating.
+
+
+Unsplitable multicommodity flow.
+
+The \e maximum \e flow \e problem is to find a flow of maximum value between
+a single source and a single target. Formally, there is a \f$G=(V,A)\f$
+digraph, a \f$cap: A\rightarrow\mathbf{R}^+_0\f$ capacity function and
+\f$s, t \in V\f$ source and target nodes.
+A maximum flow is an \f$f: A\rightarrow\mathbf{R}^+_0\f$ solution of the
+following optimization problem.
+
+\f[ \max\sum_{sv\in A} f(sv) - \sum_{vs\in A} f(vs) \f]
+\f[ \sum_{uv\in A} f(uv) = \sum_{vu\in A} f(vu)
+    \quad \forall u\in V\setminus\{s,t\} \f]
+\f[ 0 \leq f(uv) \leq cap(uv) \quad \forall uv\in A \f]
+
+LEMON contains several algorithms for solving maximum flow problems:
+- \ref EdmondsKarp Edmonds-Karp algorithm
+  \cite edmondskarp72theoretical.
+- \ref Preflow Goldberg-Tarjan's preflow push-relabel algorithm
+  \cite goldberg88newapproach.
+- \ref DinitzSleatorTarjan Dinitz's blocking flow algorithm with dynamic trees
+  \cite dinic70algorithm, \cite sleator83dynamic.
+- \ref GoldbergTarjan !Preflow push-relabel algorithm with dynamic trees
+  \cite goldberg88newapproach, \cite sleator83dynamic.
+
+In most cases the \ref Preflow algorithm provides the
+fastest method for computing a maximum flow. All implementations
+also provide functions to query the minimum cut, which is the dual
+problem of maximum flow.
+
+\ref Circulation is a preflow push-relabel algorithm implemented directly
+for finding feasible circulations, which is a somewhat different problem,
+but it is strongly related to maximum flow.
+For more information, see \ref Circulation.
+*/
+
+/**
 @defgroup min_cost_flow_algs Minimum Cost Flow Algorithms
 @ingroup algs
 

@@ -2588,7 +2588,7 @@ class ResBackwardFilter {
   }
 };
 
-} // namespace _adaptor_bits
+}  // namespace _adaptor_bits
 
 /// \ingroup graph_adaptors
 ///
@@ -3486,6 +3486,6 @@ SplitNodes<DGR> splitNodes(const DGR& digraph) {
 
 #undef LEMON_SCOPE_FIX
 
-} // namespace lemon
+}  // namespace lemon
 
-#endif // LEMON_ADAPTORS_H
+#endif  // LEMON_ADAPTORS_H

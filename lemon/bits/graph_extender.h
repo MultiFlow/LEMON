@@ -1221,6 +1221,6 @@ class BpGraphExtender : public Base {
   }
 };
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

@@ -346,6 +346,6 @@ class ArrayMap
   Allocator allocator;
 };
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

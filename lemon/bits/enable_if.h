@@ -123,6 +123,6 @@ struct lazy_disable_if_c<true, T> {};
 template<class Cond, class T>
 struct lazy_disable_if : public lazy_disable_if_c<Cond::value, T> {};
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

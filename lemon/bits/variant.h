@@ -33,7 +33,7 @@ struct CTMax {
   static const int value = left < right ? right : left;
 };
 
-} // namespace _variant_bits
+}  // namespace _variant_bits
 
 // \brief Simple Variant type for two types
 //
@@ -275,7 +275,7 @@ struct Size<0, _TypeMap> {
   static const int value = sizeof(typename _TypeMap::template Map<0>::Type);
 };
 
-} // namespace _variant_bits
+}  // namespace _variant_bits
 
 // \brief Variant type
 //
@@ -455,7 +455,7 @@ struct Mapper {
   typedef typename Get<_idx, L0>::Type Type;
 };
 
-} // namespace _variant_bits
+}  // namespace _variant_bits
 
 // \brief Helper class for Variant
 //
@@ -482,6 +482,6 @@ struct VariantTypeMap {
   };
 };
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

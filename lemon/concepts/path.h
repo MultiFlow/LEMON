@@ -213,7 +213,7 @@ struct PathDumperConstraints<
   PathDumperConstraints() {}
 };
 
-} // namespace _path_bits
+}  // namespace _path_bits
 
 /// \brief A skeleton structure for path dumpers.
 ///
@@ -347,8 +347,8 @@ class PathDumper {
 };
 
 ///@}
-} // namespace concepts
+}  // namespace concepts
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

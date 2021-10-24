@@ -139,7 +139,7 @@ WinLock::WinLock() {
   InitializeCriticalSection(lock);
   _repr = lock;
 #else
-  _repr = 0; // Just to avoid 'unused variable' warning with clang
+  _repr = 0;  // Just to avoid 'unused variable' warning with clang
 #endif
 }
 
@@ -164,5 +164,5 @@ void WinLock::unlock() {
   LeaveCriticalSection(lock);
 #endif
 }
-} // namespace bits
-} // namespace lemon
+}  // namespace bits
+}  // namespace lemon

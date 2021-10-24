@@ -95,7 +95,7 @@ if(LEMON_HAVE_LP)
 
   target_link_libraries(lp_test ${LP_TEST_LIBS})
   add_test(lp_test lp_test)
-  add_dependencies(check lp_test)
+  # add_dependencies(check lp_test)
 
   if(WIN32 AND LEMON_HAVE_GLPK)
     get_target_property(TARGET_LOC lp_test LOCATION)

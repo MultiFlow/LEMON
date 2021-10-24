@@ -51,7 +51,7 @@ class Lock {
   void unlock() {}
 };
 #endif
-} // namespace bits
-} // namespace lemon
+}  // namespace bits
+}  // namespace lemon
 
 #endif

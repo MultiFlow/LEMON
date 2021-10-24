@@ -1194,8 +1194,8 @@ class BpGraph {
   };
 };
 
-} // namespace concepts
+}  // namespace concepts
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

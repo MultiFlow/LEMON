@@ -374,6 +374,6 @@ class GraphAdaptorExtender : public _Graph {
   }
 };
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif

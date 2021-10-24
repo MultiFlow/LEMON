@@ -76,6 +76,6 @@ class LemonRangeWrapper2 {
   It end() const { return It(lemon::INVALID); }
 };
 
-} // namespace lemon
+}  // namespace lemon
 
 #endif /* STL_ITERATORS_H_ */

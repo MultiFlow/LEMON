@@ -42,5 +42,5 @@ enum MappingType {
   /// However, using this setting is faster than the other two options.
   ISOMORPH = 2
 };
-} // namespace lemon
+}  // namespace lemon
 #endif
