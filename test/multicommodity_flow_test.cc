@@ -25,9 +25,9 @@
 #include <iostream>
 #include <sstream>
 
-#include "test_tools.h"
+#include "test/test_tools.h"
 
-const std::string lgf =
+char test_lgf[] =
     "@nodes\n"
     "label\n"
     "0\n"
@@ -35,11 +35,11 @@ const std::string lgf =
     "2\n"
     "3\n"
     "@arcs\n"
-    "    label  cap   cost \n"
-    "0 1   0    10.0  1.0\n"
-    "0 2   1    10.0  1.0\n"
-    "1 3   2    10.0  1.0\n"
-    "2 3   3    10.0  1000.0\n"
+    "    label  cap   cost  solution_1  solution_2\n"
+    "0 1   0    10.0  1.0      10.0        0.0\n"
+    "0 2   1    10.0  1.0       0.0        10.0\n"
+    "1 3   2    10.0  1.0      10.0        0.0\n"
+    "2 3   3    10.0  1000.0   0.0         0.0\n"
     "@attributes\n"
     "source_1 0\n"
     "target_1 3\n"
@@ -48,139 +48,164 @@ const std::string lgf =
 
 using namespace lemon;
 
-void testLgf() {
-  DIGRAPH_TYPEDEFS(SmartDigraph);
+// Returns string for test-naming
+template<typename GR, typename A = typename GR::Arc>
+std::string getEdgeName(const GR& graph, const A& edge) {
+  return std::to_string(graph.id(graph.source(edge))) + "->" +
+         std::to_string(graph.id(graph.target(edge)));
+}
 
-  Tolerance<double> tol;
-  tol.epsilon(1e-5);
+template<class Digraph>
+void checkApproxMCF() {
+  TEMPLATE_DIGRAPH_TYPEDEFS(Digraph);
 
-  SmartDigraph                 graph;
-  Node                         s1, t1, s2, t2;
-  SmartDigraph::ArcMap<double> cap(graph), cost(graph);
+  Digraph                                                    graph;
+  Node                                                       s1, t1, s2, t2;
+  typedef typename Digraph::template ArcMap<double>          DoubleMap;
+  typedef typename ApproxMCF<Digraph>::Traits::LargeCostMap* LargeCostMapPtr;
+  DoubleMap cap(graph), cost(graph), sol1(graph), sol2(graph);
+  int       number_commodities = 2;
 
-  std::istringstream input(lgf);
-  DigraphReader<SmartDigraph>(graph, input)
+  std::istringstream input(test_lgf);
+  DigraphReader<Digraph>(graph, input)
       .arcMap("cap", cap)
       .arcMap("cost", cost)
-      .node("source_1", s1)
-      .node("target_1", t1)
-      .node("source_2", s2)
-      .node("target_2", t2)
+      .arcMap("solution_1", sol1)  // flow in the solution for commodity 1
+      .arcMap("solution_2", sol2)  // flow in the solution for commodity 1
+      .node("source_1", s1)        // source node commodity 1
+      .node("target_1", t1)        // target node commodity 1
+      .node("source_2", s2)        // source node commodity 2
+      .node("target_2", t2)        // target node commodity 2
       .run();
 
-  int number_commodities = 2;
   // Max
   {
-    ApproxMCF<SmartDigraph> max(
-        graph, cap, cost, number_commodities, {s1, s2}, {t1, t2});
-    max.run();
+    ApproxMCF<Digraph> max(graph, cap);
+    max.addCommodities(number_commodities, {s1, s2}, {t1, t2}).run();
   }
+
   // Max Concurrent
   {
-    ApproxMCF<SmartDigraph> max(
-        graph, cap, cost, number_commodities, {s1, s2}, {t1, t2}, {10.0, 10.0});
-    max.run(0.1, ApproxMCF<SmartDigraph>::FLEISCHER_MAX_CONCURRENT);
-    check(max.getTotalCost() == 30.0, "max concurrent failed");
+    ApproxMCF<Digraph> max(graph, cap);
+    max.addCommodities(number_commodities, {s1, s2}, {t1, t2}, {10.0, 10.0});
+    max.run(ApproxMCF<Digraph>::FLEISCHER_MAX_CONCURRENT);
+    for (ArcIt e(graph); e != INVALID; ++e) {
+      const std::string test_name = "flow on " + getEdgeName<Digraph>(graph, e);
+      // Check commodity 1 (index 0)
+      check(max.flow(0, e) == sol1[e], test_name + " commodity 1");
+      // Check commodity 2 (index 1)
+      check(max.flow(1, e) == sol2[e], test_name + " commodity 2");
+    }
   }
+
   // Min cost
   {
-    ApproxMCF<SmartDigraph> max(
-        graph, cap, cost, number_commodities, {s1, s2}, {t1, t2}, {10.0, 10.0});
-    max.run(0.1, ApproxMCF<SmartDigraph>::BINARY_SEARCH_MIN_COST);
+    ApproxMCF<Digraph> max(graph, cap);
+    max.addCommodity(s1, t1, 10.0, cost)
+        .addCommodity(s2, t2, 10.0, cost)
+        .run(ApproxMCF<Digraph>::BINARY_SEARCH_MIN_COST);
+    for (ArcIt e(graph); e != INVALID; ++e) {
+      const std::string test_name = "flow on " + getEdgeName<Digraph>(graph, e);
+      // Check commodity 1 (index 0)
+      check(max.flow(0, e) == sol1[e], test_name + " commodity 1");
+      // Check commodity 2 (index 1)
+      check(max.flow(1, e) == sol2[e], test_name + " commodity 2");
+    }
+    // Check total cost
     check(max.getTotalCost() == 30.0, "min-cost failed");
   }
+
   // Min cost (using constructor with cost vector)
   {
-    std::vector<ApproxMCF<SmartDigraph>::Traits::LargeCostMap*> cost_vector;
+    std::vector<LargeCostMapPtr> cost_vector;
     cost_vector.resize(number_commodities);
     for (int i = 0; i < number_commodities; ++i) {
-      cost_vector[i] =
-          ApproxMCF<SmartDigraph>::Traits::createLargeCostMap(graph);
-      for (ArcIt a(graph); a != INVALID; ++a) {
+      cost_vector[i] = ApproxMCF<Digraph>::Traits::createLargeCostMapPtr(graph);
+      for (ArcIt a(graph); a != INVALID; ++a)
         (*cost_vector[i])[a] = cost[a];
-      }
     }
-    ApproxMCF<SmartDigraph> max(
-        graph,
-        cap,
-        cost_vector,
-        number_commodities,
-        {s1, s2},
-        {t1, t2},
-        {10.0, 10.0});
-    max.run(0.1, ApproxMCF<SmartDigraph>::BINARY_SEARCH_MIN_COST);
+    ApproxMCF<Digraph> max(graph, cap);
+    max.addCommodities(
+           number_commodities, {s1, s2}, {t1, t2}, {10.0, 10.0}, cost_vector)
+        .run(ApproxMCF<Digraph>::BINARY_SEARCH_MIN_COST);
+    for (ArcIt e(graph); e != INVALID; ++e) {
+      const std::string test_name = "flow on " + getEdgeName<Digraph>(graph, e);
+      // Check commodity 1 (index 0)
+      check(max.flow(0, e) == sol1[e], test_name + " commodity 1");
+      // Check commodity 2 (index 1)
+      check(max.flow(1, e) == sol2[e], test_name + " commodity 2");
+    }
     check(max.getTotalCost() == 30.0, "min-cost failed");
   }
-  // Min cost (using default constructor and addCommodity)
-  {
-    ApproxMCF<SmartDigraph>                       max(graph, cap, cost);
-    ApproxMCF<SmartDigraph>::Traits::LargeCostMap cost1(graph, 0.0);
-    ApproxMCF<SmartDigraph>::Traits::LargeCostMap cost2(graph, 0.0);
-    mapCopy(graph, cost, cost1);
-    mapCopy(graph, cost, cost2);
-    max.addCommodity(s1, t1, 10.0, cost1).addCommodity(s2, t2, 10.0, cost2);
-    max.run(0.1, ApproxMCF<SmartDigraph>::BINARY_SEARCH_MIN_COST);
-    check(max.getTotalCost() == 30.0, "min-cost failed");
-  }
+
   // Max Concurrent - 3 commodities
   {
-    ApproxMCF<SmartDigraph> max(
-        graph, cap, cost, 3, {s1, s1, s1}, {t1, t2, t1}, {5.0, 10.0, 5.0});
-    max.run(0.1, ApproxMCF<SmartDigraph>::FLEISCHER_MAX_CONCURRENT);
-    std::cout << "max.getTotalCost() " << max.getTotalCost() << "\n";
-    check(
-        !tol.different(max.getTotalCost(), 30.0),
-        "max concurrent with 3 commodities failed");
+    ApproxMCF<Digraph> max(graph, cap);
+    max.addCommodity(s1, t1, 5.0, cost)
+        .addCommodity(s1, t2, 10.0, cost)
+        .addCommodity(s1, t1, 5.0, cost)
+        .run(ApproxMCF<Digraph>::FLEISCHER_MAX_CONCURRENT);
+    check(max.getTotalCost() == 30.0, "min-cost failed");
   }
-};
+}
 
-void testDisconnected() {
-  DIGRAPH_TYPEDEFS(SmartDigraph);
+template<class Digraph>
+void checkApproxMCFDisconnected() {
+  TEMPLATE_DIGRAPH_TYPEDEFS(Digraph);
 
-  SmartDigraph                 g;
-  SmartDigraph::ArcMap<double> cap(g);
-  SmartDigraph::ArcMap<double> cost(g);
+  Digraph                                           graph;
+  typedef typename Digraph::template ArcMap<double> DoubleMap;
+  DoubleMap cap(graph), cost(graph), sol1(graph), sol2(graph);
 
-  Node n0 = g.addNode();
-  Node n1 = g.addNode();
-  Node n2 = g.addNode();
-  Node n3 = g.addNode();
+  Node n0 = graph.addNode();
+  Node n1 = graph.addNode();
+  Node n2 = graph.addNode();
+  Node n3 = graph.addNode();
 
   Arc a;
-  a       = g.addArc(n0, n1);
+  a       = graph.addArc(n0, n1);
   cap[a]  = 10.0;
   cost[a] = 1.0;
+  sol1[a] = 10.0;
+  sol2[a] = 0.0;
 
-  a       = g.addArc(n2, n3);
+  a       = graph.addArc(n2, n3);
   cap[a]  = 10.0;
   cost[a] = 1.0;
+  sol1[a] = 0.0;
+  sol2[a] = 10.0;
 
   // Max
   {
-    ApproxMCF<SmartDigraph> max(g, cap, cost, 2, {n0, n2}, {n1, n3});
-    max.run();
-    for (int k = 0; k < 2; ++k) {
-      std::cout << "Commodity " << k << "\n";
-      for (ArcIt e(g); e != INVALID; ++e)
-        std::cout << "flow on " << g.id(g.source(e)) << "->"
-                  << g.id(g.target(e)) << " is = " << max.flow(k, e) << "\n";
+    ApproxMCF<Digraph> max(graph, cap);
+    max.addCommodities(2, {n0, n2}, {n1, n3}).run();
+    for (ArcIt e(graph); e != INVALID; ++e) {
+      const std::string test_name = "flow on " + getEdgeName<Digraph>(graph, e);
+      // Check commodity 1
+      check(max.flow(0, e) == sol1[e], test_name + " commodity 1");
+      // Check commodity 2
+      check(max.flow(1, e) == sol2[e], test_name + " commodity 2");
     }
   }
   // Max Concurrent
   {
-    ApproxMCF<SmartDigraph> max(
-        g, cap, cost, 2, {n0, n2}, {n1, n3}, {10.0, 10.0});
-    max.run(0.1, ApproxMCF<SmartDigraph>::FLEISCHER_MAX_CONCURRENT);
-    for (int k = 0; k < 2; ++k) {
-      std::cout << "Commodity " << k << "\n";
-      for (ArcIt e(g); e != INVALID; ++e)
-        std::cout << "flow on " << g.id(g.source(e)) << "->"
-                  << g.id(g.target(e)) << " is = " << max.flow(k, e) << "\n";
+    ApproxMCF<Digraph> max(graph, cap);
+    max.addCommodity(n0, n1, 10.0, cost)
+        .addCommodity(n2, n3, 10.0, cost)
+        .run(ApproxMCF<Digraph>::FLEISCHER_MAX_CONCURRENT);
+    for (ArcIt e(graph); e != INVALID; ++e) {
+      const std::string test_name = "flow on " + getEdgeName<Digraph>(graph, e);
+      // Check commodity 1
+      check(max.flow(0, e) == sol1[e], test_name + " commodity 1");
+      // Check commodity 2
+      check(max.flow(1, e) == sol2[e], test_name + " commodity 2");
     }
   }
-};
+}
 
 int main() {
-  testLgf();
-  testDisconnected();
-};
+  checkApproxMCF<SmartDigraph>();
+  checkApproxMCF<ListDigraph>();
+  checkApproxMCFDisconnected<SmartDigraph>();
+  checkApproxMCFDisconnected<ListDigraph>();
+}

@@ -1,12 +1,13 @@
 name: Ubuntu Cpp
 
 on: [push, pull_request]
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2
+    - uses: komiya-atsushi/action-enforce-timeout-minutes@v1.0.0
     - name: Configure
       run: cmake -S . -Bbuild -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Maintainer
     - name: Build

@@ -17,10 +17,10 @@
  */
 
 // Author: David Torres Sanchez <d.torressanchez@lancaster.ac.uk>
-// Lancaster University
+// Lancaster University (2021)
 
-#ifndef LEMON_MULTICOMMODITY_FLOW_H
-#define LEMON_MULTICOMMODITY_FLOW_H
+#ifndef LEMON_MULTICOMMODITY_FLOW_H_
+#define LEMON_MULTICOMMODITY_FLOW_H_
 
 /// \ingroup approx
 ///
@@ -38,7 +38,9 @@
 #include <lemon/static_graph.h>
 #include <lemon/tolerance.h>
 
-#include <memory>
+#include <algorithm>  // min
+#include <limits>     // numeric_limits
+#include <random>     // random_device, mt19937
 #include <set>
 #include <vector>
 
@@ -88,8 +90,16 @@ struct ApproxMCNFDefaultTraits {
   /// This function instantiates a \ref LargeCostMap.
   /// \param digraph The digraph for which we would like to define
   /// the large cost map. This can be used for flows or otherwise.
-  static LargeCostMap* createLargeCostMap(const Digraph& digraph) {
-    return new LargeCostMap(digraph);
+  static LargeCostMap* createLargeCostMapPtr(
+      const Digraph&   digraph,
+      const LargeCost& value = 0) {
+    return new LargeCostMap(digraph, value);
+  }
+  // Same as above just const
+  static const LargeCostMap* createLargeCostMapConstPtr(
+      const Digraph&   digraph,
+      const LargeCost& value = 0) {
+    return new LargeCostMap(digraph, value);
   }
 };
 
@@ -110,7 +120,6 @@ template<
     typename TR = ApproxMCNFDefaultTraits<GR, CM>>
 #endif
 class ApproxMCF {
-
  public:
   /// The type of the digraph
   typedef typename TR::Digraph Digraph;
@@ -178,7 +187,8 @@ class ApproxMCF {
   // is the commodity index and p is the path index.
   typedef std::vector<std::vector<PathData>> PathMatrix;
   // Vector indexed by commodity with \ref LargeCostMap pointers.
-  typedef std::vector<LargeCostMap*> LargeCostMapVector;
+  typedef std::vector<LargeCostMap*>       LargeCostMapVector;
+  typedef std::vector<const LargeCostMap*> ConstLargeCostMapVector;
 
   TEMPLATE_DIGRAPH_TYPEDEFS(Digraph);
 
@@ -198,13 +208,18 @@ class ApproxMCF {
   std::vector<Value> _demand;
   // The cost for each commodity (may be 0, or undefined)
   // See \ref LargeCostMapVector.
-  LargeCostMapVector _cost;
+  std::vector<const LargeCostMap*> _cost;
 
   /**
    * Algorithm parameters
    */
   // type of approximation algorithm. See \ref ApproxType.
   ApproxType _approx_type;
+  // Stopping criterion
+  LargeCost _epsilon;
+  // Whether the internal heuristics will be applied at the end of the
+  // algorithms
+  bool _heuristic;
   // Whether there is feasible unsplitable flow
   bool _feasible_unsplit;
   // Objective function of the primal problem
@@ -212,8 +227,6 @@ class ApproxMCF {
   // Objective function of the dual problem
   LargeCost _dual_obj;
   bool      _local_cost;
-  // Stopping criterion
-  LargeCost _epsilon;
   //
   LargeCost _delta;
   // Expected maximum number of iterations
@@ -244,61 +257,12 @@ class ApproxMCF {
 
  public:
   /// \brief Default constructor
-  ApproxMCF(
-      const Digraph&            gr,
-      const CapacityMap&        cp,
-      const LargeCostMap&       ct,
-      int                       k = 0,
-      const std::vector<Node>&  s = {},
-      const std::vector<Node>&  t = {},
-      const std::vector<Value>& d = {})
+  ApproxMCF(const Digraph& gr, const CapacityMap& cp)
       : _graph(gr),
         _num_nodes(countNodes(_graph)),
         _num_arcs(countArcs(_graph)),
         _cap(cp),
-        _num_commodities(k),
-        _source(s),
-        _target(t),
-        _demand(d),
-        _feasible_unsplit(true),
-        _obj(0),
-        _dual_obj(0),
-        _local_cost(true),
-        _iter(0),
-        _cost_bound(0),
-        _total_flow(_graph),
-        _len(_graph) {
-    // Populate cost map if not already exists
-    if (!_tol.positive(int(_cost.size()))) {
-      _cost.resize(_num_commodities);
-      for (int i = 0; i < _num_commodities; ++i) {
-        if (!_cost[i])
-          _cost[i] = Traits::createLargeCostMap(_graph);
-        for (ArcIt a(_graph); a != INVALID; ++a) {
-          (*_cost[i])[a] = ct[a];
-        }
-      }
-    }
-  }
-
-  /// \brief Default constructor
-  ApproxMCF(
-      const Digraph&            gr,
-      const CapacityMap&        cp,
-      const LargeCostMapVector& ct,
-      int                       k = 0,
-      const std::vector<Node>&  s = {},
-      const std::vector<Node>&  t = {},
-      const std::vector<Value>& d = {})
-      : _graph(gr),
-        _num_nodes(countNodes(_graph)),
-        _num_arcs(countArcs(_graph)),
-        _cap(cp),
-        _num_commodities(k),
-        _source(s),
-        _target(t),
-        _demand(d),
-        _cost(ct),
+        _num_commodities(0),
         _feasible_unsplit(true),
         _obj(0),
         _dual_obj(0),
@@ -326,17 +290,50 @@ class ApproxMCF {
   /// This function adds a new commodity with the given source and
   /// sink nodes.
   ApproxMCF& addCommodity(
-      const Node&   s,
-      const Node&   t,
-      const Value&  d        = 0,
-      LargeCostMap& cost_map = nullMap<Arc, LargeCost>()) {
+      const Node&         s,
+      const Node&         t,
+      const Value&        d,
+      const LargeCostMap& cost_map) {
     _source.push_back(s);
     _target.push_back(t);
     if (d > 0)
       _demand.push_back(d);
-    _cost.push_back(&cost_map);
     _local_cost = false;
+    _cost.push_back(&cost_map);
     ++_num_commodities;
+    return *this;
+  }
+
+  // @overload no cost
+  ApproxMCF& addCommodity(const Node& s, const Node& t, const Value& d = 0) {
+    const LargeCost* cost_map_ptr = Traits::createLargeCostMapConstPtr(_graph);
+    addCommodity(s, t, d, *cost_map_ptr);
+    _local_cost = true;
+    return *this;
+  }
+
+  ApproxMCF& addCommodities(
+      const int&                        k,
+      const std::vector<Node>&          s,
+      const std::vector<Node>&          t,
+      const std::vector<Value>&         d = {},
+      const std::vector<LargeCostMap*>& c = {}) {
+    _num_commodities = k;
+    _source          = s;
+    _target          = t;
+
+    if (!d.empty())
+      _demand = d;
+
+    _cost.resize(_num_commodities);
+    for (int i = 0; i < _num_commodities; ++i) {
+      if (c.empty()) {
+        _local_cost = true;
+        _cost[i]    = Traits::createLargeCostMapConstPtr(_graph);
+      } else {
+        _cost[i] = c[i];
+      }
+    }
     return *this;
   }
 
@@ -358,10 +355,12 @@ class ApproxMCF {
   /// the default value the algorithm performs well and it usually manage
   /// to find the exact optimum due to heuristic improvements.
   void run(
-      const LargeCost&  epsilon = 0.1,
-      const ApproxType& at      = FLEISCHER_MAX) {
-    _epsilon     = epsilon;
+      const ApproxType& at        = FLEISCHER_MAX,
+      const bool&       heuristic = true,
+      const LargeCost&  epsilon   = 0.1) {
     _approx_type = at;
+    _epsilon     = epsilon;
+    _heuristic   = heuristic;
     check();
     switch (_approx_type) {
       case FLEISCHER_MAX:
@@ -394,13 +393,14 @@ class ApproxMCF {
 
     // Allocate/reset flow per commodity and arc
     _flow.resize(_num_commodities);
-    for (int i = 0; i < _num_commodities; ++i) {
-      if (!_flow[i])
-        _flow[i] = Traits::createLargeCostMap(_graph);
-      for (ArcIt a(_graph); a != INVALID; ++a) {
-        (*_flow[i])[a] = 0.0;
+    for (int i = 0; i < _num_commodities; ++i)
+      if (!_flow[i]) {
+        _flow[i] = Traits::createLargeCostMapPtr(_graph);
+      } else {
+        for (ArcIt a(_graph); a != INVALID; ++a) {
+          (*_flow[i])[a] = 0;
+        }
       }
-    }
 
     // Initialise length and flow map
     for (ArcIt a(_graph); a != INVALID; ++a) {
@@ -420,10 +420,11 @@ class ApproxMCF {
   // 2. Input sizes are consistent
   // 3. Concurrent case: Feasible split flow exists for each commodity that
   // satisfies demand. In the case this doesn't pass, will throw an exception.
+  //
+  // TODO(torressa): Group commodities by source!
   void check() {
     LEMON_ASSERT(_tol.positive(_epsilon), "Epsilon must be greater than 0");
 
-    const int num_commodities_in = _num_commodities;
     for (int i = 0; i < _num_commodities; ++i) {
       if (_source[i] == _target[i] ||
           !bfs(_graph).run(_source[i], _target[i])) {
@@ -434,9 +435,6 @@ class ApproxMCF {
     }
 
     LEMON_ASSERT(_tol.positive(_num_commodities), "No commodities");
-    LEMON_DEBUG(
-        (num_commodities_in != _num_commodities),
-        "Preprocessing has detected dummy/unreachable commodities.");
 
     const int& s_size = _source.size();
     const int& t_size = _target.size();
@@ -489,11 +487,8 @@ class ApproxMCF {
                   std::to_string(i));
 
           // Check if feasible unsplittable flow exists that satisfies demand
-          if (max_cap_source < _demand[i] || max_cap_target < _demand[i]) {
+          if (max_cap_source < _demand[i] || max_cap_target < _demand[i])
             _feasible_unsplit = false;
-            LEMON_DEBUG(
-                false, "No feasible unsplittable flow can satisfy demand");
-          }
         }
       }
     }
@@ -505,9 +500,9 @@ class ApproxMCF {
   void runBinarySearchMinCost() {
     // Run standard max concurrent
     runFleischerMaxConcurrent();
-    // Save upper bound
-    LargeCost lower_bound = 0;
-    LargeCost upper_bound = getTotalCost();
+
+    LargeCost lower_bound = 0, upper_bound = getTotalCost();
+
     // Best solution attributes
     LargeCost curr_best_cost = std::numeric_limits<LargeCost>::infinity();
     LargeCostMapVector curr_best_flow;
@@ -544,7 +539,7 @@ class ApproxMCF {
       for (int i = 0; i < _num_commodities; ++i) {
         // Route demand
         Value d_i = _demand[i];
-        while (true) { // while (phase)
+        while (true) {  // while (phase)
           dijkstra(_graph, _len)
               .path(curr_path)
               .dist(curr_dist)
@@ -557,19 +552,19 @@ class ApproxMCF {
           updateDualObjective();
           if (d_i <= 0 || !_tol.less(_dual_obj, 1))
             break;
-        } // end while (phase)
+        }  // end while (phase)
       }
       ++_iter;
       updateDualObjective();
       if (!_tol.less(_dual_obj, 1))
         break;
-
-    } // end while (main)
+    }  // end while (main)
 
     // Clean up
     scaleFinalFlowsMaxConcurrent();
 
-    runHeurMaxConcurrent();
+    if (_heuristic)
+      randomisedRounding();
 
     setFlowPerCommodity();
     setFinalCost();
@@ -581,7 +576,7 @@ class ApproxMCF {
     Path      curr_path;
     LargeCost curr_dist;
     init();
-    while (true) {
+    while (true) {  // start while
       dijkstra(_graph, _len)
           .path(curr_path)
           .dist(curr_dist)
@@ -591,33 +586,32 @@ class ApproxMCF {
       // necessary
       if (!_tol.less(curr_dist, _limit)) {
         if (++i == _num_commodities) {
-          //  Check dual value
           if (!_tol.less(_limit, 1.0))
-            // STOP!
             break;
           i = 0;
           _limit *= (1 + _epsilon);
-          // Stop next iteration
           if (_tol.less(1.0, _limit))
             _limit = 1.0;
         }
-        // Start over
         continue;
       }
       const Value& routed_flow = updatePaths(curr_path, i);
       // Update dual values
       updateLen(curr_path, routed_flow, i);
       ++_iter;
-    } // end while
+    }  // end while
 
-    // Clean up
     scaleFinalFlowsMaxFlow();
 
-    runHeurMax1();
-    runHeurMax2();
+    if (_heuristic) {
+      runHeurMax1();
+      runHeurMax2();
+    }
 
     setFlowPerCommodity();
 
+    // Get dual objective
+    _dual_obj = getDualObjective();
     // Get objective value
     _obj = 0;
     for (int i = 0; i < _num_commodities; ++i) {
@@ -626,71 +620,43 @@ class ApproxMCF {
       for (OutArcIt a(_graph, _target[i]); a != INVALID; ++a)
         _obj -= (*_flow[i])[a];
     }
-    // Get dual objective
-    _dual_obj = getDualObjective();
   }
 
-  void runHeurMaxConcurrent() {
-    // If a feasible unsplittable flow  doesn't exist, then this heuristic
-    // fails.
+  // Randomised rounding
+  // Currently,
+  void randomisedRounding(const bool& random = false) {
+    // Only works if flow can be routed without splitting.
     if (!_feasible_unsplit)
       return;
-
-    // Number of commodities improved
-    int opi = 0;
     for (int i = 0; i < _num_commodities; ++i) {
-      Value     d           = 0; // _demand[i];
-      Value     least_slack = _demand[i];
-      int       least_slack_j;
-      LargeCost _total_cost_i = 0;
-      for (int j = 0; j < int(_paths[i].size()); ++j) {
-        _total_cost_i += _paths[i][j].cost;
-        Value slack =
-            std::min(_paths[i][j].min_cap, _demand[i]) - _paths[i][j].value;
-        if (slack <= least_slack && slack > 0) {
-          least_slack_j = j;
-          least_slack   = slack;
-        }
-        d += _paths[i][j].value;
+      const int&             p_size       = static_cast<int>(_paths[i].size());
+      LargeCost              total_flow_i = 0;
+      std::vector<LargeCost> values(p_size, 0);
+      for (int j = 0; j < p_size; ++j) {
+        const LargeCost& val = _paths[i][j].value;
+        total_flow_i += val;
+        values[j] = val;
       }
-      bool demand_satisfied = d == _demand[i];
-      // If the least slack already meets demand, then move on to next commodity
-      if (least_slack >= _demand[i])
-        continue;
-      if (_tol.positive(least_slack)) {
-        // Calculate cost diff for
-        LargeCost cost_diff = 0;
-        for (int j = 0; j < int(_paths[i].size()); ++j) {
-          if (j == least_slack_j) {
-            LargeCost diff = _paths[i][j].value + least_slack;
-            for (PathArcIt a(_paths[i][j].path); a != INVALID; ++a) {
-              cost_diff += (*_cost[i])[a] * diff;
-            }
-          } else {
-            LargeCost diff;
-            if (demand_satisfied)
-              diff = std::max(_paths[i][j].value - least_slack, 0.0);
-            else
-              diff = _paths[i][j].value;
-            for (PathArcIt a(_paths[i][j].path); a != INVALID; ++a) {
-              cost_diff += (*_cost[i])[a] * diff;
-            }
-          }
-        }
-        if (cost_diff <= _total_cost_i ||
-            (least_slack + d == _demand[i] && !demand_satisfied)) {
-          ++opi;
-          for (int j = 0; j < int(_paths[i].size()); ++j) {
-            if (j == least_slack_j) {
-              _paths[i][j].value += least_slack;
-            } else if (demand_satisfied)
-              _paths[i][j].value =
-                  std::max(_paths[i][j].value - least_slack, 0.0);
-          }
-        } // cost comparison
+      // Get random index wrt values[j] / sum of values
+      int chosen_p_idx;
+      if (random) {
+        std::random_device           rd;
+        std::mt19937                 gen(rd());
+        std::discrete_distribution<> d(values.begin(), values.end());
+        chosen_p_idx = d(gen);
+      } else {
+        for (int j = 0; j < p_size; ++j)
+          values[j] /= total_flow_i;
+        auto iter    = std::max_element(values.cbegin(), values.cend());
+        chosen_p_idx = std::distance(values.cbegin(), iter);
+      }
+      for (int j = 0; j < p_size; ++j) {
+        if (j != chosen_p_idx)
+          _paths[i][j].value = 0;
+        else
+          _paths[i][j].value = _demand[i];
       }
     }
-    LEMON_DEBUG(false, "runHeurMaxConcurrent applied. " + std::to_string(opi));
   }
 
   // Heuristic improvement 1: improve the solution along one of the
@@ -698,7 +664,7 @@ class ApproxMCF {
   void runHeurMax1() {
     int opi = 0;
     for (int i = 0; i < _num_commodities; ++i) {
-      for (int j = 0; j < int(_paths[i].size()); ++j) {
+      for (int j = 0; j < static_cast<int>(_paths[i].size()); ++j) {
         Value d = std::numeric_limits<Value>::infinity();
         for (PathArcIt a(_paths[i][j].path); a != INVALID; ++a)
           if (_cap[a] - _total_flow[a] < d)
@@ -711,7 +677,6 @@ class ApproxMCF {
         }
       }
     }
-    LEMON_DEBUG(false, "runHeurMax1 applied. " + std::to_string(opi));
   }
 
   // Heuristic improvement 2: improve the solution along new paths
@@ -737,7 +702,6 @@ class ApproxMCF {
         ++npi;
       }
     }
-    LEMON_DEBUG(false, "runHeurMax2 applied. " + std::to_string(npi));
   }
 
   // Update paths for current commodity and return flow routed
@@ -746,8 +710,8 @@ class ApproxMCF {
       const int&   i,
       const Value& d_i = std::numeric_limits<Value>::infinity()) {
     int h = hash(curr_path);
-    int j; // path index
-    for (j = 0; j < int(_paths[i].size()); ++j) {
+    int j;  // path index
+    for (j = 0; j < static_cast<int>(_paths[i].size()); ++j) {
       bool b = (_paths[i][j].hash == h) &&
                (_paths[i][j].path.length() == curr_path.length());
       if (b) {
@@ -759,7 +723,7 @@ class ApproxMCF {
           break;
       }
     }
-    const bool path_seen = !(j == int(_paths[i].size()));
+    const bool path_seen = !(j == static_cast<int>(_paths[i].size()));
     // Set/modify the flow value for the found path
     Value routed_flow = 0;
     Value min_cap;
@@ -806,7 +770,7 @@ class ApproxMCF {
   void setFinalCost() {
     _total_cost = 0;
     for (int i = 0; i < _num_commodities; ++i) {
-      for (int j = 0; j < int(_paths[i].size()); ++j) {
+      for (int j = 0; j < static_cast<int>((_paths[i].size())); ++j) {
         for (PathArcIt a(_paths[i][j].path); a != INVALID; ++a)
           _total_cost += (*_cost[i])[a] * (*_flow[i])[a];
       }
@@ -818,7 +782,7 @@ class ApproxMCF {
   void scaleFinalFlowsMaxConcurrent() {
     int scaler = _iter;
     for (int i = 0; i < _num_commodities; ++i) {
-      for (int j = 0; j < int(_paths[i].size()); ++j) {
+      for (int j = 0; j < static_cast<int>(_paths[i].size()); ++j) {
         _paths[i][j].value /= scaler;
         for (PathArcIt a(_paths[i][j].path); a != INVALID; ++a) {
           _total_flow[a] += _paths[i][j].value;
@@ -831,7 +795,7 @@ class ApproxMCF {
   // Update total flow map
   void updateTotalFlow() {
     for (int i = 0; i < _num_commodities; ++i) {
-      for (int j = 0; j < int(_paths[i].size()); ++j) {
+      for (int j = 0; j < static_cast<int>(_paths[i].size()); ++j) {
         Value val = _paths[i][j].value;
         for (PathArcIt a(_paths[i][j].path); a != INVALID; ++a)
           _total_flow[a] += val;
@@ -854,7 +818,7 @@ class ApproxMCF {
         _total_flow[a] /= scaler;
       }
       for (int i = 0; i < _num_commodities; ++i) {
-        for (int j = 0; j < int(_paths[i].size()); ++j)
+        for (int j = 0; j < static_cast<int>(_paths[i].size()); ++j)
           _paths[i][j].value /= scaler;
       }
     }
@@ -863,7 +827,7 @@ class ApproxMCF {
   void setFlowPerCommodity() {
     // Setting flow values using saved paths
     for (int i = 0; i < _num_commodities; ++i) {
-      for (int j = 0; j < int(_paths[i].size()); ++j) {
+      for (int j = 0; j < static_cast<int>(_paths[i].size()); ++j) {
         LargeCost val = _paths[i][j].value;
         for (PathArcIt a(_paths[i][j].path); a != INVALID; ++a)
           (*_flow[i])[a] += val;
@@ -889,9 +853,9 @@ class ApproxMCF {
   const LargeCost& getDualObjective() const { return _dual_obj; }
 
   const LargeCost& getTotalCost() const { return _total_cost; }
-}; // class ApproxMCF
+};  // class ApproxMCF
 /// @}
 
-} // namespace lemon
+}  // namespace lemon
 
-#endif // LEMON_MULTICOMMODITY_FLOW_H
+#endif  // LEMON_MULTICOMMODITY_FLOW_H_

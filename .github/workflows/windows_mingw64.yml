@@ -6,8 +6,10 @@ jobs:
   # Building using the github runner environement directly.
   build:
     runs-on: windows-latest
+    timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2
+    - uses: komiya-atsushi/action-enforce-timeout-minutes@v1.0.0
     - name: Check cmake
       run: cmake --version
     - name: Configure
