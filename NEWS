@@ -1,18 +1,3 @@
-2014-07-07 Version 1.3.1 released
-
-        Bugfix release.
-
-        #484: Require CMAKE 2.8
-        #471, #472, #480: Various clang compatibility fixes
-        #481, #482: Fix shared lib build and versioning
-        #476: Fix invalid map query in NearestNeighborTsp
-        #478: Bugfix in debug checking and lower bound handling
-              in min cost flow algorithms
-        #479, #465: Bugfix in default LP/MIP backend settings
-        #476: Bugfix in tsp_test
-        #487: Add missing include header and std:: namespace spec.
-        #474: Fix division by zero error in NetworkSimplex
-
 2013-08-10 Version 1.3 released
 
         This is major feature release

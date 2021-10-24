@@ -16,44 +16,42 @@
  *
  */
 
-#include <lemon/adaptors.h>
+#include <iostream>
+#include <limits>
+
+#include <lemon/list_graph.h>
+#include <lemon/grid_graph.h>
 #include <lemon/bfs.h>
-#include <lemon/concept_check.h>
+#include <lemon/path.h>
+
 #include <lemon/concepts/digraph.h>
 #include <lemon/concepts/graph.h>
 #include <lemon/concepts/graph_components.h>
 #include <lemon/concepts/maps.h>
-#include <lemon/grid_graph.h>
-#include <lemon/list_graph.h>
-#include <lemon/path.h>
+#include <lemon/concept_check.h>
 
-#include <iostream>
-#include <limits>
+#include <lemon/adaptors.h>
 
-#include "test/graph_test.h"
 #include "test/test_tools.h"
+#include "test/graph_test.h"
 
 using namespace lemon;
 
 void checkReverseDigraph() {
   // Check concepts
-  checkConcept<concepts::Digraph, ReverseDigraph<concepts::Digraph>>();
-  checkConcept<concepts::Digraph, ReverseDigraph<ListDigraph>>();
-  checkConcept<
-      concepts::AlterableDigraphComponent<>,
-      ReverseDigraph<ListDigraph>>();
-  checkConcept<
-      concepts::ExtendableDigraphComponent<>,
-      ReverseDigraph<ListDigraph>>();
-  checkConcept<
-      concepts::ErasableDigraphComponent<>,
-      ReverseDigraph<ListDigraph>>();
-  checkConcept<
-      concepts::ClearableDigraphComponent<>,
-      ReverseDigraph<ListDigraph>>();
+  checkConcept<concepts::Digraph, ReverseDigraph<concepts::Digraph> >();
+  checkConcept<concepts::Digraph, ReverseDigraph<ListDigraph> >();
+  checkConcept<concepts::AlterableDigraphComponent<>,
+               ReverseDigraph<ListDigraph> >();
+  checkConcept<concepts::ExtendableDigraphComponent<>,
+               ReverseDigraph<ListDigraph> >();
+  checkConcept<concepts::ErasableDigraphComponent<>,
+               ReverseDigraph<ListDigraph> >();
+  checkConcept<concepts::ClearableDigraphComponent<>,
+               ReverseDigraph<ListDigraph> >();
 
   // Create a digraph and an adaptor
-  typedef ListDigraph             Digraph;
+  typedef ListDigraph Digraph;
   typedef ReverseDigraph<Digraph> Adaptor;
 
   Digraph digraph;
@@ -102,7 +100,7 @@ void checkReverseDigraph() {
   Adaptor::Arc a6 = adaptor.addArc(n2, n4);
   Adaptor::Arc a7 = adaptor.addArc(n1, n4);
   Adaptor::Arc a8 = adaptor.addArc(n1, n2);
-  ::lemon::ignore_unused_variable_warning(a6, a7, a8);
+  ::lemon::ignore_unused_variable_warning(a6,a7,a8);
 
   adaptor.erase(a1);
   adaptor.erase(n3);
@@ -148,13 +146,13 @@ void checkReverseDigraph() {
   // Check the conversion of nodes and arcs
   Digraph::Node nd = n4;
   ::lemon::ignore_unused_variable_warning(nd);
-  nd               = n4;
+  nd = n4;
   Adaptor::Node na = n1;
   ::lemon::ignore_unused_variable_warning(na);
-  na              = n2;
+  na = n2;
   Digraph::Arc ad = a4;
   ::lemon::ignore_unused_variable_warning(ad);
-  ad              = a5;
+  ad = a5;
   Adaptor::Arc aa = a1;
   ::lemon::ignore_unused_variable_warning(aa);
   aa = a2;
@@ -162,29 +160,27 @@ void checkReverseDigraph() {
 
 void checkSubDigraph() {
   // Check concepts
-  checkConcept<concepts::Digraph, SubDigraph<concepts::Digraph>>();
-  checkConcept<concepts::Digraph, SubDigraph<ListDigraph>>();
-  checkConcept<
-      concepts::AlterableDigraphComponent<>,
-      SubDigraph<ListDigraph>>();
-  checkConcept<
-      concepts::ExtendableDigraphComponent<>,
-      SubDigraph<ListDigraph>>();
-  checkConcept<concepts::ErasableDigraphComponent<>, SubDigraph<ListDigraph>>();
-  checkConcept<
-      concepts::ClearableDigraphComponent<>,
-      SubDigraph<ListDigraph>>();
+  checkConcept<concepts::Digraph, SubDigraph<concepts::Digraph> >();
+  checkConcept<concepts::Digraph, SubDigraph<ListDigraph> >();
+  checkConcept<concepts::AlterableDigraphComponent<>,
+               SubDigraph<ListDigraph> >();
+  checkConcept<concepts::ExtendableDigraphComponent<>,
+               SubDigraph<ListDigraph> >();
+  checkConcept<concepts::ErasableDigraphComponent<>,
+               SubDigraph<ListDigraph> >();
+  checkConcept<concepts::ClearableDigraphComponent<>,
+               SubDigraph<ListDigraph> >();
 
   // Create a digraph and an adaptor
-  typedef ListDigraph                                Digraph;
-  typedef Digraph::NodeMap<bool>                     NodeFilter;
-  typedef Digraph::ArcMap<bool>                      ArcFilter;
+  typedef ListDigraph Digraph;
+  typedef Digraph::NodeMap<bool> NodeFilter;
+  typedef Digraph::ArcMap<bool> ArcFilter;
   typedef SubDigraph<Digraph, NodeFilter, ArcFilter> Adaptor;
 
-  Digraph    digraph;
+  Digraph digraph;
   NodeFilter node_filter(digraph);
-  ArcFilter  arc_filter(digraph);
-  Adaptor    adaptor(digraph, node_filter, arc_filter);
+  ArcFilter arc_filter(digraph);
+  Adaptor adaptor(digraph, node_filter, arc_filter);
 
   // Add nodes and arcs to the original digraph and the adaptor
   Digraph::Node n1 = digraph.addNode();
@@ -220,8 +216,7 @@ void checkSubDigraph() {
   // Hide an arc
   adaptor.status(a2, false);
   adaptor.disable(a3);
-  if (!adaptor.status(a3))
-    adaptor.enable(a3);
+  if (!adaptor.status(a3)) adaptor.enable(a3);
 
   checkGraphNodeList(adaptor, 3);
   checkGraphArcList(adaptor, 2);
@@ -244,8 +239,7 @@ void checkSubDigraph() {
   // Hide a node
   adaptor.status(n1, false);
   adaptor.disable(n3);
-  if (!adaptor.status(n3))
-    adaptor.enable(n3);
+  if (!adaptor.status(n3)) adaptor.enable(n3);
 
   checkGraphNodeList(adaptor, 2);
   checkGraphArcList(adaptor, 1);
@@ -280,13 +274,13 @@ void checkSubDigraph() {
   // Check the conversion of nodes and arcs
   Digraph::Node nd = n3;
   ::lemon::ignore_unused_variable_warning(nd);
-  nd               = n3;
+  nd = n3;
   Adaptor::Node na = n1;
   ::lemon::ignore_unused_variable_warning(na);
-  na              = n2;
+  na = n2;
   Digraph::Arc ad = a3;
   ::lemon::ignore_unused_variable_warning(ad);
-  ad              = a3;
+  ad = a3;
   Adaptor::Arc aa = a1;
   ::lemon::ignore_unused_variable_warning(aa);
   aa = a2;
@@ -294,29 +288,25 @@ void checkSubDigraph() {
 
 void checkFilterNodes1() {
   // Check concepts
-  checkConcept<concepts::Digraph, FilterNodes<concepts::Digraph>>();
-  checkConcept<concepts::Digraph, FilterNodes<ListDigraph>>();
-  checkConcept<
-      concepts::AlterableDigraphComponent<>,
-      FilterNodes<ListDigraph>>();
-  checkConcept<
-      concepts::ExtendableDigraphComponent<>,
-      FilterNodes<ListDigraph>>();
-  checkConcept<
-      concepts::ErasableDigraphComponent<>,
-      FilterNodes<ListDigraph>>();
-  checkConcept<
-      concepts::ClearableDigraphComponent<>,
-      FilterNodes<ListDigraph>>();
+  checkConcept<concepts::Digraph, FilterNodes<concepts::Digraph> >();
+  checkConcept<concepts::Digraph, FilterNodes<ListDigraph> >();
+  checkConcept<concepts::AlterableDigraphComponent<>,
+               FilterNodes<ListDigraph> >();
+  checkConcept<concepts::ExtendableDigraphComponent<>,
+               FilterNodes<ListDigraph> >();
+  checkConcept<concepts::ErasableDigraphComponent<>,
+               FilterNodes<ListDigraph> >();
+  checkConcept<concepts::ClearableDigraphComponent<>,
+               FilterNodes<ListDigraph> >();
 
   // Create a digraph and an adaptor
-  typedef ListDigraph                      Digraph;
-  typedef Digraph::NodeMap<bool>           NodeFilter;
+  typedef ListDigraph Digraph;
+  typedef Digraph::NodeMap<bool> NodeFilter;
   typedef FilterNodes<Digraph, NodeFilter> Adaptor;
 
-  Digraph    digraph;
+  Digraph digraph;
   NodeFilter node_filter(digraph);
-  Adaptor    adaptor(digraph, node_filter);
+  Adaptor adaptor(digraph, node_filter);
 
   // Add nodes and arcs to the original digraph and the adaptor
   Digraph::Node n1 = digraph.addNode();
@@ -350,8 +340,7 @@ void checkFilterNodes1() {
   // Hide a node
   adaptor.status(n1, false);
   adaptor.disable(n3);
-  if (!adaptor.status(n3))
-    adaptor.enable(n3);
+  if (!adaptor.status(n3)) adaptor.enable(n3);
 
   checkGraphNodeList(adaptor, 2);
   checkGraphArcList(adaptor, 1);
@@ -385,13 +374,13 @@ void checkFilterNodes1() {
   // Check the conversion of nodes and arcs
   Digraph::Node nd = n3;
   ::lemon::ignore_unused_variable_warning(nd);
-  nd               = n3;
+  nd = n3;
   Adaptor::Node na = n1;
   ::lemon::ignore_unused_variable_warning(na);
-  na              = n2;
+  na = n2;
   Digraph::Arc ad = a3;
   ::lemon::ignore_unused_variable_warning(ad);
-  ad              = a3;
+  ad = a3;
   Adaptor::Arc aa = a1;
   ::lemon::ignore_unused_variable_warning(aa);
   aa = a2;
@@ -399,27 +388,25 @@ void checkFilterNodes1() {
 
 void checkFilterArcs() {
   // Check concepts
-  checkConcept<concepts::Digraph, FilterArcs<concepts::Digraph>>();
-  checkConcept<concepts::Digraph, FilterArcs<ListDigraph>>();
-  checkConcept<
-      concepts::AlterableDigraphComponent<>,
-      FilterArcs<ListDigraph>>();
-  checkConcept<
-      concepts::ExtendableDigraphComponent<>,
-      FilterArcs<ListDigraph>>();
-  checkConcept<concepts::ErasableDigraphComponent<>, FilterArcs<ListDigraph>>();
-  checkConcept<
-      concepts::ClearableDigraphComponent<>,
-      FilterArcs<ListDigraph>>();
+  checkConcept<concepts::Digraph, FilterArcs<concepts::Digraph> >();
+  checkConcept<concepts::Digraph, FilterArcs<ListDigraph> >();
+  checkConcept<concepts::AlterableDigraphComponent<>,
+               FilterArcs<ListDigraph> >();
+  checkConcept<concepts::ExtendableDigraphComponent<>,
+               FilterArcs<ListDigraph> >();
+  checkConcept<concepts::ErasableDigraphComponent<>,
+               FilterArcs<ListDigraph> >();
+  checkConcept<concepts::ClearableDigraphComponent<>,
+               FilterArcs<ListDigraph> >();
 
   // Create a digraph and an adaptor
-  typedef ListDigraph                    Digraph;
-  typedef Digraph::ArcMap<bool>          ArcFilter;
+  typedef ListDigraph Digraph;
+  typedef Digraph::ArcMap<bool> ArcFilter;
   typedef FilterArcs<Digraph, ArcFilter> Adaptor;
 
-  Digraph   digraph;
+  Digraph digraph;
   ArcFilter arc_filter(digraph);
-  Adaptor   adaptor(digraph, arc_filter);
+  Adaptor adaptor(digraph, arc_filter);
 
   // Add nodes and arcs to the original digraph and the adaptor
   Digraph::Node n1 = digraph.addNode();
@@ -453,8 +440,7 @@ void checkFilterArcs() {
   // Hide an arc
   adaptor.status(a2, false);
   adaptor.disable(a3);
-  if (!adaptor.status(a3))
-    adaptor.enable(a3);
+  if (!adaptor.status(a3)) adaptor.enable(a3);
 
   checkGraphNodeList(adaptor, 3);
   checkGraphArcList(adaptor, 2);
@@ -490,13 +476,13 @@ void checkFilterArcs() {
   // Check the conversion of nodes and arcs
   Digraph::Node nd = n3;
   ::lemon::ignore_unused_variable_warning(nd);
-  nd               = n3;
+  nd = n3;
   Adaptor::Node na = n1;
   ::lemon::ignore_unused_variable_warning(na);
-  na              = n2;
+  na = n2;
   Digraph::Arc ad = a3;
   ::lemon::ignore_unused_variable_warning(ad);
-  ad              = a3;
+  ad = a3;
   Adaptor::Arc aa = a1;
   ::lemon::ignore_unused_variable_warning(aa);
   aa = a2;
@@ -504,15 +490,20 @@ void checkFilterArcs() {
 
 void checkUndirector() {
   // Check concepts
-  checkConcept<concepts::Graph, Undirector<concepts::Digraph>>();
-  checkConcept<concepts::Graph, Undirector<ListDigraph>>();
-  checkConcept<concepts::AlterableGraphComponent<>, Undirector<ListDigraph>>();
-  checkConcept<concepts::ExtendableGraphComponent<>, Undirector<ListDigraph>>();
-  checkConcept<concepts::ErasableGraphComponent<>, Undirector<ListDigraph>>();
-  checkConcept<concepts::ClearableGraphComponent<>, Undirector<ListDigraph>>();
+  checkConcept<concepts::Graph, Undirector<concepts::Digraph> >();
+  checkConcept<concepts::Graph, Undirector<ListDigraph> >();
+  checkConcept<concepts::AlterableGraphComponent<>,
+               Undirector<ListDigraph> >();
+  checkConcept<concepts::ExtendableGraphComponent<>,
+               Undirector<ListDigraph> >();
+  checkConcept<concepts::ErasableGraphComponent<>,
+               Undirector<ListDigraph> >();
+  checkConcept<concepts::ClearableGraphComponent<>,
+               Undirector<ListDigraph> >();
+
 
   // Create a digraph and an adaptor
-  typedef ListDigraph         Digraph;
+  typedef ListDigraph Digraph;
   typedef Undirector<Digraph> Adaptor;
 
   Digraph digraph;
@@ -523,8 +514,8 @@ void checkUndirector() {
   Digraph::Node n2 = digraph.addNode();
   Adaptor::Node n3 = adaptor.addNode();
 
-  Digraph::Arc  a1 = digraph.addArc(n1, n2);
-  Digraph::Arc  a2 = digraph.addArc(n1, n3);
+  Digraph::Arc a1 = digraph.addArc(n1, n2);
+  Digraph::Arc a2 = digraph.addArc(n1, n3);
   Adaptor::Edge e3 = adaptor.addEdge(n2, n3);
 
   // Check the original digraph
@@ -572,16 +563,14 @@ void checkUndirector() {
   }
 
   // Check CombinedArcMap
-  typedef Adaptor::CombinedArcMap<Digraph::ArcMap<int>, Digraph::ArcMap<int>>
-      IntCombinedMap;
-  typedef Adaptor::CombinedArcMap<Digraph::ArcMap<bool>, Digraph::ArcMap<bool>>
-      BoolCombinedMap;
-  checkConcept<
-      concepts::ReferenceMap<Adaptor::Arc, int, int&, const int&>,
-      IntCombinedMap>();
-  checkConcept<
-      concepts::ReferenceMap<Adaptor::Arc, bool, bool&, const bool&>,
-      BoolCombinedMap>();
+  typedef Adaptor::CombinedArcMap
+    <Digraph::ArcMap<int>, Digraph::ArcMap<int> > IntCombinedMap;
+  typedef Adaptor::CombinedArcMap
+    <Digraph::ArcMap<bool>, Digraph::ArcMap<bool> > BoolCombinedMap;
+  checkConcept<concepts::ReferenceMap<Adaptor::Arc, int, int&, const int&>,
+    IntCombinedMap>();
+  checkConcept<concepts::ReferenceMap<Adaptor::Arc, bool, bool&, const bool&>,
+    BoolCombinedMap>();
 
   Digraph::ArcMap<int> fw_map(digraph), bk_map(digraph);
   for (Digraph::ArcIt a(digraph); a != INVALID; ++a) {
@@ -589,8 +578,8 @@ void checkUndirector() {
     bk_map[a] = -digraph.id(a);
   }
 
-  Adaptor::CombinedArcMap<Digraph::ArcMap<int>, Digraph::ArcMap<int>> comb_map(
-      fw_map, bk_map);
+  Adaptor::CombinedArcMap<Digraph::ArcMap<int>, Digraph::ArcMap<int> >
+    comb_map(fw_map, bk_map);
   for (Adaptor::ArcIt a(adaptor); a != INVALID; ++a) {
     if (adaptor.source(a) == digraph.source(a)) {
       check(comb_map[a] == fw_map[a], "Wrong combined map");
@@ -602,13 +591,13 @@ void checkUndirector() {
   // Check the conversion of nodes and arcs/edges
   Digraph::Node nd = n3;
   ::lemon::ignore_unused_variable_warning(nd);
-  nd               = n3;
+  nd = n3;
   Adaptor::Node na = n1;
   ::lemon::ignore_unused_variable_warning(na);
-  na              = n2;
+  na = n2;
   Digraph::Arc ad = e3;
   ::lemon::ignore_unused_variable_warning(ad);
-  ad               = e3;
+  ad = e3;
   Adaptor::Edge ea = a1;
   ::lemon::ignore_unused_variable_warning(ea);
   ea = a2;
@@ -616,17 +605,17 @@ void checkUndirector() {
 
 void checkResidualDigraph() {
   // Check concepts
-  checkConcept<concepts::Digraph, ResidualDigraph<concepts::Digraph>>();
-  checkConcept<concepts::Digraph, ResidualDigraph<ListDigraph>>();
+  checkConcept<concepts::Digraph, ResidualDigraph<concepts::Digraph> >();
+  checkConcept<concepts::Digraph, ResidualDigraph<ListDigraph> >();
 
   // Create a digraph and an adaptor
-  typedef ListDigraph                         Digraph;
-  typedef Digraph::ArcMap<int>                IntArcMap;
+  typedef ListDigraph Digraph;
+  typedef Digraph::ArcMap<int> IntArcMap;
   typedef ResidualDigraph<Digraph, IntArcMap> Adaptor;
 
-  Digraph   digraph;
+  Digraph digraph;
   IntArcMap capacity(digraph), flow(digraph);
-  Adaptor   adaptor(digraph, capacity, flow);
+  Adaptor adaptor(digraph, capacity, flow);
 
   Digraph::Node n1 = digraph.addNode();
   Digraph::Node n2 = digraph.addNode();
@@ -730,21 +719,20 @@ void checkResidualDigraph() {
   checkGraphInArcList(adaptor, n4, 3);
 
   // Find maximum flow by augmenting along shortest paths
-  int                       flow_value = 0;
+  int flow_value = 0;
   Adaptor::ResidualCapacity res_cap(adaptor);
   while (true) {
+
     Bfs<Adaptor> bfs(adaptor);
     bfs.run(n1, n4);
 
-    if (!bfs.reached(n4))
-      break;
+    if (!bfs.reached(n4)) break;
 
     Path<Adaptor> p = bfs.path(n4);
 
     int min = std::numeric_limits<int>::max();
     for (Path<Adaptor>::ArcIt a(p); a != INVALID; ++a) {
-      if (res_cap[a] < min)
-        min = res_cap[a];
+      if (res_cap[a] < min) min = res_cap[a];
     }
 
     for (Path<Adaptor>::ArcIt a(p); a != INVALID; ++a) {
@@ -757,22 +745,20 @@ void checkResidualDigraph() {
 
   // Check forward() and backward()
   for (Adaptor::ArcIt a(adaptor); a != INVALID; ++a) {
-    check(
-        adaptor.forward(a) != adaptor.backward(a),
-        "Wrong forward() or backward()");
-    check(
-        (adaptor.forward(a) && adaptor.forward(Digraph::Arc(a)) == a) ||
-            (adaptor.backward(a) && adaptor.backward(Digraph::Arc(a)) == a),
-        "Wrong forward() or backward()");
+    check(adaptor.forward(a) != adaptor.backward(a),
+          "Wrong forward() or backward()");
+    check((adaptor.forward(a) && adaptor.forward(Digraph::Arc(a)) == a) ||
+          (adaptor.backward(a) && adaptor.backward(Digraph::Arc(a)) == a),
+          "Wrong forward() or backward()");
   }
 
   // Check the conversion of nodes and arcs
   Digraph::Node nd = Adaptor::NodeIt(adaptor);
   ::lemon::ignore_unused_variable_warning(nd);
-  nd               = ++Adaptor::NodeIt(adaptor);
+  nd = ++Adaptor::NodeIt(adaptor);
   Adaptor::Node na = n1;
   ::lemon::ignore_unused_variable_warning(na);
-  na              = n2;
+  na = n2;
   Digraph::Arc ad = Adaptor::ArcIt(adaptor);
   ::lemon::ignore_unused_variable_warning(ad);
   ad = ++Adaptor::ArcIt(adaptor);
@@ -780,11 +766,11 @@ void checkResidualDigraph() {
 
 void checkSplitNodes() {
   // Check concepts
-  checkConcept<concepts::Digraph, SplitNodes<concepts::Digraph>>();
-  checkConcept<concepts::Digraph, SplitNodes<ListDigraph>>();
+  checkConcept<concepts::Digraph, SplitNodes<concepts::Digraph> >();
+  checkConcept<concepts::Digraph, SplitNodes<ListDigraph> >();
 
   // Create a digraph and an adaptor
-  typedef ListDigraph         Digraph;
+  typedef ListDigraph Digraph;
   typedef SplitNodes<Digraph> Adaptor;
 
   Digraph digraph;
@@ -797,7 +783,7 @@ void checkSplitNodes() {
   Digraph::Arc a1 = digraph.addArc(n1, n2);
   Digraph::Arc a2 = digraph.addArc(n1, n3);
   Digraph::Arc a3 = digraph.addArc(n2, n3);
-  ::lemon::ignore_unused_variable_warning(a1, a2, a3);
+  ::lemon::ignore_unused_variable_warning(a1,a2,a3);
 
   checkGraphNodeList(adaptor, 6);
   checkGraphArcList(adaptor, 6);
@@ -827,12 +813,10 @@ void checkSplitNodes() {
   for (Adaptor::ArcIt a(adaptor); a != INVALID; ++a) {
     if (adaptor.origArc(a)) {
       Digraph::Arc oa = a;
-      check(
-          adaptor.source(a) == adaptor.outNode(digraph.source(oa)),
-          "Wrong split");
-      check(
-          adaptor.target(a) == adaptor.inNode(digraph.target(oa)),
-          "Wrong split");
+      check(adaptor.source(a) == adaptor.outNode(digraph.source(oa)),
+            "Wrong split");
+      check(adaptor.target(a) == adaptor.inNode(digraph.target(oa)),
+            "Wrong split");
     } else {
       Digraph::Node on = a;
       check(adaptor.source(a) == adaptor.inNode(on), "Wrong split");
@@ -841,29 +825,25 @@ void checkSplitNodes() {
   }
 
   // Check combined node map
-  typedef Adaptor::CombinedNodeMap<Digraph::NodeMap<int>, Digraph::NodeMap<int>>
-      IntCombinedNodeMap;
-  typedef Adaptor::
-      CombinedNodeMap<Digraph::NodeMap<bool>, Digraph::NodeMap<bool>>
-          BoolCombinedNodeMap;
-  checkConcept<
-      concepts::ReferenceMap<Adaptor::Node, int, int&, const int&>,
-      IntCombinedNodeMap>();
-  // checkConcept<concepts::ReferenceMap<Adaptor::Node, bool, bool&, const
-  // bool&>,
-  //  BoolCombinedNodeMap>();
-  checkConcept<
-      concepts::ReadWriteMap<Adaptor::Node, bool>,
-      BoolCombinedNodeMap>();
+  typedef Adaptor::CombinedNodeMap
+    <Digraph::NodeMap<int>, Digraph::NodeMap<int> > IntCombinedNodeMap;
+  typedef Adaptor::CombinedNodeMap
+    <Digraph::NodeMap<bool>, Digraph::NodeMap<bool> > BoolCombinedNodeMap;
+  checkConcept<concepts::ReferenceMap<Adaptor::Node, int, int&, const int&>,
+    IntCombinedNodeMap>();
+//checkConcept<concepts::ReferenceMap<Adaptor::Node, bool, bool&, const bool&>,
+//  BoolCombinedNodeMap>();
+  checkConcept<concepts::ReadWriteMap<Adaptor::Node, bool>,
+    BoolCombinedNodeMap>();
 
   Digraph::NodeMap<int> in_map(digraph), out_map(digraph);
   for (Digraph::NodeIt n(digraph); n != INVALID; ++n) {
-    in_map[n]  = digraph.id(n);
+    in_map[n] = digraph.id(n);
     out_map[n] = -digraph.id(n);
   }
 
-  Adaptor::CombinedNodeMap<Digraph::NodeMap<int>, Digraph::NodeMap<int>>
-      node_map(in_map, out_map);
+  Adaptor::CombinedNodeMap<Digraph::NodeMap<int>, Digraph::NodeMap<int> >
+    node_map(in_map, out_map);
   for (Adaptor::NodeIt n(adaptor); n != INVALID; ++n) {
     if (adaptor.inNode(n)) {
       check(node_map[n] == in_map[n], "Wrong combined node map");
@@ -873,71 +853,72 @@ void checkSplitNodes() {
   }
 
   // Check combined arc map
-  typedef Adaptor::CombinedArcMap<Digraph::ArcMap<int>, Digraph::NodeMap<int>>
-      IntCombinedArcMap;
-  typedef Adaptor::CombinedArcMap<Digraph::ArcMap<bool>, Digraph::NodeMap<bool>>
-      BoolCombinedArcMap;
-  checkConcept<
-      concepts::ReferenceMap<Adaptor::Arc, int, int&, const int&>,
-      IntCombinedArcMap>();
-  // checkConcept<concepts::ReferenceMap<Adaptor::Arc, bool, bool&, const
-  // bool&>,
-  //  BoolCombinedArcMap>();
-  checkConcept<
-      concepts::ReadWriteMap<Adaptor::Arc, bool>,
-      BoolCombinedArcMap>();
+  typedef Adaptor::CombinedArcMap
+    <Digraph::ArcMap<int>, Digraph::NodeMap<int> > IntCombinedArcMap;
+  typedef Adaptor::CombinedArcMap
+    <Digraph::ArcMap<bool>, Digraph::NodeMap<bool> > BoolCombinedArcMap;
+  checkConcept<concepts::ReferenceMap<Adaptor::Arc, int, int&, const int&>,
+    IntCombinedArcMap>();
+//checkConcept<concepts::ReferenceMap<Adaptor::Arc, bool, bool&, const bool&>,
+//  BoolCombinedArcMap>();
+  checkConcept<concepts::ReadWriteMap<Adaptor::Arc, bool>,
+    BoolCombinedArcMap>();
 
   Digraph::ArcMap<int> a_map(digraph);
   for (Digraph::ArcIt a(digraph); a != INVALID; ++a) {
     a_map[a] = digraph.id(a);
   }
 
-  Adaptor::CombinedArcMap<Digraph::ArcMap<int>, Digraph::NodeMap<int>> arc_map(
-      a_map, out_map);
+  Adaptor::CombinedArcMap<Digraph::ArcMap<int>, Digraph::NodeMap<int> >
+    arc_map(a_map, out_map);
   for (Digraph::ArcIt a(digraph); a != INVALID; ++a) {
-    check(arc_map[adaptor.arc(a)] == a_map[a], "Wrong combined arc map");
+    check(arc_map[adaptor.arc(a)] == a_map[a],  "Wrong combined arc map");
   }
   for (Digraph::NodeIt n(digraph); n != INVALID; ++n) {
-    check(arc_map[adaptor.arc(n)] == out_map[n], "Wrong combined arc map");
+    check(arc_map[adaptor.arc(n)] == out_map[n],  "Wrong combined arc map");
   }
 
   // Check the conversion of nodes
   Digraph::Node nd = adaptor.inNode(n1);
-  check(nd == n1, "Wrong node conversion");
+  check (nd == n1, "Wrong node conversion");
   nd = adaptor.outNode(n2);
-  check(nd == n2, "Wrong node conversion");
+  check (nd == n2, "Wrong node conversion");
 }
 
 void checkSubGraph() {
   // Check concepts
-  checkConcept<concepts::Graph, SubGraph<concepts::Graph>>();
-  checkConcept<concepts::Graph, SubGraph<ListGraph>>();
-  checkConcept<concepts::AlterableGraphComponent<>, SubGraph<ListGraph>>();
-  checkConcept<concepts::ExtendableGraphComponent<>, SubGraph<ListGraph>>();
-  checkConcept<concepts::ErasableGraphComponent<>, SubGraph<ListGraph>>();
-  checkConcept<concepts::ClearableGraphComponent<>, SubGraph<ListGraph>>();
+  checkConcept<concepts::Graph, SubGraph<concepts::Graph> >();
+  checkConcept<concepts::Graph, SubGraph<ListGraph> >();
+  checkConcept<concepts::AlterableGraphComponent<>,
+               SubGraph<ListGraph> >();
+  checkConcept<concepts::ExtendableGraphComponent<>,
+               SubGraph<ListGraph> >();
+  checkConcept<concepts::ErasableGraphComponent<>,
+               SubGraph<ListGraph> >();
+  checkConcept<concepts::ClearableGraphComponent<>,
+               SubGraph<ListGraph> >();
 
   // Create a graph and an adaptor
-  typedef ListGraph                               Graph;
-  typedef Graph::NodeMap<bool>                    NodeFilter;
-  typedef Graph::EdgeMap<bool>                    EdgeFilter;
+  typedef ListGraph Graph;
+  typedef Graph::NodeMap<bool> NodeFilter;
+  typedef Graph::EdgeMap<bool> EdgeFilter;
   typedef SubGraph<Graph, NodeFilter, EdgeFilter> Adaptor;
 
-  Graph      graph;
+  Graph graph;
   NodeFilter node_filter(graph);
   EdgeFilter edge_filter(graph);
-  Adaptor    adaptor(graph, node_filter, edge_filter);
+  Adaptor adaptor(graph, node_filter, edge_filter);
 
   // Add nodes and edges to the original graph and the adaptor
-  Graph::Node   n1 = graph.addNode();
-  Graph::Node   n2 = graph.addNode();
+  Graph::Node n1 = graph.addNode();
+  Graph::Node n2 = graph.addNode();
   Adaptor::Node n3 = adaptor.addNode();
   Adaptor::Node n4 = adaptor.addNode();
 
   node_filter[n1] = node_filter[n2] = node_filter[n3] = node_filter[n4] = true;
 
-  Graph::Edge   e1 = graph.addEdge(n1, n2);
-  Graph::Edge   e2 = graph.addEdge(n1, n3);
+  Graph::Edge e1 = graph.addEdge(n1, n2);
+  Graph::Edge e2 = graph.addEdge(n1, n3);
   Adaptor::Edge e3 = adaptor.addEdge(n2, n3);
   Adaptor::Edge e4 = adaptor.addEdge(n3, n4);
 
@@ -965,8 +946,7 @@ void checkSubGraph() {
   // Hide an edge
   adaptor.status(e2, false);
   adaptor.disable(e3);
-  if (!adaptor.status(e3))
-    adaptor.enable(e3);
+  if (!adaptor.status(e3)) adaptor.enable(e3);
 
   checkGraphNodeList(adaptor, 4);
   checkGraphArcList(adaptor, 6);
@@ -990,8 +970,7 @@ void checkSubGraph() {
   // Hide a node
   adaptor.status(n1, false);
   adaptor.disable(n3);
-  if (!adaptor.status(n3))
-    adaptor.enable(n3);
+  if (!adaptor.status(n3)) adaptor.enable(n3);
 
   checkGraphNodeList(adaptor, 3);
   checkGraphArcList(adaptor, 4);
@@ -1032,13 +1011,13 @@ void checkSubGraph() {
   // Check the conversion of nodes and edges
   Graph::Node ng = n3;
   ::lemon::ignore_unused_variable_warning(ng);
-  ng               = n4;
+  ng = n4;
   Adaptor::Node na = n1;
   ::lemon::ignore_unused_variable_warning(na);
-  na             = n2;
+  na = n2;
   Graph::Edge eg = e3;
   ::lemon::ignore_unused_variable_warning(eg);
-  eg               = e4;
+  eg = e4;
   Adaptor::Edge ea = e1;
   ::lemon::ignore_unused_variable_warning(ea);
   ea = e2;
@@ -1046,32 +1025,36 @@ void checkSubGraph() {
 
 void checkFilterNodes2() {
   // Check concepts
-  checkConcept<concepts::Graph, FilterNodes<concepts::Graph>>();
-  checkConcept<concepts::Graph, FilterNodes<ListGraph>>();
-  checkConcept<concepts::AlterableGraphComponent<>, FilterNodes<ListGraph>>();
-  checkConcept<concepts::ExtendableGraphComponent<>, FilterNodes<ListGraph>>();
-  checkConcept<concepts::ErasableGraphComponent<>, FilterNodes<ListGraph>>();
-  checkConcept<concepts::ClearableGraphComponent<>, FilterNodes<ListGraph>>();
+  checkConcept<concepts::Graph, FilterNodes<concepts::Graph> >();
+  checkConcept<concepts::Graph, FilterNodes<ListGraph> >();
+  checkConcept<concepts::AlterableGraphComponent<>,
+               FilterNodes<ListGraph> >();
+  checkConcept<concepts::ExtendableGraphComponent<>,
+               FilterNodes<ListGraph> >();
+  checkConcept<concepts::ErasableGraphComponent<>,
+               FilterNodes<ListGraph> >();
+  checkConcept<concepts::ClearableGraphComponent<>,
+               FilterNodes<ListGraph> >();
 
   // Create a graph and an adaptor
-  typedef ListGraph                      Graph;
-  typedef Graph::NodeMap<bool>           NodeFilter;
+  typedef ListGraph Graph;
+  typedef Graph::NodeMap<bool> NodeFilter;
   typedef FilterNodes<Graph, NodeFilter> Adaptor;
 
   // Add nodes and edges to the original graph and the adaptor
-  Graph      graph;
+  Graph graph;
   NodeFilter node_filter(graph);
-  Adaptor    adaptor(graph, node_filter);
+  Adaptor adaptor(graph, node_filter);
 
-  Graph::Node   n1 = graph.addNode();
-  Graph::Node   n2 = graph.addNode();
+  Graph::Node n1 = graph.addNode();
+  Graph::Node n2 = graph.addNode();
   Adaptor::Node n3 = adaptor.addNode();
   Adaptor::Node n4 = adaptor.addNode();
 
   node_filter[n1] = node_filter[n2] = node_filter[n3] = node_filter[n4] = true;
 
-  Graph::Edge   e1 = graph.addEdge(n1, n2);
-  Graph::Edge   e2 = graph.addEdge(n1, n3);
+  Graph::Edge e1 = graph.addEdge(n1, n2);
+  Graph::Edge e2 = graph.addEdge(n1, n3);
   Adaptor::Edge e3 = adaptor.addEdge(n2, n3);
   Adaptor::Edge e4 = adaptor.addEdge(n3, n4);
 
@@ -1097,8 +1080,7 @@ void checkFilterNodes2() {
   // Hide a node
   adaptor.status(n1, false);
   adaptor.disable(n3);
-  if (!adaptor.status(n3))
-    adaptor.enable(n3);
+  if (!adaptor.status(n3)) adaptor.enable(n3);
 
   checkGraphNodeList(adaptor, 3);
   checkGraphArcList(adaptor, 4);
@@ -1138,13 +1120,13 @@ void checkFilterNodes2() {
   // Check the conversion of nodes and edges
   Graph::Node ng = n3;
   ::lemon::ignore_unused_variable_warning(ng);
-  ng               = n4;
+  ng = n4;
   Adaptor::Node na = n1;
   ::lemon::ignore_unused_variable_warning(na);
-  na             = n2;
+  na = n2;
   Graph::Edge eg = e3;
   ::lemon::ignore_unused_variable_warning(eg);
-  eg               = e4;
+  eg = e4;
   Adaptor::Edge ea = e1;
   ::lemon::ignore_unused_variable_warning(ea);
   ea = e2;
@@ -1152,30 +1134,34 @@ void checkFilterNodes2() {
 
 void checkFilterEdges() {
   // Check concepts
-  checkConcept<concepts::Graph, FilterEdges<concepts::Graph>>();
-  checkConcept<concepts::Graph, FilterEdges<ListGraph>>();
-  checkConcept<concepts::AlterableGraphComponent<>, FilterEdges<ListGraph>>();
-  checkConcept<concepts::ExtendableGraphComponent<>, FilterEdges<ListGraph>>();
-  checkConcept<concepts::ErasableGraphComponent<>, FilterEdges<ListGraph>>();
-  checkConcept<concepts::ClearableGraphComponent<>, FilterEdges<ListGraph>>();
+  checkConcept<concepts::Graph, FilterEdges<concepts::Graph> >();
+  checkConcept<concepts::Graph, FilterEdges<ListGraph> >();
+  checkConcept<concepts::AlterableGraphComponent<>,
+               FilterEdges<ListGraph> >();
+  checkConcept<concepts::ExtendableGraphComponent<>,
+               FilterEdges<ListGraph> >();
+  checkConcept<concepts::ErasableGraphComponent<>,
+               FilterEdges<ListGraph> >();
+  checkConcept<concepts::ClearableGraphComponent<>,
+               FilterEdges<ListGraph> >();
 
   // Create a graph and an adaptor
-  typedef ListGraph                      Graph;
-  typedef Graph::EdgeMap<bool>           EdgeFilter;
+  typedef ListGraph Graph;
+  typedef Graph::EdgeMap<bool> EdgeFilter;
   typedef FilterEdges<Graph, EdgeFilter> Adaptor;
 
-  Graph      graph;
+  Graph graph;
   EdgeFilter edge_filter(graph);
-  Adaptor    adaptor(graph, edge_filter);
+  Adaptor adaptor(graph, edge_filter);
 
   // Add nodes and edges to the original graph and the adaptor
-  Graph::Node   n1 = graph.addNode();
-  Graph::Node   n2 = graph.addNode();
+  Graph::Node n1 = graph.addNode();
+  Graph::Node n2 = graph.addNode();
   Adaptor::Node n3 = adaptor.addNode();
   Adaptor::Node n4 = adaptor.addNode();
 
-  Graph::Edge   e1 = graph.addEdge(n1, n2);
-  Graph::Edge   e2 = graph.addEdge(n1, n3);
+  Graph::Edge e1 = graph.addEdge(n1, n2);
+  Graph::Edge e2 = graph.addEdge(n1, n3);
   Adaptor::Edge e3 = adaptor.addEdge(n2, n3);
   Adaptor::Edge e4 = adaptor.addEdge(n3, n4);
 
@@ -1203,8 +1189,7 @@ void checkFilterEdges() {
   // Hide an edge
   adaptor.status(e2, false);
   adaptor.disable(e3);
-  if (!adaptor.status(e3))
-    adaptor.enable(e3);
+  if (!adaptor.status(e3)) adaptor.enable(e3);
 
   checkGraphNodeList(adaptor, 4);
   checkGraphArcList(adaptor, 6);
@@ -1245,13 +1230,13 @@ void checkFilterEdges() {
   // Check the conversion of nodes and edges
   Graph::Node ng = n3;
   ::lemon::ignore_unused_variable_warning(ng);
-  ng               = n4;
+  ng = n4;
   Adaptor::Node na = n1;
   ::lemon::ignore_unused_variable_warning(na);
-  na             = n2;
+  na = n2;
   Graph::Edge eg = e3;
   ::lemon::ignore_unused_variable_warning(eg);
-  eg               = e4;
+  eg = e4;
   Adaptor::Edge ea = e1;
   ::lemon::ignore_unused_variable_warning(ea);
   ea = e2;
@@ -1259,29 +1244,33 @@ void checkFilterEdges() {
 
 void checkOrienter() {
   // Check concepts
-  checkConcept<concepts::Digraph, Orienter<concepts::Graph>>();
-  checkConcept<concepts::Digraph, Orienter<ListGraph>>();
-  checkConcept<concepts::AlterableDigraphComponent<>, Orienter<ListGraph>>();
-  checkConcept<concepts::ExtendableDigraphComponent<>, Orienter<ListGraph>>();
-  checkConcept<concepts::ErasableDigraphComponent<>, Orienter<ListGraph>>();
-  checkConcept<concepts::ClearableDigraphComponent<>, Orienter<ListGraph>>();
+  checkConcept<concepts::Digraph, Orienter<concepts::Graph> >();
+  checkConcept<concepts::Digraph, Orienter<ListGraph> >();
+  checkConcept<concepts::AlterableDigraphComponent<>,
+               Orienter<ListGraph> >();
+  checkConcept<concepts::ExtendableDigraphComponent<>,
+               Orienter<ListGraph> >();
+  checkConcept<concepts::ErasableDigraphComponent<>,
+               Orienter<ListGraph> >();
+  checkConcept<concepts::ClearableDigraphComponent<>,
+               Orienter<ListGraph> >();
 
   // Create a graph and an adaptor
-  typedef ListGraph                Graph;
+  typedef ListGraph Graph;
   typedef ListGraph::EdgeMap<bool> DirMap;
-  typedef Orienter<Graph>          Adaptor;
+  typedef Orienter<Graph> Adaptor;
 
-  Graph   graph;
-  DirMap  dir(graph);
+  Graph graph;
+  DirMap dir(graph);
   Adaptor adaptor(graph, dir);
 
   // Add nodes and edges to the original graph and the adaptor
-  Graph::Node   n1 = graph.addNode();
-  Graph::Node   n2 = graph.addNode();
+  Graph::Node n1 = graph.addNode();
+  Graph::Node n2 = graph.addNode();
   Adaptor::Node n3 = adaptor.addNode();
 
-  Graph::Edge  e1 = graph.addEdge(n1, n2);
-  Graph::Edge  e2 = graph.addEdge(n1, n3);
+  Graph::Edge e1 = graph.addEdge(n1, n2);
+  Graph::Edge e2 = graph.addEdge(n1, n3);
   Adaptor::Arc e3 = adaptor.addArc(n2, n3);
 
   dir[e1] = dir[e2] = dir[e3] = true;
@@ -1326,41 +1315,41 @@ void checkOrienter() {
 
   // Check direction changing
   {
-    dir[e1]         = true;
+    dir[e1] = true;
     Adaptor::Node u = adaptor.source(e1);
     Adaptor::Node v = adaptor.target(e1);
 
     dir[e1] = false;
-    check(u == adaptor.target(e1), "Wrong dir");
-    check(v == adaptor.source(e1), "Wrong dir");
+    check (u == adaptor.target(e1), "Wrong dir");
+    check (v == adaptor.source(e1), "Wrong dir");
 
-    check((u == n1 && v == n2) || (u == n2 && v == n1), "Wrong dir");
+    check ((u == n1 && v == n2) || (u == n2 && v == n1), "Wrong dir");
     dir[e1] = n1 == u;
   }
 
   {
-    dir[e2]         = true;
+    dir[e2] = true;
     Adaptor::Node u = adaptor.source(e2);
     Adaptor::Node v = adaptor.target(e2);
 
     dir[e2] = false;
-    check(u == adaptor.target(e2), "Wrong dir");
-    check(v == adaptor.source(e2), "Wrong dir");
+    check (u == adaptor.target(e2), "Wrong dir");
+    check (v == adaptor.source(e2), "Wrong dir");
 
-    check((u == n1 && v == n3) || (u == n3 && v == n1), "Wrong dir");
+    check ((u == n1 && v == n3) || (u == n3 && v == n1), "Wrong dir");
     dir[e2] = n3 == u;
   }
 
   {
-    dir[e3]         = true;
+    dir[e3] = true;
     Adaptor::Node u = adaptor.source(e3);
     Adaptor::Node v = adaptor.target(e3);
 
     dir[e3] = false;
-    check(u == adaptor.target(e3), "Wrong dir");
-    check(v == adaptor.source(e3), "Wrong dir");
+    check (u == adaptor.target(e3), "Wrong dir");
+    check (v == adaptor.source(e3), "Wrong dir");
 
-    check((u == n2 && v == n3) || (u == n3 && v == n2), "Wrong dir");
+    check ((u == n2 && v == n3) || (u == n3 && v == n2), "Wrong dir");
     dir[e3] = n2 == u;
   }
 
@@ -1403,13 +1392,13 @@ void checkOrienter() {
   // Check the conversion of nodes and arcs/edges
   Graph::Node ng = n3;
   ::lemon::ignore_unused_variable_warning(ng);
-  ng               = n3;
+  ng = n3;
   Adaptor::Node na = n1;
   ::lemon::ignore_unused_variable_warning(na);
-  na             = n2;
+  na = n2;
   Graph::Edge eg = e3;
   ::lemon::ignore_unused_variable_warning(eg);
-  eg              = e3;
+  eg = e3;
   Adaptor::Arc aa = e1;
   ::lemon::ignore_unused_variable_warning(aa);
   aa = e2;
@@ -1417,28 +1406,29 @@ void checkOrienter() {
 
 void checkCombiningAdaptors() {
   // Create a grid graph
-  GridGraph       graph(2, 2);
-  GridGraph::Node n1 = graph(0, 0);
-  GridGraph::Node n2 = graph(0, 1);
-  GridGraph::Node n3 = graph(1, 0);
-  GridGraph::Node n4 = graph(1, 1);
+  GridGraph graph(2,2);
+  GridGraph::Node n1 = graph(0,0);
+  GridGraph::Node n2 = graph(0,1);
+  GridGraph::Node n3 = graph(1,0);
+  GridGraph::Node n4 = graph(1,1);
 
   GridGraph::EdgeMap<bool> dir_map(graph);
   dir_map[graph.right(n1)] = graph.u(graph.right(n1)) != n1;
-  dir_map[graph.up(n1)]    = graph.u(graph.up(n1)) == n1;
-  dir_map[graph.left(n4)]  = graph.u(graph.left(n4)) == n4;
-  dir_map[graph.down(n4)]  = graph.u(graph.down(n4)) == n4;
+  dir_map[graph.up(n1)] = graph.u(graph.up(n1)) == n1;
+  dir_map[graph.left(n4)] = graph.u(graph.left(n4)) == n4;
+  dir_map[graph.down(n4)] = graph.u(graph.down(n4)) == n4;
 
   // Apply several adaptors on the grid graph
-  typedef Orienter<const GridGraph, GridGraph::EdgeMap<bool>> OrientedGridGraph;
-  typedef SplitNodes<OrientedGridGraph>                       SplitGridGraph;
-  typedef Undirector<const SplitGridGraph>                    USplitGridGraph;
+  typedef Orienter< const GridGraph, GridGraph::EdgeMap<bool> >
+    OrientedGridGraph;
+  typedef SplitNodes<OrientedGridGraph> SplitGridGraph;
+  typedef Undirector<const SplitGridGraph> USplitGridGraph;
   checkConcept<concepts::Digraph, SplitGridGraph>();
   checkConcept<concepts::Graph, USplitGridGraph>();
 
   OrientedGridGraph oadaptor = orienter(graph, dir_map);
-  SplitGridGraph    adaptor  = splitNodes(oadaptor);
-  USplitGridGraph   uadaptor = undirector(adaptor);
+  SplitGridGraph adaptor = splitNodes(oadaptor);
+  USplitGridGraph uadaptor = undirector(adaptor);
 
   // Check adaptor
   checkGraphNodeList(adaptor, 8);
@@ -1494,7 +1484,7 @@ void checkCombiningAdaptors() {
   checkGraphIncEdgeArcLists(uadaptor, adaptor.outNode(n4), 3);
 }
 
-int main(int, const char**) {
+int main(int, const char **) {
   // Check the digraph adaptors (using ListDigraph)
   checkReverseDigraph();
   checkSubDigraph();

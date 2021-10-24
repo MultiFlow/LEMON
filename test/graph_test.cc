@@ -16,21 +16,20 @@
  *
  */
 
-#include "graph_test.h"
-
 #include <lemon/concepts/graph.h>
+#include <lemon/list_graph.h>
+#include <lemon/smart_graph.h>
 #include <lemon/full_graph.h>
 #include <lemon/grid_graph.h>
 #include <lemon/hypercube_graph.h>
-#include <lemon/list_graph.h>
-#include <lemon/smart_graph.h>
 
 #include "test_tools.h"
+#include "graph_test.h"
 
 using namespace lemon;
 using namespace lemon::concepts;
 
-template<class Graph>
+template <class Graph>
 void checkGraphBuild() {
   TEMPLATE_GRAPH_TYPEDEFS(Graph);
 
@@ -42,15 +41,17 @@ void checkGraphBuild() {
   G.reserveNode(3);
   G.reserveEdge(3);
 
-  Node n1 = G.addNode(), n2 = G.addNode(), n3 = G.addNode();
+  Node
+    n1 = G.addNode(),
+    n2 = G.addNode(),
+    n3 = G.addNode();
   checkGraphNodeList(G, 3);
   checkGraphEdgeList(G, 0);
   checkGraphArcList(G, 0);
 
   Edge e1 = G.addEdge(n1, n2);
-  check(
-      (G.u(e1) == n1 && G.v(e1) == n2) || (G.u(e1) == n2 && G.v(e1) == n1),
-      "Wrong edge");
+  check((G.u(e1) == n1 && G.v(e1) == n2) || (G.u(e1) == n2 && G.v(e1) == n1),
+        "Wrong edge");
 
   checkGraphNodeList(G, 3);
   checkGraphEdgeList(G, 1);
@@ -63,8 +64,9 @@ void checkGraphBuild() {
   checkGraphConEdgeList(G, 1);
   checkGraphConArcList(G, 2);
 
-  Edge e2 = G.addEdge(n2, n1), e3 = G.addEdge(n2, n3);
-  ::lemon::ignore_unused_variable_warning(e2, e3);
+  Edge e2 = G.addEdge(n2, n1),
+       e3 = G.addEdge(n2, n3);
+  ::lemon::ignore_unused_variable_warning(e2,e3);
 
   checkGraphNodeList(G, 3);
   checkGraphEdgeList(G, 3);
@@ -87,15 +89,17 @@ void checkGraphBuild() {
   checkGraphEdgeMap(G);
 }
 
-template<class Graph>
+template <class Graph>
 void checkGraphAlter() {
   TEMPLATE_GRAPH_TYPEDEFS(Graph);
 
   Graph G;
-  Node  n1 = G.addNode(), n2 = G.addNode(), n3 = G.addNode(), n4 = G.addNode();
-  Edge  e1 = G.addEdge(n1, n2), e2 = G.addEdge(n2, n1), e3 = G.addEdge(n2, n3),
-       e4 = G.addEdge(n1, n4), e5 = G.addEdge(n4, n3);
-  ::lemon::ignore_unused_variable_warning(e1, e3, e4, e5);
+  Node n1 = G.addNode(), n2 = G.addNode(),
+       n3 = G.addNode(), n4 = G.addNode();
+  Edge e1 = G.addEdge(n1, n2), e2 = G.addEdge(n2, n1),
+       e3 = G.addEdge(n2, n3), e4 = G.addEdge(n1, n4),
+       e5 = G.addEdge(n4, n3);
+  ::lemon::ignore_unused_variable_warning(e1,e3,e4,e5);
 
   checkGraphNodeList(G, 4);
   checkGraphEdgeList(G, 5);
@@ -165,15 +169,17 @@ void checkGraphAlter() {
   checkGraphConArcList(G, 6);
 }
 
-template<class Graph>
+template <class Graph>
 void checkGraphErase() {
   TEMPLATE_GRAPH_TYPEDEFS(Graph);
 
   Graph G;
-  Node  n1 = G.addNode(), n2 = G.addNode(), n3 = G.addNode(), n4 = G.addNode();
-  Edge  e1 = G.addEdge(n1, n2), e2 = G.addEdge(n2, n1), e3 = G.addEdge(n2, n3),
-       e4 = G.addEdge(n1, n4), e5 = G.addEdge(n4, n3);
-  ::lemon::ignore_unused_variable_warning(e1, e3, e4, e5);
+  Node n1 = G.addNode(), n2 = G.addNode(),
+       n3 = G.addNode(), n4 = G.addNode();
+  Edge e1 = G.addEdge(n1, n2), e2 = G.addEdge(n2, n1),
+       e3 = G.addEdge(n2, n3), e4 = G.addEdge(n1, n4),
+       e5 = G.addEdge(n4, n3);
+  ::lemon::ignore_unused_variable_warning(e1,e3,e4,e5);
 
   // Check edge deletion
   G.erase(e2);
@@ -205,14 +211,16 @@ void checkGraphErase() {
   checkGraphConArcList(G, 4);
 }
 
-template<class Graph>
+
+template <class Graph>
 void checkGraphSnapshot() {
   TEMPLATE_GRAPH_TYPEDEFS(Graph);
 
   Graph G;
-  Node  n1 = G.addNode(), n2 = G.addNode(), n3 = G.addNode();
-  Edge  e1 = G.addEdge(n1, n2), e2 = G.addEdge(n2, n1), e3 = G.addEdge(n2, n3);
-  ::lemon::ignore_unused_variable_warning(e1, e2, e3);
+  Node n1 = G.addNode(), n2 = G.addNode(), n3 = G.addNode();
+  Edge e1 = G.addEdge(n1, n2), e2 = G.addEdge(n2, n1),
+       e3 = G.addEdge(n2, n3);
+  ::lemon::ignore_unused_variable_warning(e1,e2,e3);
 
   checkGraphNodeList(G, 3);
   checkGraphEdgeList(G, 3);
@@ -275,10 +283,12 @@ void checkFullGraph(int num) {
   GRAPH_TYPEDEFS(Graph);
 
   Graph G(num);
-  check(G.nodeNum() == num && G.edgeNum() == num * (num - 1) / 2, "Wrong size");
+  check(G.nodeNum() == num && G.edgeNum() == num * (num - 1) / 2,
+        "Wrong size");
 
   G.resize(num);
-  check(G.nodeNum() == num && G.edgeNum() == num * (num - 1) / 2, "Wrong size");
+  check(G.nodeNum() == num && G.edgeNum() == num * (num - 1) / 2,
+        "Wrong size");
 
   checkGraphNodeList(G, num);
   checkGraphEdgeList(G, num * (num - 1) / 2);
@@ -301,6 +311,7 @@ void checkFullGraph(int num) {
   checkGraphArcMap(G);
   checkGraphEdgeMap(G);
 
+
   for (int i = 0; i < G.nodeNum(); ++i) {
     check(G.index(G(i)) == i, "Wrong index");
   }
@@ -308,14 +319,13 @@ void checkFullGraph(int num) {
   for (NodeIt u(G); u != INVALID; ++u) {
     for (NodeIt v(G); v != INVALID; ++v) {
       Edge e = G.edge(u, v);
-      Arc  a = G.arc(u, v);
+      Arc a = G.arc(u, v);
       if (u == v) {
         check(e == INVALID, "Wrong edge lookup");
         check(a == INVALID, "Wrong arc lookup");
       } else {
-        check(
-            (G.u(e) == u && G.v(e) == v) || (G.u(e) == v && G.v(e) == u),
-            "Wrong edge lookup");
+        check((G.u(e) == u && G.v(e) == v) ||
+              (G.u(e) == v && G.v(e) == u), "Wrong edge lookup");
         check(G.source(a) == u && G.target(a) == v, "Wrong arc lookup");
       }
     }
@@ -324,13 +334,16 @@ void checkFullGraph(int num) {
 
 void checkConcepts() {
   { // Checking graph components
-    checkConcept<BaseGraphComponent, BaseGraphComponent>();
+    checkConcept<BaseGraphComponent, BaseGraphComponent >();
 
-    checkConcept<IDableGraphComponent<>, IDableGraphComponent<>>();
+    checkConcept<IDableGraphComponent<>,
+      IDableGraphComponent<> >();
 
-    checkConcept<IterableGraphComponent<>, IterableGraphComponent<>>();
+    checkConcept<IterableGraphComponent<>,
+      IterableGraphComponent<> >();
 
-    checkConcept<MappableGraphComponent<>, MappableGraphComponent<>>();
+    checkConcept<MappableGraphComponent<>,
+      MappableGraphComponent<> >();
   }
   { // Checking skeleton graph
     checkConcept<Graph, Graph>();
@@ -359,14 +372,19 @@ void checkConcepts() {
   }
 }
 
-template<typename Graph>
+template <typename Graph>
 void checkGraphValidity() {
   TEMPLATE_GRAPH_TYPEDEFS(Graph);
   Graph g;
 
-  Node n1 = g.addNode(), n2 = g.addNode(), n3 = g.addNode();
+  Node
+    n1 = g.addNode(),
+    n2 = g.addNode(),
+    n3 = g.addNode();
 
-  Edge e1 = g.addEdge(n1, n2), e2 = g.addEdge(n2, n3);
+  Edge
+    e1 = g.addEdge(n1, n2),
+    e2 = g.addEdge(n2, n3);
   ::lemon::ignore_unused_variable_warning(e2);
 
   check(g.valid(n1), "Wrong validity check");
@@ -378,14 +396,19 @@ void checkGraphValidity() {
   check(!g.valid(g.arcFromId(-1)), "Wrong validity check");
 }
 
-template<typename Graph>
+template <typename Graph>
 void checkGraphValidityErase() {
   TEMPLATE_GRAPH_TYPEDEFS(Graph);
   Graph g;
 
-  Node n1 = g.addNode(), n2 = g.addNode(), n3 = g.addNode();
+  Node
+    n1 = g.addNode(),
+    n2 = g.addNode(),
+    n3 = g.addNode();
 
-  Edge e1 = g.addEdge(n1, n2), e2 = g.addEdge(n2, n3);
+  Edge
+    e1 = g.addEdge(n1, n2),
+    e2 = g.addEdge(n2, n3);
 
   check(g.valid(n1), "Wrong validity check");
   check(g.valid(e1), "Wrong validity check");
@@ -463,14 +486,10 @@ void checkGridGraph(int width, int height) {
 
   for (NodeIt n(G); n != INVALID; ++n) {
     int nb = 4;
-    if (G.col(n) == 0)
-      --nb;
-    if (G.col(n) == width - 1)
-      --nb;
-    if (G.row(n) == 0)
-      --nb;
-    if (G.row(n) == height - 1)
-      --nb;
+    if (G.col(n) == 0) --nb;
+    if (G.col(n) == width - 1) --nb;
+    if (G.row(n) == 0) --nb;
+    if (G.row(n) == height - 1) --nb;
 
     checkGraphOutArcList(G, n, nb);
     checkGraphInArcList(G, n, nb);
@@ -488,6 +507,7 @@ void checkGridGraph(int width, int height) {
   checkGraphNodeMap(G);
   checkGraphArcMap(G);
   checkGraphEdgeMap(G);
+
 }
 
 void checkHypercubeGraph(int dim) {
@@ -500,7 +520,7 @@ void checkHypercubeGraph(int dim) {
   check(G.dimension() == dim, "Wrong dimension");
 
   checkGraphNodeList(G, 1 << dim);
-  checkGraphEdgeList(G, dim * (1 << (dim - 1)));
+  checkGraphEdgeList(G, dim * (1 << (dim-1)));
   checkGraphArcList(G, dim * (1 << dim));
 
   Node n = G.nodeFromId(dim);
@@ -509,32 +529,30 @@ void checkHypercubeGraph(int dim) {
   for (NodeIt n(G); n != INVALID; ++n) {
     checkGraphIncEdgeList(G, n, dim);
     for (IncEdgeIt e(G, n); e != INVALID; ++e) {
-      check(
-          (G.u(e) == n && G.id(G.v(e)) == (G.id(n) ^ (1 << G.dimension(e)))) ||
-              (G.v(e) == n &&
-               G.id(G.u(e)) == (G.id(n) ^ (1 << G.dimension(e)))),
-          "Wrong edge or wrong dimension");
+      check( (G.u(e) == n &&
+              G.id(G.v(e)) == (G.id(n) ^ (1 << G.dimension(e)))) ||
+             (G.v(e) == n &&
+              G.id(G.u(e)) == (G.id(n) ^ (1 << G.dimension(e)))),
+             "Wrong edge or wrong dimension");
     }
 
     checkGraphOutArcList(G, n, dim);
     for (OutArcIt a(G, n); a != INVALID; ++a) {
-      check(
-          G.source(a) == n &&
-              G.id(G.target(a)) == (G.id(n) ^ (1 << G.dimension(a))),
-          "Wrong arc or wrong dimension");
+      check(G.source(a) == n &&
+            G.id(G.target(a)) == (G.id(n) ^ (1 << G.dimension(a))),
+            "Wrong arc or wrong dimension");
     }
 
     checkGraphInArcList(G, n, dim);
     for (InArcIt a(G, n); a != INVALID; ++a) {
-      check(
-          G.target(a) == n &&
-              G.id(G.source(a)) == (G.id(n) ^ (1 << G.dimension(a))),
-          "Wrong arc or wrong dimension");
+      check(G.target(a) == n &&
+            G.id(G.source(a)) == (G.id(n) ^ (1 << G.dimension(a))),
+            "Wrong arc or wrong dimension");
     }
   }
 
   checkGraphConArcList(G, (1 << dim) * dim);
-  checkGraphConEdgeList(G, dim * (1 << (dim - 1)));
+  checkGraphConEdgeList(G, dim * (1 << (dim-1)));
 
   checkArcDirections(G);
 

@@ -1,6 +1,11 @@
-include_directories(${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+)
 
-link_directories(${PROJECT_BINARY_DIR}/lemon)
+LINK_DIRECTORIES(
+  ${PROJECT_BINARY_DIR}/lemon
+)
 
 # Uncomment (and adjust) the following two lines. 'myprog' is the name
 # of the final executable ('.exe' will automatically be added to the
@@ -11,3 +16,4 @@ link_directories(${PROJECT_BINARY_DIR}/lemon)
 
 # ADD_EXECUTABLE(myprog myprog-main.cc)
 # TARGET_LINK_LIBRARIES(myprog lemon)
+

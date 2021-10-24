@@ -1,175 +1,160 @@
-set(TEST_WITH_VALGRIND
-    OFF
-    CACHE BOOL "Run the test with valgrind .")
-set(VALGRIND_FLAGS
-    ""
-    CACHE STRING "Valgrind flags used by the tests.")
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+)
 
-set(TESTS
-    adaptors_test
-    arc_look_up_test
-    bellman_ford_test
-    bfs_test
-    bpgraph_test
-    circulation_test
-    connectivity_test
-    counter_test
-    dfs_test
-    digraph_test
-    dijkstra_test
-    dim_test
-    edge_set_test
-    error_test
-    euler_test
-    fractional_matching_test
-    gomory_hu_test
-    graph_copy_test
-    graph_test
-    graph_utils_test
-    hao_orlin_test
-    heap_test
-    kruskal_test
-    lgf_reader_writer_test
-    lgf_test
-    maps_test
-    matching_test
-    max_cardinality_search_test
-    max_clique_test
-    max_flow_test
-    min_cost_arborescence_test
-    min_cost_flow_test
-    min_mean_cycle_test
-    multicommodity_flow_test
-    nagamochi_ibaraki_test
-    path_test
-    planarity_test
-    radix_sort_test
-    random_test
-    suurballe_test
-    time_measure_test
-    tsp_test
-    unionfind_test
-    vf2_test
+LINK_DIRECTORIES(
+  ${PROJECT_BINARY_DIR}/lemon
+)
+
+SET(TEST_WITH_VALGRIND "NO" CACHE STRING
+  "Run the test with valgrind (YES/NO).")
+SET(VALGRIND_FLAGS "" CACHE STRING "Valgrind flags used by the tests.")
+
+SET(TESTS
+  adaptors_test
+  arc_look_up_test
+  bellman_ford_test
+  bfs_test
+  bpgraph_test
+  circulation_test
+  connectivity_test
+  counter_test
+  dfs_test
+  digraph_test
+  dijkstra_test
+  dim_test
+  edge_set_test
+  error_test
+  euler_test
+  fractional_matching_test
+  gomory_hu_test
+  graph_copy_test
+  graph_test
+  graph_utils_test
+  hao_orlin_test
+  heap_test
+  kruskal_test
+  lgf_reader_writer_test
+  lgf_test
+  maps_test
+  matching_test
+  max_cardinality_search_test
+  max_clique_test
+  max_flow_test
+  min_cost_arborescence_test
+  min_cost_flow_test
+  min_mean_cycle_test
+  nagamochi_ibaraki_test
+  path_test
+  planarity_test
+  radix_sort_test
+  random_test
+  suurballe_test
+  time_measure_test
+  tsp_test
+  unionfind_test
+  vf2_test
+)
+
+IF(LEMON_HAVE_LP)
+  IF(${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+    ADD_EXECUTABLE(lp_test lp_test.cc)
+  ELSE()
+    ADD_EXECUTABLE(lp_test EXCLUDE_FROM_ALL lp_test.cc)
+  ENDIF()
+
+  SET(LP_TEST_LIBS lemon)
+
+  IF(LEMON_HAVE_GLPK)
+    SET(LP_TEST_LIBS ${LP_TEST_LIBS} ${GLPK_LIBRARIES})
+  ENDIF()
+  IF(LEMON_HAVE_CPLEX)
+    SET(LP_TEST_LIBS ${LP_TEST_LIBS} ${ILOG_LIBRARIES})
+  ENDIF()
+  IF(LEMON_HAVE_CLP)
+    SET(LP_TEST_LIBS ${LP_TEST_LIBS} ${COIN_CLP_LIBRARIES})
+  ENDIF()
+  IF(LEMON_HAVE_SOPLEX)
+    SET(LP_TEST_LIBS ${LP_TEST_LIBS} ${SOPLEX_LIBRARIES})
+  ENDIF()
+
+  TARGET_LINK_LIBRARIES(lp_test ${LP_TEST_LIBS})
+  ADD_TEST(lp_test lp_test)
+  ADD_DEPENDENCIES(check lp_test)
+
+  IF(WIN32 AND LEMON_HAVE_GLPK)
+    ADD_CUSTOM_COMMAND(TARGET lp_test POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy ${GLPK_BIN_DIR}/glpk.dll $<TARGET_FILE_DIR:lp_test>
+      COMMAND ${CMAKE_COMMAND} -E copy ${GLPK_BIN_DIR}/libltdl3.dll $<TARGET_FILE_DIR:lp_test>
+      COMMAND ${CMAKE_COMMAND} -E copy ${GLPK_BIN_DIR}/zlib1.dll $<TARGET_FILE_DIR:lp_test>
     )
+  ENDIF()
 
-if(LEMON_HAVE_LP)
-  if(${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
-    add_executable(lp_test lp_test.cc)
-  else()
-    add_executable(lp_test EXCLUDE_FROM_ALL lp_test.cc)
-  endif()
+  IF(WIN32 AND LEMON_HAVE_CPLEX)
+    GET_TARGET_PROPERTY(TARGET_LOC lp_test LOCATION)
+    GET_FILENAME_COMPONENT(TARGET_PATH ${TARGET_LOC} PATH)
+    ADD_CUSTOM_COMMAND(TARGET lp_test POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy ${ILOG_CPLEX_DLL} ${TARGET_PATH}
+    )
+  ENDIF()
+ENDIF()
 
-  set(LP_TEST_LIBS lemon)
+IF(LEMON_HAVE_MIP)
+  IF(${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+    ADD_EXECUTABLE(mip_test mip_test.cc)
+  ELSE()
+    ADD_EXECUTABLE(mip_test EXCLUDE_FROM_ALL mip_test.cc)
+  ENDIF()
 
-  if(LEMON_HAVE_GLPK)
-    set(LP_TEST_LIBS ${LP_TEST_LIBS} ${GLPK_LIBRARIES})
-  endif()
-  if(LEMON_HAVE_CPLEX)
-    set(LP_TEST_LIBS ${LP_TEST_LIBS} ${ILOG_LIBRARIES})
-  endif()
-  if(LEMON_HAVE_CLP)
-    set(LP_TEST_LIBS ${LP_TEST_LIBS} ${COIN_CLP_LIBRARIES})
-  endif()
-  if(LEMON_HAVE_SOPLEX)
-    set(LP_TEST_LIBS ${LP_TEST_LIBS} ${SOPLEX_LIBRARIES})
-  endif()
+  SET(MIP_TEST_LIBS lemon)
 
-  target_link_libraries(lp_test ${LP_TEST_LIBS})
-  add_test(lp_test lp_test)
-  add_dependencies(check lp_test)
+  IF(LEMON_HAVE_GLPK)
+    SET(MIP_TEST_LIBS ${MIP_TEST_LIBS} ${GLPK_LIBRARIES})
+  ENDIF()
+  IF(LEMON_HAVE_CPLEX)
+    SET(MIP_TEST_LIBS ${MIP_TEST_LIBS} ${ILOG_LIBRARIES})
+  ENDIF()
+  IF(LEMON_HAVE_CBC)
+    SET(MIP_TEST_LIBS ${MIP_TEST_LIBS} ${COIN_CBC_LIBRARIES})
+  ENDIF()
 
-  if(WIN32 AND LEMON_HAVE_GLPK)
-    get_target_property(TARGET_LOC lp_test LOCATION)
-    get_filename_component(TARGET_PATH ${TARGET_LOC} PATH)
-    add_custom_command(
-      TARGET lp_test
-      POST_BUILD
+  TARGET_LINK_LIBRARIES(mip_test ${MIP_TEST_LIBS})
+  ADD_TEST(mip_test mip_test)
+  ADD_DEPENDENCIES(check mip_test)
+
+  IF(WIN32 AND LEMON_HAVE_GLPK)
+    GET_TARGET_PROPERTY(TARGET_LOC mip_test LOCATION)
+    GET_FILENAME_COMPONENT(TARGET_PATH ${TARGET_LOC} PATH)
+    ADD_CUSTOM_COMMAND(TARGET mip_test POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy ${GLPK_BIN_DIR}/glpk.dll ${TARGET_PATH}
-      COMMAND ${CMAKE_COMMAND} -E copy ${GLPK_BIN_DIR}/libltdl3.dll
-              ${TARGET_PATH}
-      COMMAND ${CMAKE_COMMAND} -E copy ${GLPK_BIN_DIR}/zlib1.dll ${TARGET_PATH})
-  endif()
+      COMMAND ${CMAKE_COMMAND} -E copy ${GLPK_BIN_DIR}/libltdl3.dll ${TARGET_PATH}
+      COMMAND ${CMAKE_COMMAND} -E copy ${GLPK_BIN_DIR}/zlib1.dll ${TARGET_PATH}
+    )
+  ENDIF()
 
-  if(WIN32 AND LEMON_HAVE_CPLEX)
-    get_target_property(TARGET_LOC lp_test LOCATION)
-    get_filename_component(TARGET_PATH ${TARGET_LOC} PATH)
-    add_custom_command(
-      TARGET lp_test
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy ${ILOG_CPLEX_DLL} ${TARGET_PATH})
-  endif()
-endif()
+  IF(WIN32 AND LEMON_HAVE_CPLEX)
+    GET_TARGET_PROPERTY(TARGET_LOC mip_test LOCATION)
+    GET_FILENAME_COMPONENT(TARGET_PATH ${TARGET_LOC} PATH)
+    ADD_CUSTOM_COMMAND(TARGET mip_test POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy ${ILOG_CPLEX_DLL} ${TARGET_PATH}
+    )
+  ENDIF()
+ENDIF()
 
-if(LEMON_HAVE_MIP)
-  if(${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
-    add_executable(mip_test mip_test.cc)
-  else()
-    add_executable(mip_test EXCLUDE_FROM_ALL mip_test.cc)
-  endif()
-
-  set(MIP_TEST_LIBS lemon)
-
-  if(LEMON_HAVE_GLPK)
-    set(MIP_TEST_LIBS ${MIP_TEST_LIBS} ${GLPK_LIBRARIES})
-  endif()
-  if(LEMON_HAVE_CPLEX)
-    set(MIP_TEST_LIBS ${MIP_TEST_LIBS} ${ILOG_LIBRARIES})
-  endif()
-  if(LEMON_HAVE_CBC)
-    set(MIP_TEST_LIBS ${MIP_TEST_LIBS} ${COIN_CBC_LIBRARIES})
-  endif()
-
-  target_link_libraries(mip_test ${MIP_TEST_LIBS})
-  add_test(mip_test mip_test)
-  add_dependencies(check mip_test)
-
-  if(WIN32 AND LEMON_HAVE_GLPK)
-    get_target_property(TARGET_LOC mip_test LOCATION)
-    get_filename_component(TARGET_PATH ${TARGET_LOC} PATH)
-    add_custom_command(
-      TARGET mip_test
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy ${GLPK_BIN_DIR}/glpk.dll ${TARGET_PATH}
-      COMMAND ${CMAKE_COMMAND} -E copy ${GLPK_BIN_DIR}/libltdl3.dll
-              ${TARGET_PATH}
-      COMMAND ${CMAKE_COMMAND} -E copy ${GLPK_BIN_DIR}/zlib1.dll ${TARGET_PATH})
-  endif()
-
-  if(WIN32 AND LEMON_HAVE_CPLEX)
-    get_target_property(TARGET_LOC mip_test LOCATION)
-    get_filename_component(TARGET_PATH ${TARGET_LOC} PATH)
-    add_custom_command(
-      TARGET mip_test
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy ${ILOG_CPLEX_DLL} ${TARGET_PATH})
-  endif()
-endif()
-
-foreach(TEST_NAME ${TESTS})
-  add_executable(${TEST_NAME} ${TEST_NAME}.cc)
-  target_link_libraries(${TEST_NAME} LEMON::LEMON)
-  target_include_directories(
-    ${TEST_NAME}
-    PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
-           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-           $<INSTALL_INTERFACE:include/lemon>)
-
-  if(APPLE)
-    set_target_properties(
-      ${TEST_NAME} PROPERTIES INSTALL_RPATH
-                              "@loader_path/../${CMAKE_INSTALL_LIBDIR}")
-  elseif(UNIX AND NOT APPLE)
-    set_target_properties(
-      ${TEST_NAME} PROPERTIES INSTALL_RPATH
-                              "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
-  endif()
-
-  if(TEST_WITH_VALGRIND)
-    add_test(${TEST_NAME} valgrind --error-exitcode=1 ${VALGRIND_FLAGS}
-             ${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME})
-  else()
-    add_test(${TEST_NAME} ${TEST_NAME})
-  endif()
-  # add_dependencies(check ${TEST_NAME})
-endforeach()
+FOREACH(TEST_NAME ${TESTS})
+  IF(${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+    ADD_EXECUTABLE(${TEST_NAME} ${TEST_NAME}.cc)
+  ELSE()
+    ADD_EXECUTABLE(${TEST_NAME} EXCLUDE_FROM_ALL ${TEST_NAME}.cc)
+  ENDIF()
+  TARGET_LINK_LIBRARIES(${TEST_NAME} lemon)
+    IF(TEST_WITH_VALGRIND)
+      ADD_TEST(${TEST_NAME}
+        valgrind --error-exitcode=1 ${VALGRIND_FLAGS}
+        ${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME} )
+    ELSE()
+      ADD_TEST(${TEST_NAME} ${TEST_NAME})
+    ENDIF()
+  ADD_DEPENDENCIES(check ${TEST_NAME})
+ENDFOREACH()

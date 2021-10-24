@@ -1,0 +1,18 @@
+name: Windows MSVC
+
+on: [push, pull_request]
+
+jobs:
+  # Building using the github runner environement directly.
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v2
+    - uses: komiya-atsushi/action-enforce-timeout-minutes@v1.0.0
+    - name: Check cmake
+      run: cmake --version
+    - name: Configure
+      run: cmake -S. -Bbuild -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Maintainer -DBUILD_TESTING=ON
+    - name: Build and test
+      run: cmake --build build --config Maintainer --target ALL_BUILD -- /verbosity:normal /maxcpucount
