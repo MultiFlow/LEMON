@@ -425,6 +425,7 @@ class ApproxMCF {
   void check() {
     LEMON_ASSERT(_tol.positive(_epsilon), "Epsilon must be greater than 0");
 
+    // Remove commodities with source = sink or unreachable
     for (int i = 0; i < _num_commodities; ++i) {
       if (_source[i] == _target[i] ||
           !bfs(_graph).run(_source[i], _target[i])) {
@@ -434,21 +435,21 @@ class ApproxMCF {
       }
     }
 
-    LEMON_ASSERT(_tol.positive(_num_commodities), "No commodities");
-
     const int& s_size = _source.size();
     const int& t_size = _target.size();
     const int& d_size = _demand.size();
 
     switch (_approx_type) {
-      case FLEISCHER_MAX:
+      case FLEISCHER_MAX: {
+        LEMON_ASSERT(_tol.positive(_num_commodities), "No commodities");
         // Check consistency of vector sizes
         LEMON_ASSERT(
             (_num_commodities == s_size && s_size == t_size &&
              !_tol.positive(d_size)),
-            "All vectors should be of size equal to the number of commodities. "
-            "No demand.");
+            "All vectors should be of size equal to the number of commodities, "
+            "and have no demand.");
         break;
+      }
       case FLEISCHER_MAX_CONCURRENT:
       case BINARY_SEARCH_MIN_COST: {
         // Check consistency of vector sizes
@@ -456,6 +457,15 @@ class ApproxMCF {
             (_num_commodities == s_size && s_size == t_size &&
              s_size == d_size),
             "All vectors should be of size equal to the number of commodities");
+        // Remove commodities with 0 demand.
+        for (int i = 0; i < _num_commodities; ++i) {
+          if (!_tol.positive(_demand[i])) {
+            _source[i] = _source[_num_commodities - 1];
+            _target[i] = _target[_num_commodities - 1];
+            --_num_commodities;
+          }
+        }
+        LEMON_ASSERT(_tol.positive(_num_commodities), "No commodities");
 
         // Check if feasible routing of demand exists for each commodity
         for (int i = 0; i < _num_commodities; ++i) {
@@ -622,9 +632,14 @@ class ApproxMCF {
     }
   }
 
-  // Randomised rounding
-  // Currently,
-  void randomisedRounding(const bool& random = false) {
+  // Randomised rounding - if flow is split over multiple paths, randomised
+  // rounding randomly rounds up the largest proportion of flow/cost.
+  //
+  // Only runs if flow can be routed without splitting.
+  // If costs are given, to make expensive paths less likely to occur, we use,
+  // for each path j a value[j] = flow / cost for the discrete distribution.
+  // This distribution samples path j with a probability value[j] / sum values
+  void randomisedRounding() {
     // Only works if flow can be routed without splitting.
     if (!_feasible_unsplit)
       return;
@@ -632,37 +647,54 @@ class ApproxMCF {
       const int&             p_size       = static_cast<int>(_paths[i].size());
       LargeCost              total_flow_i = 0;
       std::vector<LargeCost> values(p_size, 0);
+
       for (int j = 0; j < p_size; ++j) {
-        const LargeCost& val = _paths[i][j].value;
+        const LargeCost &val = _paths[i][j].value, cost = _paths[i][j].cost;
         total_flow_i += val;
         values[j] = val;
+        if (_tol.positive(cost))
+          values[j] /= cost;
       }
       // Get random index wrt values[j] / sum of values
-      int chosen_p_idx;
-      if (random) {
-        std::random_device           rd;
-        std::mt19937                 gen(rd());
-        std::discrete_distribution<> d(values.begin(), values.end());
-        chosen_p_idx = d(gen);
-      } else {
-        for (int j = 0; j < p_size; ++j)
-          values[j] /= total_flow_i;
-        auto iter    = std::max_element(values.cbegin(), values.cend());
-        chosen_p_idx = std::distance(values.cbegin(), iter);
+      int                          chosen_p_idx;
+      std::random_device           rd;
+      std::mt19937                 gen(rd());
+      std::discrete_distribution<> d(values.begin(), values.end());
+      chosen_p_idx = d(gen);
+      // Check routing all demand through chosen_p_idx remains capacity feasible
+      bool capacity_feasible = true;
+      // cost is all demand routed through here
+      for (PathArcIt a(_paths[i][chosen_p_idx].path); a != INVALID; ++a) {
+        if (_total_flow[a] - _paths[i][chosen_p_idx].value + _demand[i] >
+            _cap[a]) {
+          capacity_feasible = false;
+          break;
+        }
       }
-      for (int j = 0; j < p_size; ++j) {
-        if (j != chosen_p_idx)
-          _paths[i][j].value = 0;
-        else
-          _paths[i][j].value = _demand[i];
+      if (capacity_feasible) {
+        for (int j = 0; j < p_size; ++j) {
+          // Update total flows and path flow
+          if (j == chosen_p_idx) {  // path j routes demand
+            for (PathArcIt a(_paths[i][j].path); a != INVALID; ++a) {
+              _total_flow[a] = _total_flow[a] - _paths[i][j].value + _demand[i];
+            }
+            _paths[i][j].value = _demand[i];
+          } else {  // path j flow is 0
+            for (PathArcIt a(_paths[i][j].path); a != INVALID; ++a) {
+              _total_flow[a] = _total_flow[a] - _paths[i][j].value;
+            }
+            _paths[i][j].value = 0;
+          }
+        }
       }
     }
   }
 
-  // Heuristic improvement 1: improve the solution along one of the
-  // found paths if it is possible
+  // Heuristic improvement 1 (for FLEISCHER_MAX only).
+  //
+  // Attempts to improve the solution along one of the found paths if it is
+  // possible
   void runHeurMax1() {
-    int opi = 0;
     for (int i = 0; i < _num_commodities; ++i) {
       for (int j = 0; j < static_cast<int>(_paths[i].size()); ++j) {
         Value d = std::numeric_limits<Value>::infinity();
@@ -673,16 +705,16 @@ class ApproxMCF {
           _paths[i][j].value += d;
           for (PathArcIt a(_paths[i][j].path); a != INVALID; ++a)
             _total_flow[a] += d;
-          ++opi;
         }
       }
     }
   }
 
-  // Heuristic improvement 2: improve the solution along new paths
-  // if it is possible
+  // Heuristic improvement 2 (for FLEISCHER_MAX only).
+  //
+  // Attempts to improve the solution along one of the found paths if it is
+  // possible
   void runHeurMax2() {
-    int        npi = 0;
     BoolArcMap filter(_graph);
     for (ArcIt a(_graph); a != INVALID; ++a)
       filter[a] = _tol.positive(_cap[a] - _total_flow[a]);
@@ -699,7 +731,6 @@ class ApproxMCF {
           _total_flow[a] += d;
           filter[a] = _tol.positive(_cap[a] - _total_flow[a]);
         }
-        ++npi;
       }
     }
   }
@@ -725,8 +756,7 @@ class ApproxMCF {
     }
     const bool path_seen = !(j == static_cast<int>(_paths[i].size()));
     // Set/modify the flow value for the found path
-    Value routed_flow = 0;
-    Value min_cap;
+    Value routed_flow = 0, min_cap;
     if (path_seen) {
       // Reuse info
       min_cap     = _paths[i][j].min_cap;
@@ -757,6 +787,7 @@ class ApproxMCF {
       _len[a] *= 1 + _epsilon * f / _cap[a] + (*_cost[i])[a] * _phi;
       path_cost += (*_cost[i])[a];
     }
+    // Update phi if needed
     if (_tol.positive(_phi))
       _phi *= (1 + (_epsilon * path_cost * f) / _cost_bound);
   }
@@ -777,8 +808,8 @@ class ApproxMCF {
     }
   }
 
-  // In the Max concurrent algorithm flows are scaled by the number of
-  // iterations.
+  // Scale flows in the \ref FLEISCHER_MAX_CONCURRENT.
+  // Flows are scaled by the number of iterations.
   void scaleFinalFlowsMaxConcurrent() {
     int scaler = _iter;
     for (int i = 0; i < _num_commodities; ++i) {
@@ -824,6 +855,7 @@ class ApproxMCF {
     }
   }
 
+  // Set flow decomposed solution for exposure
   void setFlowPerCommodity() {
     // Setting flow values using saved paths
     for (int i = 0; i < _num_commodities; ++i) {
@@ -853,7 +885,7 @@ class ApproxMCF {
   const LargeCost& getDualObjective() const { return _dual_obj; }
 
   const LargeCost& getTotalCost() const { return _total_cost; }
-};  // class ApproxMCF
+};  // namespace lemon
 /// @}
 
 }  // namespace lemon

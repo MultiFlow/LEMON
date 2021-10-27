@@ -476,4 +476,4 @@ ArgParser& ArgParser::parse() {
   return *this;
 }
 
-} // namespace lemon
+}  // namespace lemon

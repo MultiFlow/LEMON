@@ -34,6 +34,7 @@ project(
 # add_subdirectory(path-to-lemon)
 
 # Option 3. (works with updated repo)
+# include(FetchContent)
 # find_package(Hg)
 # if(HG_FOUND)
 #   FetchContent_Declare(
@@ -42,6 +43,7 @@ project(
 #     )
 # else()
 #   FetchContent_Declare(
+#     LEMON
 #     SOURCE_DIR "path-to-lemon-src")
 # endif()
 # FetchContent_MakeAvailable(LEMON)

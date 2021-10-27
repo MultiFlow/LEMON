@@ -47,9 +47,9 @@ class ArgParserException : public Exception {
   /// Reasons for failure.
   ///
   enum Reason {
-    HELP,        ///< <tt>--help</tt> option was given.
-    UNKNOWN_OPT, ///< Unknown option was given.
-    INVALID_OPT  ///< Invalid combination of options.
+    HELP,         ///< <tt>--help</tt> option was given.
+    UNKNOWN_OPT,  ///< Unknown option was given.
+    INVALID_OPT   ///< Invalid combination of options.
   };
 
  private:
@@ -448,6 +448,6 @@ class ArgParser {
   /// Throw instead of exit in case of problems
   void throwOnProblems() { _exit_on_problems = false; }
 };
-} // namespace lemon
+}  // namespace lemon
 
-#endif // LEMON_ARG_PARSER_H
+#endif  // LEMON_ARG_PARSER_H

@@ -35,11 +35,12 @@ char test_lgf[] =
     "2\n"
     "3\n"
     "@arcs\n"
-    "    label  cap   cost  solution_1  solution_2\n"
-    "0 1   0    10.0  1.0      10.0        0.0\n"
-    "0 2   1    10.0  1.0       0.0        10.0\n"
-    "1 3   2    10.0  1.0      10.0        0.0\n"
-    "2 3   3    10.0  1000.0   0.0         0.0\n"
+    "    label  cap   cost  solution_1  solution_2 solution_1_max  "
+    "solution_2_max\n"
+    "0 1   0    10.0  1.0      10.0        0.0         10.0    0.0\n"
+    "0 2   1    10.0  1.0       0.0        10.0        8.3     1.7\n"
+    "1 3   2    10.0  1.0      10.0        0.0         10.0    0.0\n"
+    "2 3   3    10.0  1000.0   0.0         0.0         8.3     0.0\n"
     "@attributes\n"
     "source_1 0\n"
     "target_1 3\n"
@@ -63,8 +64,11 @@ void checkApproxMCF() {
   Node                                                       s1, t1, s2, t2;
   typedef typename Digraph::template ArcMap<double>          DoubleMap;
   typedef typename ApproxMCF<Digraph>::Traits::LargeCostMap* LargeCostMapPtr;
-  DoubleMap cap(graph), cost(graph), sol1(graph), sol2(graph);
-  int       number_commodities = 2;
+  DoubleMap cap(graph), cost(graph), sol1(graph), sol2(graph), sol1_max(graph),
+      sol2_max(graph);
+  int               number_commodities = 2;
+  Tolerance<double> tol;
+  tol.epsilon(1e-1);  // 1 decimal place
 
   std::istringstream input(test_lgf);
   DigraphReader<Digraph>(graph, input)
@@ -72,16 +76,34 @@ void checkApproxMCF() {
       .arcMap("cost", cost)
       .arcMap("solution_1", sol1)  // flow in the solution for commodity 1
       .arcMap("solution_2", sol2)  // flow in the solution for commodity 1
-      .node("source_1", s1)        // source node commodity 1
-      .node("target_1", t1)        // target node commodity 1
-      .node("source_2", s2)        // source node commodity 2
-      .node("target_2", t2)        // target node commodity 2
+      .arcMap(
+          "solution_1_max",
+          sol1_max)  // flow in the solution for commodity (max-flow) 1
+      .arcMap(
+          "solution_2_max",
+          sol2_max)          // flow in the solution for commodity (max-flow) 1
+      .node("source_1", s1)  // source node commodity 1
+      .node("target_1", t1)  // target node commodity 1
+      .node("source_2", s2)  // source node commodity 2
+      .node("target_2", t2)  // target node commodity 2
       .run();
 
   // Max
   {
     ApproxMCF<Digraph> max(graph, cap);
     max.addCommodities(number_commodities, {s1, s2}, {t1, t2}).run();
+    for (ArcIt e(graph); e != INVALID; ++e) {
+      const std::string test_name =
+          "[FLEISCHER_MAX] flow on " + getEdgeName<Digraph>(graph, e);
+      // Check flow for commodity 1 (index 0) to 1 decimal place
+      check(
+          !tol.different(max.flow(0, e), sol1_max[e]),
+          test_name + " commodity 1");
+      // Check flow for commodity 2 (index 1) to 1 decimal place
+      check(
+          !tol.different(max.flow(1, e), sol2_max[e]),
+          test_name + " commodity 2");
+    }
   }
 
   // Max Concurrent
@@ -90,7 +112,8 @@ void checkApproxMCF() {
     max.addCommodities(number_commodities, {s1, s2}, {t1, t2}, {10.0, 10.0});
     max.run(ApproxMCF<Digraph>::FLEISCHER_MAX_CONCURRENT);
     for (ArcIt e(graph); e != INVALID; ++e) {
-      const std::string test_name = "flow on " + getEdgeName<Digraph>(graph, e);
+      const std::string test_name = "[FLEISCHER_MAX_CONCURRENT] flow on " +
+                                    getEdgeName<Digraph>(graph, e);
       // Check commodity 1 (index 0)
       check(max.flow(0, e) == sol1[e], test_name + " commodity 1");
       // Check commodity 2 (index 1)
@@ -105,7 +128,8 @@ void checkApproxMCF() {
         .addCommodity(s2, t2, 10.0, cost)
         .run(ApproxMCF<Digraph>::BINARY_SEARCH_MIN_COST);
     for (ArcIt e(graph); e != INVALID; ++e) {
-      const std::string test_name = "flow on " + getEdgeName<Digraph>(graph, e);
+      const std::string test_name =
+          "[BINARY_SEARCH_MIN_COST] flow on " + getEdgeName<Digraph>(graph, e);
       // Check commodity 1 (index 0)
       check(max.flow(0, e) == sol1[e], test_name + " commodity 1");
       // Check commodity 2 (index 1)
@@ -129,13 +153,15 @@ void checkApproxMCF() {
            number_commodities, {s1, s2}, {t1, t2}, {10.0, 10.0}, cost_vector)
         .run(ApproxMCF<Digraph>::BINARY_SEARCH_MIN_COST);
     for (ArcIt e(graph); e != INVALID; ++e) {
-      const std::string test_name = "flow on " + getEdgeName<Digraph>(graph, e);
+      const std::string test_name =
+          "[BINARY_SEARCH_MIN_COST cost-vector] flow on " +
+          getEdgeName<Digraph>(graph, e);
       // Check commodity 1 (index 0)
       check(max.flow(0, e) == sol1[e], test_name + " commodity 1");
       // Check commodity 2 (index 1)
       check(max.flow(1, e) == sol2[e], test_name + " commodity 2");
     }
-    check(max.getTotalCost() == 30.0, "min-cost failed");
+    check(max.getTotalCost() == 30.0, "min-cost (cost-vector) failed");
   }
 
   // Max Concurrent - 3 commodities
@@ -145,7 +171,9 @@ void checkApproxMCF() {
         .addCommodity(s1, t2, 10.0, cost)
         .addCommodity(s1, t1, 5.0, cost)
         .run(ApproxMCF<Digraph>::FLEISCHER_MAX_CONCURRENT);
-    check(max.getTotalCost() == 30.0, "min-cost failed");
+    check(
+        max.getTotalCost() == 30.0,
+        "3 commodities FLEISCHER_MAX_CONCURRENT failed");
   }
 }
 
@@ -180,7 +208,8 @@ void checkApproxMCFDisconnected() {
     ApproxMCF<Digraph> max(graph, cap);
     max.addCommodities(2, {n0, n2}, {n1, n3}).run();
     for (ArcIt e(graph); e != INVALID; ++e) {
-      const std::string test_name = "flow on " + getEdgeName<Digraph>(graph, e);
+      const std::string test_name =
+          "[FLEISCHER_MAX] flow on " + getEdgeName<Digraph>(graph, e);
       // Check commodity 1
       check(max.flow(0, e) == sol1[e], test_name + " commodity 1");
       // Check commodity 2
@@ -194,7 +223,8 @@ void checkApproxMCFDisconnected() {
         .addCommodity(n2, n3, 10.0, cost)
         .run(ApproxMCF<Digraph>::FLEISCHER_MAX_CONCURRENT);
     for (ArcIt e(graph); e != INVALID; ++e) {
-      const std::string test_name = "flow on " + getEdgeName<Digraph>(graph, e);
+      const std::string test_name = "[FLEISCHER_MAX_CONCURRENT] flow on " +
+                                    getEdgeName<Digraph>(graph, e);
       // Check commodity 1
       check(max.flow(0, e) == sol1[e], test_name + " commodity 1");
       // Check commodity 2
