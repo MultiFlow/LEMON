@@ -649,7 +649,8 @@ class ApproxMCF {
       std::vector<LargeCost> values(p_size, 0);
 
       for (int j = 0; j < p_size; ++j) {
-        const LargeCost &val = _paths[i][j].value, cost = _paths[i][j].cost;
+        const LargeCost& val  = _paths[i][j].value;
+        const LargeCost& cost = _paths[i][j].cost;
         total_flow_i += val;
         values[j] = val;
         if (_tol.positive(cost))

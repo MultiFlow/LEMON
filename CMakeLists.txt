@@ -22,10 +22,49 @@ files in the cmake directory.
 cmake_minimum_required(VERSION 3.15)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-project(
-  LEMON
-  VERSION 1.4.0
-  LANGUAGES CXX C)
+project(LEMON LANGUAGES CXX C)
+
+# Get version
+find_package(Hg)
+if(EXISTS ${PROJECT_SOURCE_DIR}/cmake/LEMONVersion.cmake)
+  include(${PROJECT_SOURCE_DIR}/cmake/LEMONVersion.cmake)
+elseif(DEFINED ENV{LEMON_VERSION})
+  set(LEMON_VERSION
+      $ENV{LEMON_VERSION}
+      CACHE STRING "LEMON version string.")
+elseif(HG_FOUND)
+  execute_process(
+    COMMAND hg log -r. --template "{latesttag}"
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    OUTPUT_VARIABLE HG_REVISION_TAG
+    ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(
+    COMMAND hg log -r. --template "{latesttagdistance}"
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    OUTPUT_VARIABLE HG_REVISION_DIST
+    ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(
+    COMMAND hg log -r. --template "{node|short}"
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    OUTPUT_VARIABLE HG_REVISION_ID
+    ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(HG_REVISION_TAG STREQUAL "")
+    set(HG_REVISION_ID "hg-tip")
+  else()
+    if(HG_REVISION_TAG STREQUAL "null")
+      set(HG_REVISION_TAG "trunk")
+    elseif(HG_REVISION_TAG MATCHES "^r")
+      string(SUBSTRING ${HG_REVISION_TAG} 1 -1 HG_REVISION_TAG)
+    endif()
+    if(HG_REVISION_DIST STREQUAL "0")
+      set(HG_REVISION ${HG_REVISION_TAG})
+    else()
+      set(HG_REVISION
+          "${HG_REVISION_TAG}+${HG_REVISION_DIST}-${HG_REVISION_ID}")
+    endif()
+  endif()
+  set(LEMON_VERSION ${HG_REVISION})
+endif()
 
 # OS
 if(WIN32)
@@ -40,22 +79,16 @@ option(LEMON_ENABLE_ILOG "Enable ILOG (CPLEX) solver backend." OFF)
 option(LEMON_ENABLE_COIN "Enable COIN solver backend." OFF)
 option(LEMON_ENABLE_SOPLEX "Enable SoPlex solver backend." OFF)
 
-# Maintainer only options
+# Building
+option(LEMON_MAINTAINER "Enable Maintainer options." OFF)
+option(LEMON_BUILD_TESTING "" ON)
 option(LEMON_BUILD_DOCS "" OFF)
 option(LEMON_BUILD_TOOLS "" OFF)
 option(LEMON_BUILD_DEMO "" OFF)
 option(LEMON_BUILD_ARCHIVE "Enable to create archive" OFF)
 option(LEMON_BUILD_CPACK "Enable to create cpack" OFF)
-option(LEMON_TEST_WITH_VALGRIND "Run the test wit valgrind" OFF)
+option(LEMON_TEST_WITH_VALGRIND "Run the tests with valgrind" OFF)
 option(LEMON_ENABLE_DEBUG "Display debug messages" OFF)
-
-if(CMAKE_CONFIGURATION_TYPES)
-  list(APPEND CMAKE_CONFIGURATION_TYPES Maintainer)
-  list(REMOVE_DUPLICATES CMAKE_CONFIGURATION_TYPES)
-  set(CMAKE_CONFIGURATION_TYPES
-      "${CMAKE_CONFIGURATION_TYPES}"
-      CACHE STRING "Add the configurations that we need" FORCE)
-endif()
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
@@ -65,7 +98,7 @@ set(CMAKE_BUILD_TYPE
     "${CMAKE_BUILD_TYPE}"
     CACHE
       STRING
-      "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel Maintainer."
+      "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
       FORCE)
 
 enable_testing()
@@ -73,26 +106,32 @@ enable_testing()
 # Add LEMON::LEMON target
 include(base)
 
-if(BUILD_TESTING AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+if(LEMON_MAINTAINER)
+  add_custom_target(check ALL COMMAND ${CMAKE_CTEST_COMMAND})
+else()
+  add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
+endif()
+
+if(LEMON_BUILD_TESTING)
   add_subdirectory(test)
 endif()
 
-if(LEMON_BUILD_TOOLS AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+if(LEMON_BUILD_TOOLS)
   add_subdirectory(tools)
 endif()
 
-if(LEMON_BUILD_DOCS AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+if(LEMON_BUILD_DOCS)
   add_subdirectory(doc)
 endif()
 
-if(LEMON_BUILD_DEMO AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+if(LEMON_BUILD_DEMO)
   add_subdirectory(demo)
 endif()
 
-if(LEMON_BUILD_ARCHIVE AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+if(LEMON_BUILD_ARCHIVE)
   include(archive)
 endif()
 
-if(LEMON_BUILD_CPACK AND ${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+if(LEMON_BUILD_CPACK)
   include(cpack)
 endif()

@@ -72,7 +72,7 @@ set(TESTS
     vf2_test)
 
 if(LEMON_HAVE_LP)
-  if(${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+  if(LEMON_MAINTAINER)
     add_executable(lp_test lp_test.cc)
   else()
     add_executable(lp_test EXCLUDE_FROM_ALL lp_test.cc)
@@ -120,7 +120,7 @@ if(LEMON_HAVE_LP)
 endif()
 
 if(LEMON_HAVE_MIP)
-  if(${CMAKE_BUILD_TYPE} STREQUAL "Maintainer")
+  if(LEMON_MAINTAINER)
     add_executable(mip_test mip_test.cc)
   else()
     add_executable(mip_test EXCLUDE_FROM_ALL mip_test.cc)
@@ -140,7 +140,7 @@ if(LEMON_HAVE_MIP)
 
   target_link_libraries(mip_test ${MIP_TEST_LIBS})
   add_test(mip_test mip_test)
-  # add_dependencies(check mip_test)
+  add_dependencies(check mip_test)
 
   if(WIN32 AND LEMON_HAVE_GLPK)
     get_target_property(TARGET_LOC mip_test LOCATION)
@@ -174,8 +174,7 @@ foreach(TEST_NAME ${TESTS})
            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
            $<INSTALL_INTERFACE:include/lemon>)
-
-  # Inherit lemon target properties
+  # Inherit lemon target properties (flags, cxx standard)
   if(APPLE)
     set_target_properties(
       ${TEST_NAME} PROPERTIES INSTALL_RPATH
@@ -192,5 +191,5 @@ foreach(TEST_NAME ${TESTS})
   else()
     add_test(${TEST_NAME} ${TEST_NAME})
   endif()
-  # add_dependencies(check ${TEST_NAME})
+  add_dependencies(check ${TEST_NAME})
 endforeach()
