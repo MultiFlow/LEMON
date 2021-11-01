@@ -13,10 +13,10 @@ jobs:
     - name: Check cmake
       run: cmake --version
     - name: Configure
-      run: cmake -S. -Bbuild -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Maintainer -DBUILD_TESTING=ON
+      run: cmake -S. -Bbuild -G "Visual Studio 16 2019" 
     - name: Build
-      run: cmake --build build --config Maintainer --target ALL_BUILD -- /verbosity:normal /maxcpucount
+      run: cmake --build build --config Release --target ALL_BUILD -- /verbosity:normal /maxcpucount
     - name: Test
-      run: cmake --build build --config Maintainer --target RUN_TESTS -- /verbosity:normal /maxcpucount
+      run: cmake --build build --config Release --target RUN_TESTS -- /verbosity:normal /maxcpucount
     - name: Install
-      run: cmake --build build --config Maintainer --target INSTALL -- /verbosity:normal /maxcpucount
+      run: cmake --build build --config Release --target INSTALL -- /verbosity:normal /maxcpucount

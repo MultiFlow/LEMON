@@ -13,8 +13,8 @@ jobs:
     - name: Check cmake
       run: cmake --version
     - name: Configure
-      run: cmake -S. -Bbuild -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Maintainer -DBUILD_TESTING=ON
+      run: cmake -S. -Bbuild -G "MinGW Makefiles"
     - name: Build
-      run: cmake --build build --config Maintainer --target all -v
+      run: cmake --build build --config Release --target all -v
     - name: Test
       run: cd build && ctest --verbose

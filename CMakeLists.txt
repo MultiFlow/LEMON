@@ -79,12 +79,12 @@ option(LEMON_ENABLE_ILOG "Enable ILOG (CPLEX) solver backend." OFF)
 option(LEMON_ENABLE_COIN "Enable COIN solver backend." OFF)
 option(LEMON_ENABLE_SOPLEX "Enable SoPlex solver backend." OFF)
 
-# Building
+# Building + Testing
+option(LEMON_BUILD_TESTING "Enable unit tests" ON)
 option(LEMON_MAINTAINER "Enable Maintainer options." OFF)
-option(LEMON_BUILD_TESTING "" ON)
-option(LEMON_BUILD_DOCS "" OFF)
-option(LEMON_BUILD_TOOLS "" OFF)
-option(LEMON_BUILD_DEMO "" OFF)
+option(LEMON_BUILD_DOCS "Enable docs using doxygen and ghostcript" OFF)
+option(LEMON_BUILD_TOOLS "Enable project in tools directory" OFF)
+option(LEMON_BUILD_DEMO "Enable project in demo directory" OFF)
 option(LEMON_BUILD_ARCHIVE "Enable to create archive" OFF)
 option(LEMON_BUILD_CPACK "Enable to create cpack" OFF)
 option(LEMON_TEST_WITH_VALGRIND "Run the tests with valgrind" OFF)
