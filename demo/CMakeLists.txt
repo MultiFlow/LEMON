@@ -34,19 +34,9 @@ project(
 # add_subdirectory(path-to-lemon)
 
 # Option 3. (works with updated repo)
-# include(FetchContent)
-# find_package(Hg)
-# if(HG_FOUND)
-#   FetchContent_Declare(
-#     LEMON
-#     HG_REPOSITORY "https://lemon.cs.elte.hu/hg/lemon/"
-#     )
-# else()
-#   FetchContent_Declare(
-#     LEMON
-#     SOURCE_DIR "path-to-lemon-src")
-# endif()
-# FetchContent_MakeAvailable(LEMON)
+include(FetchContent)
+FetchContent_Declare(LEMON SOURCE_DIR "../")
+FetchContent_MakeAvailable(LEMON)
 
 set(DEMOS arg_parser_demo graph_to_eps_demo lgf_demo)
 

@@ -30,7 +30,6 @@ target_link_libraries(dimacs-solver LEMON::LEMON)
 install(TARGETS lgf-gen dimacs-to-lgf dimacs-solver RUNTIME DESTINATION bin
                                                             COMPONENT bin)
 
-# TODO: Check
 if(NOT WIN32)
   install(
     PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/lemon-0.x-to-1.x.sh

@@ -64,7 +64,11 @@ elseif(HG_FOUND)
     endif()
   endif()
   set(LEMON_VERSION ${HG_REVISION})
+else() # Hg not found and no environment variable is set
+  set(LEMON_VERSION "unknown")
 endif()
+
+message(STATUS "LEMON Version: ${LEMON_VERSION}")
 
 # OS
 if(WIN32)
