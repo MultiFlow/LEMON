@@ -5,9 +5,9 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
-      os: [macos-11, macos-10.15, ubuntu-latest]
       fail-fast: false
       matrix:
+        os: [macos-11, macos-10.15, ubuntu-latest]
         cxx_std: [11, 17, 20]
     timeout-minutes: 100
     steps:
