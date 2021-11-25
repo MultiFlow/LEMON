@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cxx_std: [11, 17, 20]
+        cxx_std: [11, 17, 23]
     timeout-minutes: 60
     steps:
     - uses: actions/checkout@v2
