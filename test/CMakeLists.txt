@@ -59,7 +59,7 @@ set(TESTS
     min_cost_arborescence_test
     min_cost_flow_test
     min_mean_cycle_test
-    multicommodity_flow_test
+    # multicommodity_flow_test
     nagamochi_ibaraki_test
     path_test
     planarity_test
@@ -174,17 +174,6 @@ foreach(TEST_NAME ${TESTS})
            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
            $<INSTALL_INTERFACE:include/lemon>)
-  # Inherit lemon target properties (flags, cxx standard)
-  if(APPLE)
-    set_target_properties(
-      ${TEST_NAME} PROPERTIES INSTALL_RPATH
-                              "@loader_path/../${CMAKE_INSTALL_LIBDIR}")
-  elseif(UNIX AND NOT APPLE)
-    set_target_properties(
-      ${TEST_NAME} PROPERTIES INSTALL_RPATH
-                              "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
-  endif()
-
   if(LEMON_TEST_WITH_VALGRIND)
     add_test(${TEST_NAME} valgrind --error-exitcode=1 ${VALGRIND_FLAGS}
              ${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME})

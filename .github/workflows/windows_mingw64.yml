@@ -6,14 +6,18 @@ jobs:
   # Building using the github runner environement directly.
   build:
     runs-on: windows-latest
-    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        cxx_std: [11, 17, 20]
+    timeout-minutes: 60
     steps:
     - uses: actions/checkout@v2
     - uses: komiya-atsushi/action-enforce-timeout-minutes@v1.0.0
     - name: Check cmake
       run: cmake --version
     - name: Configure
-      run: cmake -S. -Bbuild -G "MinGW Makefiles"
+      run: cmake -S. -Bbuild -G "MinGW Makefiles" -DLEMON_CXX_STANDARD=${{ matrix.cxx_std }}
     - name: Build
       run: cmake --build build --config Release --target all -v
     - name: Test

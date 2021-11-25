@@ -76,6 +76,7 @@ if(WIN32)
 endif()
 
 # Building Options #
+set(LEMON_CXX_STANDARD CACHE FORCE 20) # "C++ Standard for building >=11"
 
 # Solvers
 option(LEMON_ENABLE_GLPK "Enable GLPK solver backend." OFF)
