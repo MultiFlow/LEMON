@@ -559,13 +559,13 @@ void checkBpGraphReaderWriter() {
 }
 
 int main() {
-  { // Check digrpah
+  {  // Check digrpah
     checkDigraphReaderWriter();
   }
-  { // Check graph
+  {  // Check graph
     checkGraphReaderWriter();
   }
-  { // Check bipartite graph
+  {  // Check bipartite graph
     checkBpGraphReaderWriter();
   }
   return 0;

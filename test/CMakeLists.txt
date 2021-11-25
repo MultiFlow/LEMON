@@ -174,6 +174,11 @@ foreach(TEST_NAME ${TESTS})
            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
            $<INSTALL_INTERFACE:include/lemon>)
+  if(UNIX AND NOT APPLE)
+    set_target_properties(
+      ${TEST_NAME} PROPERTIES INSTALL_RPATH
+                              "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+  endif()
   if(LEMON_TEST_WITH_VALGRIND)
     add_test(${TEST_NAME} valgrind --error-exitcode=1 ${VALGRIND_FLAGS}
              ${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME})
