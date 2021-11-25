@@ -64,10 +64,12 @@ elseif(HG_FOUND)
     endif()
   endif()
   set(LEMON_VERSION ${HG_REVISION})
-else() # Hg not found and no environment variable is set
-  set(LEMON_VERSION "unknown")
 endif()
 
+# If Hg not found or not initialized correctly, use the default version string
+if("${LEMON_VERSION}" STREQUAL "")
+  set(LEMON_VERSION "unknown")
+endif()
 message(STATUS "LEMON Version: ${LEMON_VERSION}")
 
 # OS
@@ -76,7 +78,7 @@ if(WIN32)
 endif()
 
 # Building Options #
-set(LEMON_CXX_STANDARD CACHE FORCE 20) # "C++ Standard for building >=11"
+set(LEMON_CXX_STANDARD CACHE STRING 17) # "C++ Standard for building >=11"
 
 # Solvers
 option(LEMON_ENABLE_GLPK "Enable GLPK solver backend." OFF)

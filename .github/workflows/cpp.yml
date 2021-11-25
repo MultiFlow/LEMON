@@ -14,11 +14,9 @@ jobs:
     - uses: actions/checkout@v2
     - uses: komiya-atsushi/action-enforce-timeout-minutes@v1.0.0
     - name: Configure
-      run: cmake -S . -Bbuild -DLEMON_CXX_STANDARD=${{ matrix.cxx_std }}
-    - name: Build
+      run: cmake -S . -Bbuild -DLEMON_CXX_STANDARD=${{ matrix.cxx_std }} -DLEMON_MAINTAINER=ON
+    - name: Build and Test
       run: cmake --build build --target all -v
-    - name: Test
-      run: cd build && ctest --verbose
     - name: Install
       run: cmake --build build --target install -v -- DESTDIR=install
       continue-on-error: true
