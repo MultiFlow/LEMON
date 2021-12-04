@@ -78,7 +78,9 @@ if(WIN32)
 endif()
 
 # Building Options #
-set(LEMON_CXX_STANDARD CACHE STRING 17) # "C++ Standard for building >=11"
+set(LEMON_CXX_STANDARD
+    17
+    CACHE STRING "C++ Standard for building (has to be >=11).")
 
 # Solvers
 option(LEMON_ENABLE_GLPK "Enable GLPK solver backend." OFF)
