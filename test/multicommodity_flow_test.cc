@@ -60,13 +60,11 @@ template<class Digraph>
 void checkApproxMCF() {
   TEMPLATE_DIGRAPH_TYPEDEFS(Digraph);
 
-  Digraph                                                    graph;
-  Node                                                       s1, t1, s2, t2;
-  typedef typename Digraph::template ArcMap<double>          DoubleMap;
-  typedef typename ApproxMCF<Digraph>::Traits::LargeCostMap* LargeCostMapPtr;
+  Digraph                                           graph;
+  Node                                              s1, t1, s2, t2;
+  typedef typename Digraph::template ArcMap<double> DoubleMap;
   DoubleMap cap(graph), cost(graph), sol1(graph), sol2(graph), sol1_max(graph),
       sol2_max(graph);
-  int               number_commodities = 2;
   Tolerance<double> tol;
   tol.epsilon(1e-1);  // 1 decimal place
 
@@ -91,7 +89,7 @@ void checkApproxMCF() {
   // Max
   {
     ApproxMCF<Digraph> max(graph, cap);
-    max.addCommodities(number_commodities, {s1, s2}, {t1, t2}).run();
+    max.addCommodity(s1, t1).addCommodity(s2, t2).run();
     for (ArcIt e(graph); e != INVALID; ++e) {
       const std::string test_name =
           "[FLEISCHER_MAX] flow on " + getEdgeName<Digraph>(graph, e);
@@ -109,8 +107,9 @@ void checkApproxMCF() {
   // Max Concurrent
   {
     ApproxMCF<Digraph> max(graph, cap);
-    max.addCommodities(number_commodities, {s1, s2}, {t1, t2}, {10.0, 10.0});
-    max.run(ApproxMCF<Digraph>::FLEISCHER_MAX_CONCURRENT);
+    max.addCommodity(s1, t1, 10.0)
+        .addCommodity(s2, t2, 10.0)
+        .run(ApproxMCF<Digraph>::FLEISCHER_MAX_CONCURRENT);
     for (ArcIt e(graph); e != INVALID; ++e) {
       const std::string test_name = "[FLEISCHER_MAX_CONCURRENT] flow on " +
                                     getEdgeName<Digraph>(graph, e);
@@ -139,31 +138,6 @@ void checkApproxMCF() {
     check(max.getTotalCost() == 30.0, "min-cost failed");
   }
 
-  // Min cost (using constructor with cost vector)
-  {
-    std::vector<LargeCostMapPtr> cost_vector;
-    cost_vector.resize(number_commodities);
-    for (int i = 0; i < number_commodities; ++i) {
-      cost_vector[i] = ApproxMCF<Digraph>::Traits::createLargeCostMapPtr(graph);
-      for (ArcIt a(graph); a != INVALID; ++a)
-        (*cost_vector[i])[a] = cost[a];
-    }
-    ApproxMCF<Digraph> max(graph, cap);
-    max.addCommodities(
-           number_commodities, {s1, s2}, {t1, t2}, {10.0, 10.0}, cost_vector)
-        .run(ApproxMCF<Digraph>::BINARY_SEARCH_MIN_COST);
-    for (ArcIt e(graph); e != INVALID; ++e) {
-      const std::string test_name =
-          "[BINARY_SEARCH_MIN_COST cost-vector] flow on " +
-          getEdgeName<Digraph>(graph, e);
-      // Check commodity 1 (index 0)
-      check(max.flow(0, e) == sol1[e], test_name + " commodity 1");
-      // Check commodity 2 (index 1)
-      check(max.flow(1, e) == sol2[e], test_name + " commodity 2");
-    }
-    check(max.getTotalCost() == 30.0, "min-cost (cost-vector) failed");
-  }
-
   // Max Concurrent - 3 commodities
   {
     ApproxMCF<Digraph> max(graph, cap);
@@ -171,6 +145,8 @@ void checkApproxMCF() {
         .addCommodity(s1, t2, 10.0, cost)
         .addCommodity(s1, t1, 5.0, cost)
         .run(ApproxMCF<Digraph>::FLEISCHER_MAX_CONCURRENT);
+
+    const DoubleMap& flow = max.getFlowMap(0);
     check(
         max.getTotalCost() == 30.0,
         "3 commodities FLEISCHER_MAX_CONCURRENT failed");
@@ -206,7 +182,7 @@ void checkApproxMCFDisconnected() {
   // Max
   {
     ApproxMCF<Digraph> max(graph, cap);
-    max.addCommodities(2, {n0, n2}, {n1, n3}).run();
+    max.addCommodity(n0, n1).addCommodity(n2, n3).run();
     for (ArcIt e(graph); e != INVALID; ++e) {
       const std::string test_name =
           "[FLEISCHER_MAX] flow on " + getEdgeName<Digraph>(graph, e);
