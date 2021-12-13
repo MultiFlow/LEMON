@@ -6,9 +6,22 @@ jobs:
   # Building using the github runner environement directly.
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 100
     steps:
     - uses: actions/checkout@v2
-    - name: Run all
+    - name: Ubuntu
       run: |
         cd docker
-        docker-compose up --build
+        docker-compose up --build lemon-ubuntu
+    - name: Alpine
+      run: |
+        cd docker
+        docker-compose up --build lemon-alpine
+    - name: Debian
+      run: |
+        cd docker
+        docker-compose up --build lemon-debian
+    - name: Archlinux
+      run: |
+        cd docker
+        docker-compose up --build lemon-archlinux
