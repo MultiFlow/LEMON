@@ -4,6 +4,8 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    gcc: 10
+    g++: 10
     strategy:
       fail-fast: false
       matrix:

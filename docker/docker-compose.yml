@@ -1,0 +1,35 @@
+version: "2.3"
+
+services:
+
+  lemon-alpine:
+    image: lemon-alpine:latest
+    build:
+      context: ../
+      dockerfile: docker/alpine.Dockerfile
+      cache_from:
+        - lemon-alpine:latest
+
+  lemon-ubuntu:
+    image: lemon-ubuntu:latest
+    build:
+      context: ../
+      dockerfile: docker/ubuntu.Dockerfile
+      cache_from:
+        - lemon-ubuntu:latest
+
+  lemon-debian:
+    image: lemon-debian:latest
+    build:
+      context: ../
+      dockerfile: docker/debian.Dockerfile
+      cache_from:
+        - lemon-debian:latest
+
+  lemon-archlinux:
+    image: lemon-archlinux:latest
+    build:
+      context: ../
+      dockerfile: docker/archlinux.Dockerfile
+      cache_from:
+        - lemon-archlinux:latest
