@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: komiya-atsushi/action-enforce-timeout-minutes@v1.0.0
     - name: Run all
       run: |
         cd docker
